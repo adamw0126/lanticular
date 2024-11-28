@@ -1,0 +1,135 @@
+/*width*/
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+/*track*/
+::-webkit-scrollbar-track {
+    background: rgb(46, 46, 56);
+    border-color: rgb(255, 255, 255);
+    border-radius: 4px;
+}
+
+/*thumb*/
+::-webkit-scrollbar-thumb {
+    background: rgb(65, 65, 78);
+}
+
+.app-phone_item .cover-image {
+    pointer-events: none;
+}
+
+.tabs-menu {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.tabs-menu a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+}
+
+.dspPopup {
+    will-change: opacity, transform;
+    opacity: 1;
+    transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+}
+.nonPopup {
+    will-change: opacity, transform;
+    opacity: 0;
+    transform: translate3d(0px, -3.1%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+}
+
+.motion3D {
+    transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.26, 0.6, 0.04, 1.6);
+}
+.motion2D {
+    transform: translate3d(-100%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.26, 0.6, 0.04, 1.6);
+}
+
+.logWindow {
+    background: transparent;
+    border-radius: 20px;
+    width: 370px;
+}
+
+.perform-upload {
+    border: 1px solid;
+}
+
+.perform-upload:hover {
+    background: white;
+    color: #22222d;
+}
+
+label {
+    font-weight: 500 !important;
+}
+
+.modal-cancel {
+    border: 1px solid;
+}
+.modal-cancel:hover {
+    background-color: #22222d;
+    color: white;
+}
+
+.text-lg {
+    font-size: 1rem !important;
+}
+
+.css-wkb2u9{
+    position: fixed;
+    inset: 0px;
+    padding-right: 20px;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    background-color: rgb(18, 18, 33);
+    flex-shrink: 0;
+    z-index: 5;
+}
+.css-moulko {
+    display: flex;
+    width: 324px;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+.css-tkevr6 {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.drop-item {
+    color: #22222d;
+}
+.drop-item:hover {
+    color: blue;
+}
+
+.image-container {
+    height: 100%;
+    width: 100%;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+}
+
+.fuly-image {
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
