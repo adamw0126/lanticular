@@ -5,7 +5,6 @@ let gv = require('./config');
 const LeftSection = ({ isMotion, isDepth, isAnagl }) => {
   const user = JSON.parse(localStorage.getItem('userInfo'));
 
-  console.log('gv.anaglUrl', gv.anaglUrl)
   return (
     <div className="image-container">
       {

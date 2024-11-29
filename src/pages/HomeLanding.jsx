@@ -42,7 +42,7 @@ const HomeLanding = () => {
                     <div className="nav-wrapper">
                         <div className="nav-container">
                             <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
-                                <img src="./logo.png" loading="eager" data-w-id="abe3504f-abe0-74f0-87b5-91de36bb01fb" alt="immersity AI" className="nav-brand" style={{willChange: 'width, height', height: `${!logoSize ? '2.5' : logoSize}rem`, minHeight:'1.5rem', maxHeight:'2.5rem'}} />
+                                <img src="./logo.png" loading="eager" data-w-id="abe3504f-abe0-74f0-87b5-91de36bb01fb" alt="lenticular" className="nav-brand" style={{willChange: 'width, height', height: `${!logoSize ? '2.5' : logoSize}rem`, minHeight:'1.5rem', maxHeight:'2.5rem'}} />
                             </a>
                             <div className="nav-container-right">
                                 {
@@ -62,47 +62,30 @@ const HomeLanding = () => {
                         </div>
                     </div>
                     <div className="menu" style={{willChange: 'opacity',opacity:`calc(0 + ${valByScroll/378})`}}>
-                        <a href="/#tools" className="navlink w-inline-block">
+                        <a href="/#motion" className="navlink w-inline-block">
                             <div>2D to 3DMotion</div>
                         </a>
-                        <a href="" target="_blank" className="navlink w-inline-block">
-                            <div>Company</div>
-                        </a>
-                        <a href="/contact" className="navlink w-inline-block">
-                            <div>Contact Us</div>
-                        </a>
-                        <a href="" target="_blank" className="navlink w-inline-block">
+                        <NavLink to="/contact" className="navlink w-inline-block">Contact Us</NavLink>
+                        <a href="https://discord.gg/tokenstormfun" target="_blank" className="navlink w-inline-block">
                             <div>Discord</div>
                         </a>
                     </div>
                     <div className="navbar_menu-mobile">
                         <div className="container_large-copy">
-                            <a id="w-node-a98d28af-448d-971b-0d7a-75d2967ed96b-36bb01f7" href="/#tools" className="navlink-mobile w-inline-block">
+                            <a id="w-node-a98d28af-448d-971b-0d7a-75d2967ed96b-36bb01f7" href="/#motion" className="navlink-mobile w-inline-block">
                                 <div className="text-size-regular">Products</div>
                                 <div className="icon_20x20-solid text-color-dark100">
                                     <div className="icon"></div>
                                 </div>
                             </a>
-                            <a id="w-node-d5575a52-2454-2d79-5cff-2b32fa8d137d-36bb01f7" href="" target="_blank" className="navlink-mobile w-inline-block">
+                            <a id="w-node-d5575a52-2454-2d79-5cff-2b32fa8d137d-36bb01f7" href="https://discord.gg/tokenstormfun" target="_blank" className="navlink-mobile w-inline-block">
                                 <div className="text-size-regular">Discord</div>
-                                <div className="icon_20x20-solid text-color-dark100">
-                                    <div className="icon"></div>
-                                </div>
-                            </a>
-                            <a id="w-node-bda7ca50-a44a-a990-6bca-3ed6caa39413-36bb01f7" href="/pricing" className="navlink-mobile w-inline-block">
-                                <div className="text-size-regular">Pricing</div>
                                 <div className="icon_20x20-solid text-color-dark100">
                                     <div className="icon"></div>
                                 </div>
                             </a>
                             <a id="w-node-_59f4e24a-b438-2d6e-1a9a-f68d63f474df-36bb01f7" href="/faqs" className="navlink-mobile w-inline-block">
                                 <div className="text-size-regular">FAQ</div>
-                                <div className="icon_20x20-solid text-color-dark100">
-                                    <div className="icon"></div>
-                                </div>
-                            </a>
-                            <a id="w-node-_71fe4e7c-e966-1206-f17b-0d1a7ff03b08-36bb01f7" href="https://localhost/" target="_blank" className="navlink-mobile w-inline-block">
-                                <div className="text-size-regular">Company</div>
                                 <div className="icon_20x20-solid text-color-dark100">
                                     <div className="icon"></div>
                                 </div>
@@ -115,8 +98,14 @@ const HomeLanding = () => {
                             </a>
                         </div>
                         <div className="c-menu-bottom">
-                            <a id="w-node-_60fcf559-822b-39de-48ac-fbb74526203a-36bb01f7" href="/signin" className="button w-button">Try Now</a>
-                            <a id="w-node-_340b3113-e739-607b-376b-225d514935f7-36bb01f7" href="/signin" className="button secondary w-button">Sign In</a>
+                            <NavLink to={!user ? "/signin" : "/upload"} className="navbar-button w-button">Try Now</NavLink>
+                            {
+                                (user == null || !user)
+                                ? <NavLink to="/signin" className="navlink w-inline-block">
+                                    <div>Sign In</div>
+                                </NavLink>
+                                : <></>
+                            }
                         </div>
                     </div>
                 </nav>
@@ -127,8 +116,8 @@ const HomeLanding = () => {
                             <div className="hero-container">
                                 <div className="padding-global">
                                     <div className="container align-center gap-small" style={{willChange: 'opacity',opacity:`calc(0 + ${valByScroll/378})`}}>
-                                        <h1 id="w-node-_4146ae31-843e-6155-a933-3f3f49478edd-7b225824" className="heading-style-h1 large">From Content to Immersive Content</h1>
-                                        <p id="w-node-_4146ae31-843e-6155-a933-3f3f49478edf-7b225824" className="text-size-xlarge">The AI platform converting images &amp; videos into 3D</p>
+                                        <h1 id="w-node-_4146ae31-843e-6155-a933-3f3f49478edd-7b225824" className="heading-style-h1 large">Lenticular Content</h1>
+                                        <p id="w-node-_4146ae31-843e-6155-a933-3f3f49478edf-7b225824" className="text-size-xlarge">The platform converting images into 3D</p>
                                     </div>
                                 </div>
                             </div>
@@ -144,9 +133,9 @@ const HomeLanding = () => {
                             <div className="popup-wrap">
                                 <div className={`popup-inner ${valByScroll > 0 ? 'nonPopup' : 'dspPopup'}`}>
                                     <div className="popup-text_wrap">
-                                        <p className="text-size-medium">Generate Apple Music® Album Motion with Immersity AI</p>
+                                        <p className="text-size-medium">Generate 2D image 3D Motion with Lenticular</p>
                                     </div>
-                                    <a href="/apple-music" className="button w-button">Learn More</a>
+                                    <a href="/#motion" className="button w-button">Learn More</a>
                                 </div>
                             </div>
                         </div>

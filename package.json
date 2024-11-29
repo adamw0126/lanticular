@@ -20,6 +20,7 @@
     "@mui/material": "^6.1.8",
     "apexcharts": "^3.41.0",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "headlessui": "^0.0.0",
     "jsvectormap": "^1.5.3",
     "match-sorter": "^6.3.1",

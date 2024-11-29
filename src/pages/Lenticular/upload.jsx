@@ -62,7 +62,6 @@ const UploadPage = () => {
     
         try {
             const { width, height } = await getImageDimensions();
-            console.log(`Width: ${width}, Height: ${height}`);
     
             const formData = new FormData();
             formData.append('file', file); // Correctly append file
@@ -79,7 +78,6 @@ const UploadPage = () => {
     
             // Call depth_gen function
             const depthGen = await depth_gen(file);
-            console.log('depthGen ===>', depthGen);
 
             if (response.status === 200) {
                 const depthGen = await depth_gen(file);
@@ -120,7 +118,6 @@ const UploadPage = () => {
             }
     
             const depthURL = f_data; // Assuming f_data is the correct URL
-            console.log(depthURL);
     
             // Send depthPath to API
             const axiosResponse = await axios.post('/api/depthImage', {
@@ -130,7 +127,6 @@ const UploadPage = () => {
     
             const { message } = axiosResponse.data;
             if (message === 'success') {
-                console.log('axiosResponse.data ===>', axiosResponse.data)
                 localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
                 return 'success';
             } else {
@@ -224,12 +220,12 @@ const UploadPage = () => {
                             </button>
                         </div>
         
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl">
+                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
                             <Card title="2D to 3D Motion" description="Convert your pictures into immersive 3D Motions" />
                             <Card title="2D to 3D Image" description="Easily create accurately detailed 3D Images" />
                             {/* <Card title="2D to 3D Video" description="Convert any video and transport viewers into the scene" /> */}
                             <Card title="Edit Neural Depth" description="State-of-the-art depthmap generation and editing" />
-                            <Card title="Apple Music® Album Motion" description="Bring your album art to life and stand out in the mix" isNew={true} />
+                            {/* <Card title="Apple Music® Album Motion" description="Bring your album art to life and stand out in the mix" isNew={true} /> */}
                         </div>
                     </div>
         
@@ -274,7 +270,7 @@ const UploadPage = () => {
 
 const Card = ({ title, description, isNew }) => {
     return (
-        <div className="bg-gray-800 rounded-lg p-4 relative transition-transform transform hover:scale-105">
+        <div className="bg-gray-800 rounded-lg p-4 relative transition-transform transform hover:scale-95" style={{border:'1px dashed'}}>
             {isNew && <span className="bg-purple-500 text-white text-xs px-2 rounded absolute top-2 right-2">New</span>}
             <h3 className="text-white text-lg font-semibold">{title}</h3>
             <p className="text-gray-400 mt-2">{description}</p>

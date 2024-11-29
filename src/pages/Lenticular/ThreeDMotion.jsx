@@ -107,7 +107,7 @@ function ThreeDMotion({user, isDepth, setIsDepth, isAnagl, setIsAnagl}) {
         // { label: 'Zoom Right', icon: <ArrowRight />, style: 'Zoom Right' },
         // { label: 'Custom', icon: <Tune />, style: 'Custom' },
     ];
-    const [previewStyle, setPreviewStyle] = useState('Vertical');
+    const [previewStyle, setPreviewStyle] = useState('Circle');
     const [amountValue, setAmountValue] = useState(50); // Default value is 50
     const [lengthValue, setLengthValue] = useState(5);
     const [focusValue, setFocusValue] = useState(50);
@@ -142,7 +142,6 @@ function ThreeDMotion({user, isDepth, setIsDepth, isAnagl, setIsAnagl}) {
     const handleDilationCommit = (event, newValue) => {
         dilateDepthMapFromUrl(gv.depthURL, parseInt(newValue / 10))
         .then(outputUrl => {
-            console.log('outputURL ===>', gv.depthURL, outputUrl)
             gv.viewer.setDepthmap(outputUrl);
         })
         .catch(error => {

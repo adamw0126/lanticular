@@ -12,13 +12,14 @@ const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 const Upload = lazy(() => import('./pages/Lenticular/upload'));
 const Image = lazy(() => import('./pages/Lenticular/image'));
 const DepthMap = lazy(() => import('./pages/Lenticular/DepthMap'));
+const Contact = lazy(() => import('./pages/Lenticular/contact'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
   const user = localStorage.getItem('userInfo');
 
   useEffect(() => {
-    setTimeout(() => setLoading(false), 1000);
+    setTimeout(() => setLoading(false), 500);
   }, []);
 
   return loading ? (
@@ -45,6 +46,7 @@ function App() {
             <Route index path="/image/depth-map" element={<Suspense fallback={<Loader/>}><DepthMap/></Suspense>}></Route>
           </>) : <Route path="*" element={<Navigate to="/" replace />} />
         }
+        <Route index path="/contact" element={<Suspense fallback={<Loader />}><Contact /></Suspense>} />
 
         {user !== null ? (
           <Route element={<DefaultLayout />}>

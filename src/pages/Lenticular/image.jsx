@@ -97,7 +97,6 @@ const ImageComponent = () => {
     
         try {
             const { width, height } = await getImageDimensions();
-            console.log(`Width: ${width}, Height: ${height}`);
     
             const formData = new FormData();
             formData.append('file', file); // Correctly append file
@@ -368,16 +367,20 @@ const ImageComponent = () => {
                                             <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                // localStorage.removeItem("userInfo");
-                                                // navigate('/');
+                                                navigate('/contact');
                                                 window.location.reload();
                                             }}>
                                                 <ContactPageOutlinedIcon />
                                                 Contact Us
                                             </button>
                                             <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
-                                            onClick={(e) => {
+                                            onClick={async (e) => {
                                                 e.preventDefault();
+                                                const result = await axios.post('/api/logout', { who: user.admin._id });
+
+                                                if (result.data.message == 'logout') {
+                                                    setFile(null);
+                                                }
                                                 localStorage.removeItem("userInfo");
                                                 navigate('/');
                                                 window.location.reload();

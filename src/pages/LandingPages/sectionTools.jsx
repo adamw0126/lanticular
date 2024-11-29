@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { NavLink } from 'react-router-dom';
 
 const SectionTools = () => {
+    const user = JSON.parse(localStorage.getItem('userInfo'));
     let [is2D, setIs2D] = useState(false);
     const videoRef = useRef(null);
 
@@ -24,7 +25,7 @@ const SectionTools = () => {
     }, [])
 
     return (
-        <section id="tools" className="section_tools">
+        <section id="motion" className="section_tools">
         <div className="padding-global">
             <div className="container_large gap-large">
                 <div id="w-node-_2f559bd0-4d76-57df-cfb0-2206704edbf7-7b225824" data-current="2D to 3D Motion" data-easing="ease" data-duration-in="0" data-duration-out="0" className="tabs w-tabs">
@@ -55,11 +56,11 @@ const SectionTools = () => {
                                                 <br/>Create depth and motion fast and with full control on your camera path, with our instant previews before the conversion.
                                             </p>
                                         </div>
-                                        <a href="https://app.immersity.ai/" className="button w-button">Try Now</a>
+                                        <NavLink to={!user ? "/signin" : "/upload"} className="navbar-button w-button">Try Now</NavLink>
                                     </div>
                                     <div id="w-node-_03bd3d16-fd9e-51dd-4083-176ce369b92f-7b225824" className="motion-element">
                                         <div className="motion-wrapper">
-                                            <a href="https://www.instagram.com/simplifyerx/" target="_blank" className="motion_creator motion">@simplifyerx</a>
+                                            {/* <a href="" target="_blank" className="motion_creator motion">@simplifyerx</a> */}
                                             <div className="motion_3d-wrapper">
                                                 {
                                                     is2D ? <img sizes="(max-width: 479px) 100vw, (max-width: 767px) 97vw, (max-width: 991px) 90vw, 91vw" srcSet="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720-p-500.webp 500w, https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720-p-800.webp 800w, https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720.webp 1024w" alt="immersity AI" src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720.webp" loading="eager" className="motion_img-2d"/> :
