@@ -13,6 +13,7 @@ const Upload = lazy(() => import('./pages/Lenticular/upload'));
 const Image = lazy(() => import('./pages/Lenticular/image'));
 const DepthMap = lazy(() => import('./pages/Lenticular/DepthMap'));
 const Contact = lazy(() => import('./pages/Lenticular/contact'));
+const Account = lazy(() => import('./pages/mypage/Account'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -43,6 +44,7 @@ function App() {
           user != null ? (<>
             <Route index path="/upload" element={<Suspense fallback={<Loader />}><Upload /></Suspense>} />
             <Route index path="/image" element={<Suspense fallback={<Loader />}><Image /></Suspense>} />
+            <Route index path="/account" element={<Suspense fallback={<Loader />}><Account /></Suspense>} />
             <Route index path="/image/depth-map" element={<Suspense fallback={<Loader/>}><DepthMap/></Suspense>}></Route>
           </>) : <Route path="*" element={<Navigate to="/" replace />} />
         }

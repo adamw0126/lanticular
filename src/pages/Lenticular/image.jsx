@@ -5,6 +5,7 @@ import { toast } from 'react-hot-toast';
 import { lazy } from 'react';
 import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import Loader from '../../common/Loader/index';
 require('../DepthyViewer');
 let gv = require('./config');
@@ -62,13 +63,16 @@ const ImageComponent = () => {
         };
     }, []);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         if (e.target.files && e.target.files.length > 0) {
             setFile(e.target.files[0]);
+            const seletedFile = e.target.files[0];
+            console.log('file===>', seletedFile)
+            await handleUpload(seletedFile);
         }
     };
 
-    const handleUpload = async () => {
+    const handleUpload = async (file) => {
         if (!file) {
             toast.error('Please select a file first');
             return;
@@ -111,8 +115,8 @@ const ImageComponent = () => {
                 },
             });
     
+            const depthGen = await depth_gen(file);
             if (response.status === 200) {
-                const depthGen = await depth_gen(file);
                 if(depthGen === 'success'){
                     toast.success(response.data.message);
                 }
@@ -335,14 +339,14 @@ const ImageComponent = () => {
                                         id="file-input"
                                     />
                                     <label htmlFor="file-input" className="cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded" style={{marginBottom:0}}>
-                                        Select File
+                                        + Upload
                                     </label>
-                                    <button 
+                                    {/* <button 
                                         onClick={handleUpload}
                                         className="bg-blue-500 text-white hover:bg-blue-600 transition-colors py-2 px-4 rounded perform-upload"
                                     >
                                         {file != null ? 'Play' : 'No File'}
-                                    </button>
+                                    </button> */}
                                     <div
                                         onClick={() => setIsOpen(!isOpen)}
                                         aria-haspopup="true"
@@ -367,6 +371,15 @@ const ImageComponent = () => {
                                             <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
                                             onClick={(e) => {
                                                 e.preventDefault();
+                                                navigate('/account');
+                                                window.location.reload();
+                                            }}>
+                                                <ManageAccountsOutlinedIcon />
+                                                Manage Account
+                                            </button>
+                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
                                                 navigate('/contact');
                                                 window.location.reload();
                                             }}>
@@ -379,7 +392,7 @@ const ImageComponent = () => {
                                                 const result = await axios.post('/api/logout', { who: user.admin._id });
 
                                                 if (result.data.message == 'logout') {
-                                                    setFile(null);
+                                                    console.log('logout')
                                                 }
                                                 localStorage.removeItem("userInfo");
                                                 navigate('/');

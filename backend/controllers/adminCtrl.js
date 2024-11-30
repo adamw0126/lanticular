@@ -149,3 +149,13 @@ exports.logout = async (req, res) => {
         return res.json({message: 'logout'});
     }
 }
+
+exports.changeUserId = async (req, res) => {
+    const { userId, editVal } = req.body;
+    let user = await AdminMdl.findOne(userId);
+    if(user){
+        user.userId = editVal;
+        await user.save();
+        return res.json({message: 'success'});
+    }
+}

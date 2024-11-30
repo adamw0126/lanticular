@@ -16,22 +16,14 @@ mongoose.connect('mongodb://127.0.0.1:27017/lanticular')
         console.error('Error connecting to MongoDB:', error);
     });
 
-// Middleware
-app.use(cors()); // Enables CORS
-// app.use(cors({
-//     origin: 'http://localhost:5000', // Or the origin of your frontend
-//     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-//     credentials: true
-// }));
+app.use(cors());
 
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 app.use(express.json()); // Parses incoming JSON requests
 
-// Mount the router on the '/' path
 app.use('/', router);
 
-// Serve uploaded files (optional)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // app.use(express.static(path.join(__dirname, '..', 'dist')));

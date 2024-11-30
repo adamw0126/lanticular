@@ -21,7 +21,6 @@ function ThreeDMotion({user, isDepth, setIsDepth, isAnagl, setIsAnagl}) {
         // gv.viewer = new DepthyViewer(viewerContainer, {});
         console.log('gv.viewer', gv.viewer)
         const handleCanvasClick = viewerContainer.addEventListener('click', function (event) {
-            console.log('123djfishfsuehkjsef__', isFocus, event.target.tagName)
             if(!isFocus && event.target.tagName === 'CANVAS'){
               const mouseX = event.offsetX;
               const mouseY = event.offsetY;
