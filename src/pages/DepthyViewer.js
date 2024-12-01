@@ -1,6 +1,93 @@
 
 let gv = require('./Lenticular/config');
 
+const sharpenFilter = new PIXI.Filter(null, `
+  varying vec2 vTextureCoord;
+  uniform sampler2D uSampler;
+
+  void main(void) {
+      vec2 texCoord = vTextureCoord;
+
+      // Sharpening kernel with brightness adjustment
+      float kernel[9];
+      kernel[0] =  0.0;     kernel[1] = -0.1;   kernel[2] = 0.0;
+      kernel[3] = -0.1;     kernel[4] =  1.4;   kernel[5] = -0.1;
+      kernel[6] =  0.0;     kernel[7] = -0.1;   kernel[8] = 0.0;
+
+      vec4 color = vec4(0.0);
+      for (int x = -1; x <= 1; x++) {
+          for (int y = -1; y <= 1; y++) {
+              vec2 coord = texCoord + vec2(x, y) / 512.0; // Adjust the divisor for your texture size
+              color += texture2D(uSampler, coord) * kernel[(x + 1) * 3 + (y + 1)];
+          }
+      }
+
+      // Brightness adjustment: Clamping to ensure color stays within range
+      gl_FragColor = vec4(clamp(color.rgb, 0.0, 1.0), 1.0);
+  }
+`);
+
+PIXI.SharpLinearStretchFilter = function (strength) {
+  PIXI.Filter.call(this);
+
+  this.uniforms = {
+      uSampler: null,
+      strength: strength || 1.0  // Control the strength of the sharpening
+  };
+
+  // Vertex shader
+  this.vertexSrc = `
+      attribute vec2 aVertexPosition;
+      attribute vec2 aTextureCoord;
+
+      uniform mat3 projectionMatrix;
+
+      varying vec2 vTextureCoord;
+
+      void main(void) {
+          gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+          vTextureCoord = aTextureCoord;
+      }
+  `;
+
+  // Fragment shader
+  this.fragmentSrc = `
+      precision mediump float;
+      varying vec2 vTextureCoord;
+      uniform sampler2D uSampler;
+      uniform float strength;
+
+      void main(void) {
+          vec4 color = texture2D(uSampler, vTextureCoord);
+          vec4 colorLeft = texture2D(uSampler, vTextureCoord + vec2(-1.0, 0.0) * strength);
+          vec4 colorRight = texture2D(uSampler, vTextureCoord + vec2(1.0, 0.0) * strength);
+          vec4 colorTop = texture2D(uSampler, vTextureCoord + vec2(0.0, -1.0) * strength);
+          vec4 colorBottom = texture2D(uSampler, vTextureCoord + vec2(0.0, 1.0) * strength);
+
+          // Combine sampled colors
+          vec4 sharpenedColor = color * 5.0 - (colorLeft + colorRight + colorTop + colorBottom);
+
+          // Ensure the color stays in the valid range [0.0, 1.0]
+          sharpenedColor = clamp(sharpenedColor, 0.0, 1.0);
+
+          gl_FragColor = sharpenedColor;
+      }
+  `;
+};
+
+PIXI.SharpLinearStretchFilter.prototype = Object.create(PIXI.Filter.prototype);
+PIXI.SharpLinearStretchFilter.prototype.constructor = PIXI.SharpLinearStretchFilter;
+
+// Property to manage the strength of the effect dynamically
+Object.defineProperty(PIXI.SharpLinearStretchFilter.prototype, 'strength', {
+  get: function () {
+      return this.uniforms.strength;
+  },
+  set: function (value) {
+      this.uniforms.strength = value;
+  }
+});
+
 PIXI.ColorMatrixFilter2 = function () {
   'use strict';
 
@@ -676,7 +763,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     animateScale: { x: 1.5, y: 1.5 },
 
     depthScale: 1,
-    depthBlurSize: 4,
+    depthBlurSize: 0,
     depthFocus: 0.5,
     depthPreview: 0,
 
@@ -716,7 +803,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
 
       depthOffset = { x: 0, y: 0 }, easedOffset = depthOffset;
 
-    options = defaultOptions;
+    options = Object.assign({}, defaultOptions, options);
 
     // PRIVATE FUNCTIONS
     function init() {
@@ -726,10 +813,11 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
 
     function initRenderer() {
       try {
-        app = new PIXI.Application({ width: 800, height: 600, backgroundColor: 0x0c0c18 });
-        // console.log('element ===>', element.children[0], app.view)
+        app = new PIXI.Application({ width: 800, height: 600, antialias: false, backgroundColor: 0x0c0c18 });
         if(element.children[0]){
-          return;  
+          app.view.id = 'origin_view';
+          app.view.style.display = 'none';
+          element.appendChild(app.view);
         }
         else element.appendChild(app.view);
         stage = app.stage;
@@ -805,7 +893,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     }
 
     function createDepthBlurFilter() {
-      return new PIXI.filters.BlurFilter();
+      return new PIXI.SharpLinearStretchFilter()
     }
 
     function sizeCopy(size, expand) {
@@ -915,43 +1003,39 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
 
 
     function updateSize() {
+      var maxSize = sizeCopy(image.size, (options.fit && options.upscale) || 1);
 
-      var size = {
-        width: gv.canvasWidth,
-        height: gv.canvasHeight,
-        // width:  window.innerWidth ,
-        // height: window.innerWidth/2,
-        left: 0,
-        transform: 'translateX(0)'
-        // 
-      };
+      stageSize = sizeCopy(maxSize);
 
-      console.log('stagesize :', gv.canvasHeight, size.height);
-
-      // if (window.innerWidth < window.innerHeight) {
-      //   size =  {
-      //     width:  window.innerHeight ,
-      //     height: window.innerHeight,
-      //     left: '50%',
-      //     transform: 'translateX(-50%)'
-      //   };
-      // }
-
-      stageSize = size;
-
+      // preferred size
+      if (options.size) {
+        stageSize = sizeFit(stageSize, options.size);
+        if (options.fit === 'cover') {
+          stageSize = sizeFit(stageSize, options.size, true);
+          stageSize = sizeFit(stageSize, maxSize);
+          // 
+          if (stageSize.height > options.size.height) stageSize.height = options.size.height;
+          if (stageSize.width > options.size.width) stageSize.width = options.size.width;
+        }
+      }
       // remember target size
       stageSizeCPX = sizeRound(stageSize);
 
       // retina
+      if (options.retina && options.fit && window.devicePixelRatio >= 2) {
+        stageSize.width *= 2;
+        stageSize.height *= 2;
+      }
 
-      // 
+      stageSize = sizeFit(stageSize, image.size);
+      stageSize = sizeRound(stageSize);
 
-      canvas.style.width = size.width;
-      canvas.style.height = size.height;
-      canvas.style.left = size.left;
-      // canvas.style.position = 'absolute';
-      // canvas.style.transform = size.transform
-      //canvas.style.marginTop = Math.round(stageSizeCPX.height / -2) + 'px';
+      if (options.sizeDivisible > 1) {
+        stageSize.width -= stageSize.width % options.sizeDivisible;
+        stageSize.height -= stageSize.height % options.sizeDivisible;
+      }
+      canvas.style.width = stageSizeCPX.width + 'px';
+      canvas.style.height = stageSizeCPX.height + 'px';
 
       if (renderer && (renderer.width !== stageSize.width || renderer.height !== stageSize.height)) {
         renderer.resize(stageSize.width, stageSize.height);
@@ -970,10 +1054,11 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       imageTextureSprite.scale.set(scale, scale);
 
       imageTextureSprite.anchor.set(0.5, 0.5);
+
+      
       imageTextureSprite.position.set(stageSize.width / 2, stageSize.height / 2);
 
-      // discard alpha channel
-      // imageTextureSprite.filters = [discardAlphaFilter];
+      imageTextureSprite.filters = [sharpenFilter];
       imageTextureContainer = new PIXI.Container();
       imageTextureContainer.addChild(imageTextureSprite);
 
@@ -984,7 +1069,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         imageRender = null;
       }
       imageRender = imageRender || new PIXI.RenderTexture.create(stageSize.width, stageSize.height);
-
+      
       image.dirty = false;
       image.renderDirty = stageDirty = true;
     }
@@ -1036,7 +1121,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     }
 
     function renderDepthTexture() {
-      depthBlurFilter.blur = options.depthBlurSize;
+      depthBlurFilter.strength = options.depthBlurSize;
       renderer.render(depthTextureContainer, depthRender);
       depth.renderDirty = false;
       renderDirty = true;
@@ -1108,24 +1193,25 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     }
 
     function updateOffset() {
-      //console.log(depthOffset);
+      const horizontalIncreaseFactor = 1.4; // Factor to increase the horizontal motion
       if (depthOffset.x !== easedOffset.x || depthOffset.y !== easedOffset.y) {
-
         if (options.easeFactor && !options.animate) {
-          easedOffset.x = easedOffset.x * options.easeFactor + depthOffset.x * (1 - options.easeFactor);
-          easedOffset.y = easedOffset.y * options.easeFactor + depthOffset.y * (1 - options.easeFactor);
-          if (Math.abs(easedOffset.x - depthOffset.x) < 0.0001 && Math.abs(easedOffset.y - depthOffset.y) < 0.0001) {
-            easedOffset = depthOffset;
-          }
+          easedOffset.x =
+            easedOffset.x * options.easeFactor +
+            depthOffset.x * horizontalIncreaseFactor * (1 - options.easeFactor);
+          easedOffset.y =
+            easedOffset.y * options.easeFactor +
+            depthOffset.y * (1 - options.easeFactor);
         } else {
-          easedOffset = depthOffset;
+          easedOffset = {
+            x: depthOffset.x * horizontalIncreaseFactor,
+            y: depthOffset.y,
+          };
         }
-
         depthFilter.offset = {
           x: easedOffset.x,
-          y: easedOffset.y
+          y: easedOffset.y,
         };
-
         renderDirty = true;
       }
     }
@@ -1500,9 +1586,85 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       );
     }
 
-    this.exportWebmAnimation = function(duration, fps)  {
+    // this.exportWebmAnimation = function(duration, fps)  {
+    //   return new Promise((resolve, reject) => {
+    //     const canvas = this.getCanvas();  // Get the canvas from the current DepthyViewer instance
+    //     if (!canvas) {
+    //       reject(new Error("Canvas is not available."));
+    //       return;
+    //     }
+    
+    //     const stream = canvas.captureStream(fps);
+    //     const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/mp4' });
+    //     const chunks = [];
+    
+    //     let frame = 0;
+    //     const totalFrames = duration * fps;
+    //     let animationFrameRequest;
+    
+    //     // Save the current state to restore later
+    //     const originalOptions = this.getOptions();
+    
+    //     // Collect recorded video chunks
+    //     mediaRecorder.ondataavailable = (e) => {
+    //       if (e.data.size > 0) chunks.push(e.data);
+    //     };
+    
+    //     // Handle recording stop: Combine chunks and download the video
+    //     mediaRecorder.onstop = () => {
+    //       const blob = new Blob(chunks, { type: 'video/mp4' });
+          
+    //       // Create and trigger a download link
+    //       const url = URL.createObjectURL(blob);
+    //       const link = document.createElement('a');
+    //       link.href = url;
+    //       link.download = 'animation.mp4';
+    //       document.body.appendChild(link);
+    //       link.click();
+    //       document.body.removeChild(link);
+    //       URL.revokeObjectURL(url);  // Free up memory
+          
+    //       // Restore original viewer state
+    //       this.setOptions(originalOptions);
+          
+    //       resolve(blob);  // Resolve with the final video blob
+    //     };
+    
+    //     // Handle recording errors
+    //     mediaRecorder.onerror = (e) => {
+    //       this.setOptions(originalOptions);  // Restore state on error
+    //       reject(new Error(`MediaRecorder error: ${e.message}`));
+    //     };
+    
+    //     // Capture and render each frame
+    //     const captureFrame = () => {
+    //       if (frame < totalFrames) {
+    //         this.setOptions({ animatePosition: frame / totalFrames });
+    //         this.render(true);  // Update the canvas
+    //         frame++;
+    //         animationFrameRequest = requestAnimationFrame(captureFrame);
+    //       } else {
+    //         mediaRecorder.stop();  // Stop recording after the last frame
+    //       }
+    //     };
+    
+    //     // Start recording and frame capture
+    //     mediaRecorder.start();
+    //     captureFrame();
+    
+    //     // Provide a method to abort the recording process
+    //     this.abortExport = () => {
+    //       cancelAnimationFrame(animationFrameRequest);
+    //       mediaRecorder.stop();
+    //       this.setOptions(originalOptions);  // Restore state on abort
+    //       reject(new Error('Export aborted'));
+    //     };
+    //   });
+    // }
+
+    this.exportWebmAnimation = function(targetCanvas, duration, fps, options) {
       return new Promise((resolve, reject) => {
-        const canvas = this.getCanvas();  // Get the canvas from the current DepthyViewer instance
+        const canvas = targetCanvas || this.getCanvas(); // Use the provided targetCanvas or default to the viewer's canvas
         if (!canvas) {
           reject(new Error("Canvas is not available."));
           return;
@@ -1516,9 +1678,6 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         const totalFrames = duration * fps;
         let animationFrameRequest;
     
-        // Save the current state to restore later
-        const originalOptions = this.getOptions();
-    
         // Collect recorded video chunks
         mediaRecorder.ondataavailable = (e) => {
           if (e.data.size > 0) chunks.push(e.data);
@@ -1527,7 +1686,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         // Handle recording stop: Combine chunks and download the video
         mediaRecorder.onstop = () => {
           const blob = new Blob(chunks, { type: 'video/mp4' });
-          
+    
           // Create and trigger a download link
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
@@ -1536,29 +1695,28 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          URL.revokeObjectURL(url);  // Free up memory
-          
+          URL.revokeObjectURL(url); // Free up memory
+    
           // Restore original viewer state
-          this.setOptions(originalOptions);
-          
-          resolve(blob);  // Resolve with the final video blob
+          this.setOptions(options);
+          resolve(blob); // Resolve with the final video blob
         };
     
         // Handle recording errors
         mediaRecorder.onerror = (e) => {
-          this.setOptions(originalOptions);  // Restore state on error
+          this.setOptions(options); // Restore state on error
           reject(new Error(`MediaRecorder error: ${e.message}`));
         };
     
         // Capture and render each frame
         const captureFrame = () => {
           if (frame < totalFrames) {
-            this.setOptions({ animatePosition: frame / totalFrames });
-            this.render(true);  // Update the canvas
+            this.setOptions({ ...options, animatePosition: frame / totalFrames });
+            this.render(true); // Update the canvas
             frame++;
             animationFrameRequest = requestAnimationFrame(captureFrame);
           } else {
-            mediaRecorder.stop();  // Stop recording after the last frame
+            mediaRecorder.stop(); // Stop recording after the last frame
           }
         };
     
@@ -1570,11 +1728,79 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         this.abortExport = () => {
           cancelAnimationFrame(animationFrameRequest);
           mediaRecorder.stop();
-          this.setOptions(originalOptions);  // Restore state on abort
+          this.setOptions(options); // Restore state on abort
           reject(new Error('Export aborted'));
         };
       });
-    }
+    };
+
+    this.exportFramesToZip = function (targetCanvas, duration, fps, options) {
+      return new Promise((resolve, reject) => {
+        const canvas = targetCanvas || this.getCanvas(); // Use the provided targetCanvas or default to the viewer's canvas
+        if (!canvas) {
+          reject(new Error("Canvas is not available."));
+          return;
+        }
+    
+        const frames = [];
+        const totalFrames = Math.floor(duration * fps);
+        let frame = 0;
+        let animationFrameRequest;
+    
+        // Save the provided options to restore later
+        const originalOptions = { ...options };
+    
+        const jsZip = new JSZip(); // Create a new instance of JSZip
+    
+        // Capture each frame as an image
+        const captureFrame = () => {
+          if (frame < totalFrames) {
+            const currentOptions = { ...options, animatePosition: frame / totalFrames };
+            this.setOptions(currentOptions);
+            this.render(true); // Update the canvas
+    
+            // Convert the canvas content to a data URL and store it
+            const dataUrl = canvas.toDataURL("image/png");
+            const base64Data = dataUrl.split(",")[1]; // Extract base64 portion
+            jsZip.file(`frame_${String(frame).padStart(4, "0")}.png`, base64Data, { base64: true });
+    
+            frame++;
+            animationFrameRequest = requestAnimationFrame(captureFrame);
+          } else {
+            // Restore the original viewer state
+            this.setOptions(originalOptions);
+    
+            // Generate the ZIP file
+            jsZip
+              .generateAsync({ type: "blob" })
+              .then((zipBlob) => {
+                // Create a download link for the ZIP file
+                const url = URL.createObjectURL(zipBlob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "frames.zip";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url); // Free up memory
+    
+                resolve(zipBlob); // Resolve with the ZIP file blob
+              })
+              .catch((err) => reject(err));
+          }
+        };
+    
+        // Start capturing frames
+        captureFrame();
+    
+        // Provide a method to abort the frame export process
+        this.abortExport = () => {
+          cancelAnimationFrame(animationFrameRequest);
+          this.setOptions(originalOptions); // Restore state on abort
+          reject(new Error("Export aborted"));
+        };
+      });
+    };    
 
     this.exportDepthmapAsTexture = function (maxSize) {
       var size = sizeCopy(image.size);

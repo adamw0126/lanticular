@@ -63,15 +63,15 @@ const SectionTools = () => {
                                             {/* <a href="" target="_blank" className="motion_creator motion">@simplifyerx</a> */}
                                             <div className="motion_3d-wrapper">
                                                 {
-                                                    is2D ? <img sizes="(max-width: 479px) 100vw, (max-width: 767px) 97vw, (max-width: 991px) 90vw, 91vw" srcSet="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720-p-500.webp 500w, https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720-p-800.webp 800w, https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720.webp 1024w" alt="immersity AI" src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720.webp" loading="eager" className="motion_img-2d"/> :
+                                                    is2D ? <img sizes="(max-width: 479px) 100vw, (max-width: 767px) 97vw, (max-width: 991px) 90vw, 91vw" srcSet="./anim_2.mp4 500w, ./anim_2.mp4 800w, ./anim_2.mp4 1024w" alt="immersity AI" src="./cat.jpg" loading="eager" className="motion_img-2d"/> :
                                                     <video id="03bd3d16-fd9e-51dd-4083-176ce369b953-video" ref={videoRef} autoPlay loop style={{backgroundImage:"url(https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b41f6faa67372647003_octopus_Horizontal_80_1024x720-poster-00001.jpg)"}} muted playsInline="" data-wf-ignore="true" data-object-fit="cover">
-                                                        <source src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b41f6faa67372647003_octopus_Horizontal_80_1024x720-transcode.mp4" data-wf-ignore="true"/>
-                                                        <source src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b41f6faa67372647003_octopus_Horizontal_80_1024x720-transcode.webm" data-wf-ignore="true"/>
+                                                        <source src="./anim_2.mp4" data-wf-ignore="true"/>
+                                                        <source src="./anim_2.mp4" data-wf-ignore="true"/>
                                                     </video>
                                                 }
                                             </div>
                                             <div className="motion_2d-wrapper">
-                                                <img sizes="(max-width: 479px) 100vw, (max-width: 767px) 97vw, (max-width: 991px) 90vw, 91vw" srcSet="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720-p-500.webp 500w, https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720-p-800.webp 800w, https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720.webp 1024w" alt="immersity AI" src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b0dd8af1d48e3b1ef4a_octopus_1024x720.webp" loading="eager" className="motion_img-2d"/>
+                                                <img sizes="(max-width: 479px) 100vw, (max-width: 767px) 97vw, (max-width: 991px) 90vw, 91vw" srcSet="./cat.jpg 500w, ./cat.jpg 800w, ./cat.jpg 1024w" alt="immersity AI" src="./cat.jpg" loading="eager" className="motion_img-2d"/>
                                             </div>
                                         </div>
                                         <div data-w-id="03bd3d16-fd9e-51dd-4083-176ce369b95c" className="motion_toggle">

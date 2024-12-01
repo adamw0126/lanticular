@@ -285,10 +285,22 @@ const ImageComponent = () => {
     }
 
     function build_viewer() {
-        gv.viewer = new DepthyViewer(viewerContainer, {});
+        console.log(gv.canvasWidth, gv.canvasHeight);
+
+        gv.viewer = new DepthyViewer(viewerContainer, {
+            size: {width: gv.canvasWidth, height: gv.canvasHeight} 
+        });
         // depthPreview.src = gv.depthURL;
         gv.viewer.setImage(gv.imageURL);
         gv.viewer.setDepthmap(gv.tempDepth);
+
+        gv.origin_viewer = new DepthyViewer(
+            viewerContainer, {
+                size: {width: gv.imageWidth,height: gv.imageHeight} 
+            },
+          );
+        gv.origin_viewer.setImage(gv.imageURL);
+        gv.origin_viewer.setDepthmap(gv.tempDepth);
     }
     function fitImageToStage(stageWidth, stageHeight, imageWidth, imageHeight) {
         const imageAspectRatio = imageWidth / imageHeight;

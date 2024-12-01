@@ -10,12 +10,16 @@ var depthPrevWidth = 0;
 var depthPrevHeight = 0;
 var stageWidth = 0;
 var stageHeight = 0;
-var dilationSize = 4;
+var dilationSize = 1;
 var tempDepth = null;
 var set_focus = 0;
 var temp_amt_mot = 50;
 var viewer = null;
+var origin_viewer = null;
+var drawer = null;
 var anaglUrl = ''
+var upload_depth = '';
+var tempedit_depth = '';
 
 module.exports = {
   depthData,
@@ -34,6 +38,10 @@ module.exports = {
   tempDepth,
   set_focus,
   temp_amt_mot,
+  origin_viewer,
   viewer,
-  anaglUrl
+  drawer,
+  anaglUrl,
+  upload_depth,
+  tempedit_depth,
 };
