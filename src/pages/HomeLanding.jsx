@@ -123,8 +123,8 @@ const HomeLanding = () => {
                             </div>
                             <div className="hero_video-wrapper">
                                 <div className="hero_video-mask" style={{willChange: 'width, height',height: `calc(${valByScroll}% / 378 * 100)`}}></div>
-                                <div data-poster-url="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c%2F664ba8d1d1d0a839816c4eaf_Sequence%2001_2-poster-00001.jpg" data-video-urls="./anim_1.mp4,./anim_1.mp4" data-autoplay="true" data-loop="true" data-wf-ignore="true" className="hero_video w-background-video w-background-video-atom">
-                                    <video id="4146ae31-843e-6155-a933-3f3f49478ee4-video" ref={videoRef} autoPlay loop muted playsInline="" data-wf-ignore="true" data-object-fit="cover" style={{backgroundImage:"url(https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c%2F664ba8d1d1d0a839816c4eaf_Sequence%2001_2-poster-00001.jpg)"}}>
+                                <div data-poster-url="" data-video-urls="./anim_1.mp4,./anim_1.mp4" data-autoplay="true" data-loop="true" data-wf-ignore="true" className="hero_video w-background-video w-background-video-atom">
+                                    <video id="4146ae31-843e-6155-a933-3f3f49478ee4-video" ref={videoRef} autoPlay loop muted playsInline="" data-wf-ignore="true" data-object-fit="cover" style={{backgroundImage:"url()"}}>
                                         <source src="./anim_1.mp4" data-wf-ignore="true"/>
                                         <source src="./anim_1.mp4" data-wf-ignore="true"/>
                                     </video>

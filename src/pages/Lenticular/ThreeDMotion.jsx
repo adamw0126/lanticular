@@ -210,6 +210,8 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const handleDepthSave = () => {
     gv.tempedit_depth = gv.drawer.getCanvasDataURL();
     gv.viewer.setDepthmap(gv.tempedit_depth);
+    gv.storeDepth = gv.depthURL;
+    gv.depthURL = gv.tempedit_depth;
   };
 
   const amountValues = [
@@ -236,6 +238,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     const restoreDepth = () => {
         gv.upload_depth = gv.tempDepth;
         gv.drawer.setCanvasImageFromURL(gv.tempDepth);
+        gv.viewer.setDepthmap(gv.tempDepth);
     };
 
     const discardDepth = () => {

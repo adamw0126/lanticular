@@ -20,14 +20,6 @@ const LeftSection = ({ isMotion, isDepth, isAnagl }) => {
 
         // Initialize DepthyDrawer after the image is loaded
         gv.drawer = new window.DepthyDrawer(canvas);
-
-        // Optionally, set initial brush options
-        gv.drawer.setOptions({
-          depth: 0.5,
-          size: 20,
-          hardness: 0.5,
-          opacity: 1.0,
-        });
       };
     }
   }, [isMotion, isDepth, isAnagl]);

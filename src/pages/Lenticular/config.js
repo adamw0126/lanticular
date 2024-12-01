@@ -20,6 +20,7 @@ var drawer = null;
 var anaglUrl = ''
 var upload_depth = '';
 var tempedit_depth = '';
+var storeDepth = '';
 
 module.exports = {
   depthData,
@@ -44,4 +45,5 @@ module.exports = {
   anaglUrl,
   upload_depth,
   tempedit_depth,
+  storeDepth
 };
