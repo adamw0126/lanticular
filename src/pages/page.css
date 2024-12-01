@@ -142,5 +142,35 @@ label {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 45vw;
+    margin-top: 80px;
+}
+
+.acc_content {
+    width: 80%;
+}
+
+.css-hmk518-MuiButtonBase-root-MuiTab-root {
+    color: white !important;
+}
+.css-hmk518-MuiButtonBase-root-MuiTab-root.Mui-selected {
+    color: #96cbff !important;
+}
+.myacc {
+    margin: 0 100px;
+}
+.css-19kzrtu {
+    padding: 24px 0 !important;
+}
+.css-1rdyknl{
+    justify-content: left !important;
+}
+
+.edit_bar {
+    display: flex;
+    padding: 16px 0;
+    min-height: 96px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    flex-direction: row;
+    justify-content: space-between;
 }

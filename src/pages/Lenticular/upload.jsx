@@ -3,8 +3,10 @@ import { useState, useEffect, lazy } from "react";
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Loader from '../../common/Loader/index';
+import UploadLoader from '../../common/Loader/uploadLoading';
 const Depthy = require('../DepthyViewer');
 let gv = require('./config');
+import 'react-circular-progressbar/dist/styles.css';
 
 const UploadPage = () => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -12,9 +14,11 @@ const UploadPage = () => {
     const { pathname } = location;
     const navigate = useNavigate();
 
-    const [file, setFile] = useState(null);
+    // const [file, setFile] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [progress, setProgress] = useState(0);
+    const [downloadProgress, setDownloadProgress] = useState(0); // For tracking download progress
 
     useEffect(() => {
         if (user.admin.currentImg) {
@@ -27,13 +31,15 @@ const UploadPage = () => {
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+            const seletedFile = e.target.files[0];
+            console.log('file===>', seletedFile)
+            await handleUpload(seletedFile);
         }
     };
 
-    const handleUpload = async () => {
+    const handleUpload = async (file) => {
         if (!file) {
             toast.error('Please select a file first');
             return;
@@ -80,51 +86,75 @@ const UploadPage = () => {
             const depthGen = await depth_gen(file);
 
             if (response.status === 200) {
-                const depthGen = await depth_gen(file);
+                // const depthGen = await depth_gen(file);
                 if(depthGen === 'success'){
                     toast.success(response.data.message);
                 }
-                setFile(null);
+                // setFile(null);
                 navigate('/image');
+                // window.location.reload();
             }
         } catch (error) {
             toast.error('File upload failed');
             console.error('Upload error:', error);
         }
-    };    
+    };
 
-    async function depth_gen(file) {
+    const depth_gen = async (file) => {
         setIsLoading(true);
         try {
             const formData = new FormData();
             formData.append("file_in", file);
-    
-            // Use fetch instead of XMLHttpRequest
+
+            // Upload file to generate depth map
             const uploadResponse = await fetch("https://gatorswap.com/depth_map.php", {
                 method: "POST",
                 body: formData,
             });
-    
+
             if (!uploadResponse.ok) {
                 throw new Error("Error uploading image.");
             }
-    
+
             const f_data = await uploadResponse.text();
-    
-            // Fetch depth URL
+
+            // Fetch depth URL with progress tracking
             const depthResponse = await fetch(f_data);
             if (!depthResponse.ok) {
                 throw new Error("Error fetching depth URL.");
             }
-    
+
+            const contentLength = depthResponse.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Content-Length header is missing.");
+            }
+
+            const totalSize = contentLength ? parseInt(contentLength, 10) : 0;
+            let receivedSize = 0;
+            const reader = depthResponse.body.getReader();
+            const chunks = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                chunks.push(value);
+                receivedSize += value.length;
+
+                if (totalSize > 0) {
+                    const progress = (receivedSize / totalSize) * 100;
+                    setDownloadProgress(progress); // Update progress state
+                }
+            }
+
             const depthURL = f_data; // Assuming f_data is the correct URL
-    
+
             // Send depthPath to API
             const axiosResponse = await axios.post('/api/depthImage', {
                 who: user.admin._id,
                 depthPath: depthURL,
             });
-    
+
             const { message } = axiosResponse.data;
             if (message === 'success') {
                 localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
@@ -139,51 +169,136 @@ const UploadPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }
-    // async function depth_gen(file) {
-    //     const formData = new FormData();
-    //     formData.append("file_in", file);
+    };
 
-    //     const xhr = new XMLHttpRequest();
-    //     xhr.onreadystatechange = function () {
-    //         if (xhr.readyState === XMLHttpRequest.DONE) {
-    //             if (xhr.status === 200) {
-    //                 const f_data = xhr.responseText;
-    //                 fetch(f_data).then((response) => {
-    //                     gv.depthURL = f_data;
-    //                     console.log(gv.depthURL)
-    //                     axios.post('/api/depthImage', {who: user.admin._id, depthPath: gv.depthURL})
-    //                     .then(response => {
-    //                         const { message } = response.data;
-    //                         if(message == 'success'){
-    //                             console.log('success')
-    //                             return 'success';
-    //                         } else {
-    //                             console.log('Not Found')
-    //                             return 'failed';
-    //                         }
-    //                     })
-    //                 });
-    //             } else {
-    //                 console.error("Error uploading image.");
-    //             }
+    // async function depth_gen(file) {
+    //     setIsLoading(true);
+    //     setProgress(0);
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append("file_in", file);
+    
+    //         // Use fetch instead of XMLHttpRequest
+    //         const uploadResponse = await fetch("https://gatorswap.com/depth_map.php", {
+    //             method: "POST",
+    //             body: formData,
+    //         });
+    
+    //         if (!uploadResponse.ok) {
+    //             throw new Error("Error uploading image.");
     //         }
-    //     };
-    //     xhr.open("POST", "https://gatorswap.com/depth_map.php", true);
-    //     xhr.send(formData);
+    
+    //         const f_data = await uploadResponse.text();
+    
+    //         // Fetch depth URL
+    //         const depthResponse = await fetch(f_data);
+    //         if (!depthResponse.ok) {
+    //             throw new Error("Error fetching depth URL.");
+    //         }
+    
+    //         const depthURL = f_data; // Assuming f_data is the correct URL
+    
+    //         // Send depthPath to API
+    //         const axiosResponse = await axios.post('/api/depthImage', {
+    //             who: user.admin._id,
+    //             depthPath: depthURL,
+    //         });
+    
+    //         const { message } = axiosResponse.data;
+    //         if (message === 'success') {
+    //             localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
+    //             return 'success';
+    //         } else {
+    //             console.log('Not Found');
+    //             return 'failed';
+    //         }
+    //     } catch (error) {
+    //         console.error(error.message);
+    //         return 'failed';
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
     // }
 
+    // async function depth_gen(file) {
+    //     setIsLoading(true);
+    //     setProgress(0); // Initialize progress to 0
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append("file_in", file);
+    
+    //         // Custom fetch with progress tracking
+    //         const uploadResponse = await customFetchWithProgress("https://gatorswap.com/depth_map.php", formData);
+    
+    //         if (!uploadResponse.ok) {
+    //             throw new Error("Error uploading image.");
+    //         }
+    
+    //         const f_data = await uploadResponse.text();
+    
+    //         // Fetch depth URL
+    //         const depthResponse = await fetch(f_data);
+    //         if (!depthResponse.ok) {
+    //             throw new Error("Error fetching depth URL.");
+    //         }
+    
+    //         const depthURL = f_data; // Assuming f_data is the correct URL
+    
+    //         // Send depthPath to API
+    //         const axiosResponse = await axios.post('/api/depthImage', {
+    //             who: user.admin._id,
+    //             depthPath: depthURL,
+    //         });
+    
+    //         const { message } = axiosResponse.data;
+    //         if (message === 'success') {
+    //             localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
+    //             return 'success';
+    //         } else {
+    //             console.log('Not Found');
+    //             return 'failed';
+    //         }
+    //     } catch (error) {
+    //         console.error(error.message);
+    //         return 'failed';
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // }
+    
+    // Custom fetch function to track upload progress
+    // async function customFetchWithProgress(url, formData) {
+    //     const xhr = new XMLHttpRequest();
+    
+    //     return new Promise((resolve, reject) => {
+    //         xhr.open("POST", url);
+    //         xhr.upload.onprogress = (event) => {
+    //             console.log('event.===>', event)
+    //             if (event.lengthComputable) {
+    //                 const percentCompleted = Math.round((event.loaded * 100) / event.total);
+    //                 console.log("File upload progress:", percentCompleted, new Date());
+    //                 setProgress(percentCompleted); // Update progress
+    //                 console.log('progress', progress)
+    //             }
+    //         };
+    
+    //         xhr.onload = () => resolve(new Response(xhr.response));
+    //         xhr.onerror = () => reject(new Error("Network error during upload"));
+    //         xhr.send(formData);
+    //     });
+    // }    
+    
     const usePrevFile = () => {
         setTimeout(() => {
             navigate('/image');
             // window.location.reload();
         }, 500);
     }
-
+    
     return (
         <div>
             {isLoading ? (
-                <Loader />
+                <UploadLoader progress={downloadProgress} />
             ) : (
                 <div>
                     <nav className="navbar" style={{ position: 'unset' }}>
@@ -210,14 +325,14 @@ const UploadPage = () => {
                                 id="file-input"
                             />
                             <label htmlFor="file-input" className="cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded mb-2">
-                                Select File
+                                + Upload
                             </label>
-                            <button
+                            {/* <button
                                 onClick={handleUpload}
                                 className="bg-blue-500 text-white hover:bg-blue-600 transition-colors py-2 px-4 rounded perform-upload"
                             >
                                 {file != null ? 'Play' : 'No File'}
-                            </button>
+                            </button> */}
                         </div>
         
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">

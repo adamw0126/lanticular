@@ -22,6 +22,28 @@ const FormLayout = () => {
     password: '',
   });
   
+  const autoLogin = async(signupInfo: any) => {
+    if(!signinInfo.userId || !signinInfo.password)
+      return toast.error('Enter information conrrectly.');
+    try {
+      const result = await axios.post('/api/signin', {signinInfo: signupInfo});
+      if(result.data.message === 'success'){
+        console.log(result.data)
+        localStorage.setItem('userInfo', JSON.stringify(result.data));
+        setTimeout(() => {
+          navigate('/upload');
+          window.location.reload();
+        }, 500);
+      } else if(result.data.message === 'permited') {
+        return toast.error('Not permission');
+      } else {
+        return toast.error(result.data.message);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
   return (
     <>{
       pathname === '/' ?
@@ -73,7 +95,7 @@ const FormLayout = () => {
                           if(!signinInfo.userId || !signinInfo.password)
                             return toast.error('Enter information conrrectly.');
                           try {
-                            const result = await axios.post('http://144.172.122.59:5000/api/signin', {signinInfo});
+                            const result = await axios.post('/api/signin', {signinInfo});
                             if(result.data.message === 'success'){
                               toast.success(`SignIn successfuly.`,{
                                 duration: 1000,
@@ -84,7 +106,6 @@ const FormLayout = () => {
                                 },
                                 icon: '👏',
                               });
-                              console.log(result.data)
                               localStorage.setItem('userInfo', JSON.stringify(result.data));
                               setTimeout(() => {
                                 navigate('/upload');
@@ -193,17 +214,16 @@ const FormLayout = () => {
                         toast.success(`${result.data.message}`,{
                           duration: 3000,
                           position: 'top-right',
-                          // Customize styles
                           style: {
                             background: '#333',
                             color: '#fff',
                           },
-                          // Add custom icon
                           icon: '👏',
                         });
-                        setTimeout(() => {
-                          navigate('/');
-                        }, 500);
+                        await autoLogin(signupInfo);
+                        // setTimeout(() => {
+                        //   navigate('/');
+                        // }, 500);
                         // window.location.reload();
                       } else {
                         toast.error(result.data.message);

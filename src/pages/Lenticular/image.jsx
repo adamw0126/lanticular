@@ -5,7 +5,9 @@ import { toast } from 'react-hot-toast';
 import { lazy } from 'react';
 import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
+import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import Loader from '../../common/Loader/index';
+import UploadLoader from '../../common/Loader/uploadLoading';
 require('../DepthyViewer');
 let gv = require('./config');
 
@@ -25,6 +27,7 @@ const ImageComponent = () => {
     const [file, setFile] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0); // For tracking download progress
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -62,13 +65,16 @@ const ImageComponent = () => {
         };
     }, []);
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         if (e.target.files && e.target.files.length > 0) {
             setFile(e.target.files[0]);
+            const seletedFile = e.target.files[0];
+            console.log('file===>', seletedFile)
+            await handleUpload(seletedFile);
         }
     };
 
-    const handleUpload = async () => {
+    const handleUpload = async (file) => {
         if (!file) {
             toast.error('Please select a file first');
             return;
@@ -111,8 +117,8 @@ const ImageComponent = () => {
                 },
             });
     
+            const depthGen = await depth_gen(file);
             if (response.status === 200) {
-                const depthGen = await depth_gen(file);
                 if(depthGen === 'success'){
                     toast.success(response.data.message);
                 }
@@ -127,49 +133,63 @@ const ImageComponent = () => {
         }
     };
 
-    async function depth_gen(file) {
+    const depth_gen = async (file) => {
         setIsLoading(true);
         try {
             const formData = new FormData();
             formData.append("file_in", file);
-    
-            // Use fetch instead of XMLHttpRequest
+
+            // Upload file to generate depth map
             const uploadResponse = await fetch("https://gatorswap.com/depth_map.php", {
                 method: "POST",
                 body: formData,
             });
-    
+
             if (!uploadResponse.ok) {
                 throw new Error("Error uploading image.");
             }
-    
+
             const f_data = await uploadResponse.text();
-    
-            // Fetch depth URL
+
+            // Fetch depth URL with progress tracking
             const depthResponse = await fetch(f_data);
             if (!depthResponse.ok) {
                 throw new Error("Error fetching depth URL.");
             }
-    
+
+            const contentLength = depthResponse.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Content-Length header is missing.");
+            }
+
+            const totalSize = contentLength ? parseInt(contentLength, 10) : 0;
+            let receivedSize = 0;
+            const reader = depthResponse.body.getReader();
+            const chunks = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                chunks.push(value);
+                receivedSize += value.length;
+
+                if (totalSize > 0) {
+                    const progress = (receivedSize / totalSize) * 100;
+                    setDownloadProgress(progress); // Update progress state
+                }
+            }
+
             const depthURL = f_data; // Assuming f_data is the correct URL
-    
+
             // Send depthPath to API
             const axiosResponse = await axios.post('/api/depthImage', {
                 who: user.admin._id,
                 depthPath: depthURL,
             });
-    
-            dilateDepthMapFromUrl(gv.depthURL, gv.dilationSize)
-            .then(outputUrl => {
-                gv.tempDepth = outputUrl;
-                build_viewer();
-            })
-            .catch(error => {
-                console.error(error);
-            });
-            
+
             const { message } = axiosResponse.data;
-            if (message == 'success') {
+            if (message === 'success') {
                 localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
                 return 'success';
             } else {
@@ -182,7 +202,7 @@ const ImageComponent = () => {
         } finally {
             setIsLoading(false);
         }
-    }
+    };
     async function dilateDepthMapFromUrl(imageUrl, strength, scaleFactor = 0.5) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -317,7 +337,7 @@ const ImageComponent = () => {
     return (
         <div>
             {isLoading ? (
-                <Loader />
+                <UploadLoader progress={downloadProgress} />
             ) : (
                 <div>
                     <nav className="navbar" style={{position: 'unset', paddingRight:10, padding:'5px 0'}}>
@@ -335,14 +355,14 @@ const ImageComponent = () => {
                                         id="file-input"
                                     />
                                     <label htmlFor="file-input" className="cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded" style={{marginBottom:0}}>
-                                        Select File
+                                        + Upload
                                     </label>
-                                    <button 
+                                    {/* <button 
                                         onClick={handleUpload}
                                         className="bg-blue-500 text-white hover:bg-blue-600 transition-colors py-2 px-4 rounded perform-upload"
                                     >
                                         {file != null ? 'Play' : 'No File'}
-                                    </button>
+                                    </button> */}
                                     <div
                                         onClick={() => setIsOpen(!isOpen)}
                                         aria-haspopup="true"
@@ -367,6 +387,15 @@ const ImageComponent = () => {
                                             <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
                                             onClick={(e) => {
                                                 e.preventDefault();
+                                                navigate('/account');
+                                                window.location.reload();
+                                            }}>
+                                                <ManageAccountsOutlinedIcon />
+                                                Manage Account
+                                            </button>
+                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
                                                 navigate('/contact');
                                                 window.location.reload();
                                             }}>
@@ -379,7 +408,7 @@ const ImageComponent = () => {
                                                 const result = await axios.post('/api/logout', { who: user.admin._id });
 
                                                 if (result.data.message == 'logout') {
-                                                    setFile(null);
+                                                    console.log('logout')
                                                 }
                                                 localStorage.removeItem("userInfo");
                                                 navigate('/');
