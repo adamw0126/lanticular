@@ -6,6 +6,8 @@ const Footer = () => {
             <div className="padding-global">
                 <div className="container_large gap-large align-center">
                     <div id="w-node-_66c2c61a-dc6e-4a0c-82d9-c6f724eae6ef-24eae6ec" className="hr"></div>
+                    {/* <NavLink to={'/newsroom'}>Newsroom</NavLink>
+                    <NavLink to={'/faqs'}>FAQs</NavLink> */}
                     {/* <div id="w-node-_66c2c61a-dc6e-4a0c-82d9-c6f724eae6f0-24eae6ec" className="footer_menu">
                         <a href="/faqs" className="footer_navlink w-inline-block">
                             <div className="text-size-small">FAQ</div>

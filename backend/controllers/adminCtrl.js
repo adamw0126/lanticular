@@ -150,12 +150,43 @@ exports.logout = async (req, res) => {
     }
 }
 
-exports.changeUserId = async (req, res) => {
-    const { userId, editUserId } = req.body;
-    let user = await AdminMdl.findOne(userId);
+exports.changeName = async (req, res) => {
+    const { userId, editName } = req.body;
+    console.log('editName', editName);
+    let user = await AdminMdl.findOne({userId});
     if(user){
-        user.userId = editUserId;
+        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${user.currentImg}`;
+        user.name = editName;
+        // user.wallet_score = 18;
         await user.save();
-        return res.json({message: 'success'});
+        return res.json({message: 'success', admin: user, filePath: fileUrl});
+    }
+}
+exports.changePassword = async (req, res) => {
+    const { userId, editPassword } = req.body;
+    console.log('editPassword', editPassword);
+    let user = await AdminMdl.findOne({userId});
+    if(user){
+        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${user.currentImg}`;
+        user.password = editPassword;
+        await user.save();
+        return res.json({message: 'success', admin: user, filePath: fileUrl});
+    }
+}
+
+exports.buyCredits = async (req, res) => {
+    const { who, reqCredits, reqPrice } = req.body;
+    let user = await AdminMdl.findById(who);
+    if(user){
+        const price = Number(reqPrice);
+        console.log(who, reqCredits, price)
+        if(user.wallet_score < price){
+            return res.json({message: 'small_than', current_score: user.wallet_score});
+        }
+        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${user.currentImg}`;
+        user.credits = user.credits + reqCredits;
+        user.wallet_score = user.wallet_score - price;
+        await user.save();
+        return res.json({ message: 'success', admin: user, filePath: fileUrl });
     }
 }

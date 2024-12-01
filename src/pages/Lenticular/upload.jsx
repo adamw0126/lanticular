@@ -7,6 +7,7 @@ import UploadLoader from '../../common/Loader/uploadLoading';
 const Depthy = require('../DepthyViewer');
 let gv = require('./config');
 import 'react-circular-progressbar/dist/styles.css';
+import Dropdown from './dropdown';
 
 const UploadPage = () => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -15,6 +16,7 @@ const UploadPage = () => {
     const navigate = useNavigate();
 
     // const [file, setFile] = useState(null);
+    const [isOpenDrop, setIsOpenDrop] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
@@ -40,6 +42,11 @@ const UploadPage = () => {
     };
 
     const handleUpload = async (file) => {
+        if(file.type.includes('video/')){
+            navigate('/video')
+            window.location.reload();
+            return;
+        }
         if (!file) {
             toast.error('Please select a file first');
             return;
@@ -92,7 +99,7 @@ const UploadPage = () => {
                 }
                 // setFile(null);
                 navigate('/image');
-                // window.location.reload();
+                window.location.reload();
             }
         } catch (error) {
             toast.error('File upload failed');
@@ -306,9 +313,26 @@ const UploadPage = () => {
                             <div className="nav-container">
                                 <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
                                     <img src="./logo.png"
-                                        loading="eager" alt="immersity AI" className="nav-brand" style={{ height: '2.2rem' }} />
+                                        loading="eager" alt="" className="nav-brand" style={{ height: '2.2rem' }} />
                                 </a>
-                                <div className="nav-container-right"></div>
+                                <div className="nav-container-right">
+                                    <div
+                                        onClick={() => setIsOpenDrop(!isOpenDrop)}
+                                        aria-haspopup="true"
+                                        aria-expanded={isOpenDrop}
+                                        className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                                    >
+                                        <img
+                                            src="./userlogo.png"
+                                            width={40}
+                                            style={{
+                                                borderRadius: "50%",
+                                                cursor: "pointer",
+                                            }}
+                                        />
+                                    </div>
+                                    <Dropdown isOpenDrop={isOpenDrop} setIsOpenDrop={setIsOpenDrop} />
+                                </div>
                             </div>
                         </div>
                     </nav>

@@ -79,7 +79,7 @@ const DepthMap = () => {
                     <div className="nav-container">
                         <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
                             <img src="../logo.png"
-                                loading="eager" alt="immersity AI" className="nav-brand" style={{ height: '2.2rem' }} />
+                                loading="eager" alt="" className="nav-brand" style={{ height: '2.2rem' }} />
                         </a>
                         <div className="nav-container-right" style={{ paddingRight: 0 }}>
                             <input

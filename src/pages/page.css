@@ -159,7 +159,7 @@ label {
     margin: 0 100px;
 }
 .css-19kzrtu {
-    padding: 24px 0 !important;
+    padding: 5px 0 !important;
 }
 .css-1rdyknl{
     justify-content: left !important;
@@ -167,10 +167,56 @@ label {
 
 .edit_bar {
     display: flex;
-    padding: 16px 0;
-    min-height: 96px;
+    padding: 10px 5px;
+    min-height: 85px;
     align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.2);
     flex-direction: row;
     justify-content: space-between;
+}
+.buy-credits {
+    background:#482bd9 !important;
+    border-radius: 20px !important;
+    color: white !important;
+    padding: 10px 20px !important;
+}
+
+.css-1rdyknl {
+    border-color: #96cbff !important;
+}
+
+.launch:hover {
+    cursor: pointer;
+    color: #96cbff;
+}
+.in-navbar {
+    background: #22222d;
+}
+
+.css-1808mag-MuiPaper-root-MuiAccordion-root.Mui-expanded {
+    margin: 0 !important;
+}
+
+.modal-style .css-11r052a{
+    background: #22222e;
+    padding: 0;
+    min-width: 350px;
+    width: 450px;
+}
+.modal-style .css-1abudc7 {
+    padding: 20px;
+}
+.modal-style .css-1olaq31 {
+    padding: 10px;
+}
+
+.modal-body {
+    padding-right: 30px;
+    padding-left: 20px;
+}
+
+.bonustip {
+    background: #482bd9;
+    padding: 4px;
+    border-radius: 5px;
 }

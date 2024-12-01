@@ -11,9 +11,13 @@ const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 // Lenticular
 const Upload = lazy(() => import('./pages/Lenticular/upload'));
 const Image = lazy(() => import('./pages/Lenticular/image'));
+const Video = lazy(() => import('./pages/Lenticular/Video'));
 const DepthMap = lazy(() => import('./pages/Lenticular/DepthMap'));
 const Contact = lazy(() => import('./pages/Lenticular/contact'));
 const Account = lazy(() => import('./pages/mypage/Account'));
+// const Price = lazy(() => import('./pages/Lenticular/Pricing'));
+const Newsroom = lazy(() => import('./pages/Lenticular/Newsroom'));
+const Faq = lazy(() => import('./pages/Lenticular/Fap'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,11 +48,14 @@ function App() {
           user != null ? (<>
             <Route index path="/upload" element={<Suspense fallback={<Loader />}><Upload /></Suspense>} />
             <Route index path="/image" element={<Suspense fallback={<Loader />}><Image /></Suspense>} />
+            <Route index path="/video" element={<Suspense fallback={<Loader />}><Video /></Suspense>} />
             <Route index path="/account" element={<Suspense fallback={<Loader />}><Account /></Suspense>} />
             <Route index path="/image/depth-map" element={<Suspense fallback={<Loader/>}><DepthMap/></Suspense>}></Route>
           </>) : <Route path="*" element={<Navigate to="/" replace />} />
         }
         <Route index path="/contact" element={<Suspense fallback={<Loader />}><Contact /></Suspense>} />
+        <Route index path="/newsroom" element={<Suspense fallback={<Loader />}><Newsroom /></Suspense>} />
+        <Route index path="/faqs" element={<Suspense fallback={<Loader />}><Faq /></Suspense>} />
 
         {user !== null ? (
           <Route element={<DefaultLayout />}>

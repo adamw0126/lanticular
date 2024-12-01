@@ -6,6 +6,8 @@ import { lazy } from 'react';
 import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
+import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
+import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
 import Loader from '../../common/Loader/index';
 import UploadLoader from '../../common/Loader/uploadLoading';
 require('../DepthyViewer');
@@ -345,7 +347,7 @@ const ImageComponent = () => {
                             <div className="nav-container">
                                 <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
                                     <img src="./logo.png" 
-                                        loading="eager" alt="immersity AI" className="nav-brand" style={{height:'2.2rem'}} />
+                                        loading="eager" alt="" className="nav-brand" style={{height:'2.2rem'}} />
                                 </a>
                                 <div className="nav-container-right" style={{paddingRight:10}}>
                                     <input
@@ -384,6 +386,11 @@ const ImageComponent = () => {
                                             className="absolute right-0 mt-2 w-max bg-white border rounded shadow-lg z-10 top-11"
                                             role="menu"
                                         >
+                                            <div >
+                                                <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
+                                                    {`${user.admin.name} (${user.admin.userId})` }
+                                                </button>
+                                            </div>
                                             <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
                                             onClick={(e) => {
                                                 e.preventDefault();
@@ -392,6 +399,24 @@ const ImageComponent = () => {
                                             }}>
                                                 <ManageAccountsOutlinedIcon />
                                                 Manage Account
+                                            </button>
+                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate('/newsroom');
+                                                window.location.reload();
+                                            }}>
+                                                <NewspaperOutlinedIcon />
+                                                News
+                                            </button>
+                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                navigate('/faqs');
+                                                window.location.reload();
+                                            }}>
+                                                <LiveHelpOutlinedIcon />
+                                                FAQs
                                             </button>
                                             <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
                                             onClick={(e) => {

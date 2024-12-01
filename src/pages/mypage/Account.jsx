@@ -8,6 +8,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 import Profile from './profile';
+import Credits from './credits';
 
 const Account = () => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -21,7 +22,7 @@ const Account = () => {
 
     return (
         <div className='myacc'>
-            <nav className="navbar">
+            <nav className="navbar in-navbar">
                 <div className="nav-wrapper">
                     <div className="nav-container">
                         <div className="nav-wrapper">
@@ -30,7 +31,7 @@ const Account = () => {
                                     <img
                                         src="./logo.png"
                                         loading="eager"
-                                        alt="immersity AI"
+                                        alt=""
                                         className="nav-brand"
                                         style={{ height: '2.2rem' }}
                                     />
@@ -58,7 +59,7 @@ const Account = () => {
             <div className="no-fillpage">
                 <div className="acc_content text-white">
                     <div>
-                        <h3>Manage Account</h3>
+                        <h3 style={{padding:'15px 0'}}>Manage Account</h3>
                     </div>
                     <div>
                         <Box sx={{ width: '100%' }}>
@@ -79,20 +80,19 @@ const Account = () => {
                                 >
                                     <Tab label="Profile" {...a11yProps(0)} />
                                     <Tab label="Credits" {...a11yProps(1)} />
-                                    <Tab label="Activity" {...a11yProps(2)} />
+                                    {/* <Tab label="Activity" {...a11yProps(2)} /> */}
                                 </Tabs>
                             </Box>
                             <CustomTabPanel value={value} index={0}>
                                 <Profile />
                             </CustomTabPanel>
                             <CustomTabPanel value={value} index={1}>
-                                <h3>Account Settings</h3>
-                                <p>Settings for the account will be displayed here.</p>
+                                <Credits />
                             </CustomTabPanel>
-                            <CustomTabPanel value={value} index={2}>
+                            {/* <CustomTabPanel value={value} index={2}>
                                 <h3>Recent Activity</h3>
                                 <p>Details about recent user activity will appear here.</p>
-                            </CustomTabPanel>
+                            </CustomTabPanel> */}
                         </Box>
                     </div>
                 </div>

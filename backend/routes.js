@@ -27,7 +27,9 @@ router.post('/setAdminPassword', AdminController.setAdminPassword);
 router.post('/depthImage', AdminController.depthImage);
 router.post('/logout', AdminController.logout);
 
-router.post('/acc/changeUserId', AdminController.changeUserId);
+router.post('/acc/changeName', AdminController.changeName);
+router.post('/acc/changePassword', AdminController.changePassword);
+router.post('/buyCredits', AdminController.buyCredits);
 
 // Define a route with a URL parameter
 router.get('/user/:id', (req, res) => {

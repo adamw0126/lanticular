@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Button, Accordion, AccordionSummary, AccordionDetails, Input } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -8,23 +8,24 @@ function Profile() {
     const user = JSON.parse(localStorage.getItem('userInfo'));
     const navigate = useNavigate();
 
-    const [editUserId, setEditUserId] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [editPassword, setEditPassword] = useState('');
+    const [isEditName, setIsEditName] = useState(false);
+    const [isEditPassword, setIsEditPassword] = useState(false);
     const inputRef = useRef(null);
 
     useEffect(() => {
-        setEditUserId(user.admin.userId);
+        setEditName(user.admin.name);
     }, []);
 
-    // Handles clicks outside of the input field
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (inputRef.current && !inputRef.current.contains(event.target)) {
-                setIsEditing(false);
+                setIsEditName(false);
             }
         };
 
-        if (isEditing) {
+        if (isEditName) {
             document.addEventListener('mousedown', handleClickOutside);
         } else {
             document.removeEventListener('mousedown', handleClickOutside);
@@ -33,12 +34,45 @@ function Profile() {
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isEditing]);
+    }, [isEditName]);
+    
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (inputRef.current && !inputRef.current.contains(event.target)) {
+                setIsEditPassword(false);
+            }
+        };
 
-    const changeUserId = async () => {
+        if (isEditPassword) {
+            document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.removeEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isEditPassword]);
+
+    const changeName = async () => {
         try {
-            await axios.post('/api/acc/changeUserId', { userId: user.admin.userId, editUserId });
-            setIsEditing(false);
+            const res = await axios.post('/api/acc/changeName', { userId: user.admin.userId, editName });
+            console.log('res.data ===>', res.data)
+            if(res.data.message == 'success'){
+                localStorage.setItem('userInfo', JSON.stringify(res.data));
+            }
+            setIsEditName(false);
+        } catch (error) {
+            console.error("Error updating user ID", error);
+        }
+    };
+    const changePassword = async () => {
+        try {
+            const res = await axios.post('/api/acc/changePassword', { userId: user.admin.userId, editPassword });
+            console.log('res.data ===>', res.data)
+            if(res.data.message == 'success'){
+                setIsEditPassword(false);
+            }
         } catch (error) {
             console.error("Error updating user ID", error);
         }
@@ -49,35 +83,49 @@ function Profile() {
             <div className="edit_bar">
                 <div>Name</div>
                 <div>
-                    {isEditing ? (
+                    {isEditName ? (
                         <div ref={inputRef}>
                             <input
-                                type="text"
-                                value={editUserId}
-                                onChange={(e) => setEditUserId(e.target.value)}
-                                onBlur={changeUserId}
+                                type="text" style={{color:'#22222d'}}
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
                                 autoFocus
                             />
+                            <Button size="large" onClick={changeName}>Change</Button>
                         </div>
                     ) : (
                         <div>
-                            <span>{editUserId}</span>
-                            <Button size="large" onClick={() => setIsEditing(true)}>Edit</Button>
+                            <span>{editName}</span>
+                            <Button size="large" onClick={() => setIsEditName(true)}>Edit</Button>
                         </div>
                     )}
                 </div>
             </div>
             <div className="edit_bar">
-                <div>Password</div>
+                <div>UserId</div>
                 <div>
-                    <Button size="large">Edit</Button>
+                    <span>{user.admin.userId}</span>
                 </div>
             </div>
-            <Accordion style={{ backgroundColor: "transparent", borderBottom: "1px solid rgba(172, 180, 215, 0.3)" }}>
-                <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />} sx={{ color: "rgb(175, 175, 182)" }}>
-                    Preview Style
-                </AccordionSummary>
-            </Accordion>
+            <div className="edit_bar">
+                <div>Password</div>
+                <div>{isEditPassword ? (
+                        <div ref={inputRef}>
+                            <input
+                                type="password" style={{color:'#22222d'}}
+                                value={editPassword}
+                                onChange={(e) => setEditPassword(e.target.value)}
+                                autoFocus
+                            />
+                            <Button size="large" onClick={changePassword}>Change</Button>
+                        </div>
+                    ) : (
+                        <div>
+                            <Button size="large" onClick={() => setIsEditPassword(true)}>Edit</Button>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

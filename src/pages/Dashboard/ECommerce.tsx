@@ -23,12 +23,13 @@ const FormLayout = () => {
   });
   
   const autoLogin = async(signupInfo: any) => {
-    if(!signinInfo.userId || !signinInfo.password)
+    console.log(123123123123, signupInfo)
+    if(!signupInfo.userId || !signupInfo.password)
       return toast.error('Enter information conrrectly.');
     try {
       const result = await axios.post('/api/signin', {signinInfo: signupInfo});
       if(result.data.message === 'success'){
-        console.log(result.data)
+        console.log('result.data ===>', result.data)
         localStorage.setItem('userInfo', JSON.stringify(result.data));
         setTimeout(() => {
           navigate('/upload');
@@ -220,6 +221,7 @@ const FormLayout = () => {
                           },
                           icon: '👏',
                         });
+                        console.log('signupInfo ===>', signupInfo)
                         await autoLogin(signupInfo);
                         // setTimeout(() => {
                         //   navigate('/');
