@@ -1,0 +1,222 @@
+/*width*/
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+/*track*/
+::-webkit-scrollbar-track {
+    background: rgb(46, 46, 56);
+    border-color: rgb(255, 255, 255);
+    border-radius: 4px;
+}
+
+/*thumb*/
+::-webkit-scrollbar-thumb {
+    background: rgb(65, 65, 78);
+}
+
+.app-phone_item .cover-image {
+    pointer-events: none;
+}
+
+.tabs-menu {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.tabs-menu a {
+    display: inline-block;
+    color: white;
+    text-align: center;
+    padding: 14px;
+    text-decoration: none;
+}
+
+.dspPopup {
+    will-change: opacity, transform;
+    opacity: 1;
+    transform: translate3d(0px, 0%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+}
+.nonPopup {
+    will-change: opacity, transform;
+    opacity: 0;
+    transform: translate3d(0px, -3.1%, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+}
+
+.motion3D {
+    transform: translate3d(0%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.26, 0.6, 0.04, 1.6);
+}
+.motion2D {
+    transform: translate3d(-100%, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg);
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.26, 0.6, 0.04, 1.6);
+}
+
+.logWindow {
+    background: transparent;
+    border-radius: 20px;
+    width: 370px;
+}
+
+.perform-upload {
+    border: 1px solid;
+}
+
+.perform-upload:hover {
+    background: white;
+    color: #22222d;
+}
+
+label {
+    font-weight: 500 !important;
+}
+
+.modal-cancel {
+    border: 1px solid;
+}
+.modal-cancel:hover {
+    background-color: #22222d;
+    color: white;
+}
+
+.text-lg {
+    font-size: 1rem !important;
+}
+
+.css-wkb2u9{
+    position: fixed;
+    inset: 0px;
+    padding-right: 20px;
+    display: flex;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+    background-color: rgb(18, 18, 33);
+    flex-shrink: 0;
+    z-index: 5;
+}
+.css-moulko {
+    display: flex;
+    width: 324px;
+    -webkit-box-pack: justify;
+    justify-content: space-between;
+}
+.css-tkevr6 {
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.drop-item {
+    color: #22222d;
+}
+.drop-item:hover {
+    color: blue;
+}
+
+.image-container {
+    height: 100%;
+    width: 100%;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+}
+
+.fuly-image {
+    max-width: 100% !important;
+    max-height: 100% !important;
+}
+
+.card_intro {
+    border: 1px dashed !important;
+}
+
+.no-fillpage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 80px;
+}
+
+.acc_content {
+    width: 80%;
+}
+
+.css-hmk518-MuiButtonBase-root-MuiTab-root {
+    color: white !important;
+}
+.css-hmk518-MuiButtonBase-root-MuiTab-root.Mui-selected {
+    color: #96cbff !important;
+}
+.myacc {
+    margin: 0 100px;
+}
+.css-19kzrtu {
+    padding: 5px 0 !important;
+}
+.css-1rdyknl{
+    justify-content: left !important;
+}
+
+.edit_bar {
+    display: flex;
+    padding: 10px 5px;
+    min-height: 85px;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    flex-direction: row;
+    justify-content: space-between;
+}
+.buy-credits {
+    background:#482bd9 !important;
+    border-radius: 20px !important;
+    color: white !important;
+    padding: 10px 20px !important;
+}
+
+.css-1rdyknl {
+    border-color: #96cbff !important;
+}
+
+.launch:hover {
+    cursor: pointer;
+    color: #96cbff;
+}
+.in-navbar {
+    background: #22222d;
+}
+
+.css-1808mag-MuiPaper-root-MuiAccordion-root.Mui-expanded {
+    margin: 0 !important;
+}
+
+.modal-style .css-11r052a{
+    background: #22222e;
+    padding: 0;
+    min-width: 350px;
+    width: 450px;
+}
+.modal-style .css-1abudc7 {
+    padding: 20px;
+}
+.modal-style .css-1olaq31 {
+    padding: 10px;
+}
+
+.modal-body {
+    padding-right: 30px;
+    padding-left: 20px;
+}
+
+.bonustip {
+    background: #482bd9;
+    padding: 4px;
+    border-radius: 5px;
+}
