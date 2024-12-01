@@ -3,9 +3,9 @@ import { useState, useEffect, lazy } from "react";
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import Loader from '../../common/Loader/index';
+import UploadLoader from '../../common/Loader/uploadLoading';
 const Depthy = require('../DepthyViewer');
 let gv = require('./config');
-import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
 const UploadPage = () => {
@@ -18,6 +18,7 @@ const UploadPage = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [progress, setProgress] = useState(0);
+    const [downloadProgress, setDownloadProgress] = useState(0); // For tracking download progress
 
     useEffect(() => {
         if (user.admin.currentImg) {
@@ -99,6 +100,77 @@ const UploadPage = () => {
         }
     };
 
+    const depth_gen = async (file) => {
+        setIsLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append("file_in", file);
+
+            // Upload file to generate depth map
+            const uploadResponse = await fetch("https://gatorswap.com/depth_map.php", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                throw new Error("Error uploading image.");
+            }
+
+            const f_data = await uploadResponse.text();
+
+            // Fetch depth URL with progress tracking
+            const depthResponse = await fetch(f_data);
+            if (!depthResponse.ok) {
+                throw new Error("Error fetching depth URL.");
+            }
+
+            const contentLength = depthResponse.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Content-Length header is missing.");
+            }
+
+            const totalSize = contentLength ? parseInt(contentLength, 10) : 0;
+            let receivedSize = 0;
+            const reader = depthResponse.body.getReader();
+            const chunks = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                chunks.push(value);
+                receivedSize += value.length;
+
+                if (totalSize > 0) {
+                    const progress = (receivedSize / totalSize) * 100;
+                    setDownloadProgress(progress); // Update progress state
+                }
+            }
+
+            const depthURL = f_data; // Assuming f_data is the correct URL
+
+            // Send depthPath to API
+            const axiosResponse = await axios.post('/api/depthImage', {
+                who: user.admin._id,
+                depthPath: depthURL,
+            });
+
+            const { message } = axiosResponse.data;
+            if (message === 'success') {
+                localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
+                return 'success';
+            } else {
+                console.log('Not Found');
+                return 'failed';
+            }
+        } catch (error) {
+            console.error(error.message);
+            return 'failed';
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // async function depth_gen(file) {
     //     setIsLoading(true);
     //     setProgress(0);
@@ -148,73 +220,73 @@ const UploadPage = () => {
     //     }
     // }
 
-    async function depth_gen(file) {
-        setIsLoading(true);
-        setProgress(0); // Initialize progress to 0
-        try {
-            const formData = new FormData();
-            formData.append("file_in", file);
+    // async function depth_gen(file) {
+    //     setIsLoading(true);
+    //     setProgress(0); // Initialize progress to 0
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append("file_in", file);
     
-            // Custom fetch with progress tracking
-            const uploadResponse = await customFetchWithProgress("https://gatorswap.com/depth_map.php", formData);
+    //         // Custom fetch with progress tracking
+    //         const uploadResponse = await customFetchWithProgress("https://gatorswap.com/depth_map.php", formData);
     
-            if (!uploadResponse.ok) {
-                throw new Error("Error uploading image.");
-            }
+    //         if (!uploadResponse.ok) {
+    //             throw new Error("Error uploading image.");
+    //         }
     
-            const f_data = await uploadResponse.text();
+    //         const f_data = await uploadResponse.text();
     
-            // Fetch depth URL
-            const depthResponse = await fetch(f_data);
-            if (!depthResponse.ok) {
-                throw new Error("Error fetching depth URL.");
-            }
+    //         // Fetch depth URL
+    //         const depthResponse = await fetch(f_data);
+    //         if (!depthResponse.ok) {
+    //             throw new Error("Error fetching depth URL.");
+    //         }
     
-            const depthURL = f_data; // Assuming f_data is the correct URL
+    //         const depthURL = f_data; // Assuming f_data is the correct URL
     
-            // Send depthPath to API
-            const axiosResponse = await axios.post('/api/depthImage', {
-                who: user.admin._id,
-                depthPath: depthURL,
-            });
+    //         // Send depthPath to API
+    //         const axiosResponse = await axios.post('/api/depthImage', {
+    //             who: user.admin._id,
+    //             depthPath: depthURL,
+    //         });
     
-            const { message } = axiosResponse.data;
-            if (message === 'success') {
-                localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
-                return 'success';
-            } else {
-                console.log('Not Found');
-                return 'failed';
-            }
-        } catch (error) {
-            console.error(error.message);
-            return 'failed';
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    //         const { message } = axiosResponse.data;
+    //         if (message === 'success') {
+    //             localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
+    //             return 'success';
+    //         } else {
+    //             console.log('Not Found');
+    //             return 'failed';
+    //         }
+    //     } catch (error) {
+    //         console.error(error.message);
+    //         return 'failed';
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // }
     
     // Custom fetch function to track upload progress
-    async function customFetchWithProgress(url, formData) {
-        const xhr = new XMLHttpRequest();
+    // async function customFetchWithProgress(url, formData) {
+    //     const xhr = new XMLHttpRequest();
     
-        return new Promise((resolve, reject) => {
-            xhr.open("POST", url);
-            xhr.upload.onprogress = (event) => {
-                console.log('event.===>', event)
-                if (event.lengthComputable) {
-                    const percentCompleted = Math.round((event.loaded * 100) / event.total);
-                    console.log("File upload progress:", percentCompleted, new Date());
-                    setProgress(percentCompleted); // Update progress
-                    console.log('progress', progress)
-                }
-            };
+    //     return new Promise((resolve, reject) => {
+    //         xhr.open("POST", url);
+    //         xhr.upload.onprogress = (event) => {
+    //             console.log('event.===>', event)
+    //             if (event.lengthComputable) {
+    //                 const percentCompleted = Math.round((event.loaded * 100) / event.total);
+    //                 console.log("File upload progress:", percentCompleted, new Date());
+    //                 setProgress(percentCompleted); // Update progress
+    //                 console.log('progress', progress)
+    //             }
+    //         };
     
-            xhr.onload = () => resolve(new Response(xhr.response));
-            xhr.onerror = () => reject(new Error("Network error during upload"));
-            xhr.send(formData);
-        });
-    }    
+    //         xhr.onload = () => resolve(new Response(xhr.response));
+    //         xhr.onerror = () => reject(new Error("Network error during upload"));
+    //         xhr.send(formData);
+    //     });
+    // }    
     
     const usePrevFile = () => {
         setTimeout(() => {
@@ -223,17 +295,10 @@ const UploadPage = () => {
         }, 500);
     }
     
-    const CircularProgress = ({ progress }) => {
-        return <CircularProgressbar value={progress} text={`${progress}%`} />;
-    };
-
     return (
         <div>
             {isLoading ? (
-                <div className='flex justify-center align-middle'>
-                    <CircularProgress progress={progress} />
-                    {/* <Loader /> */}
-                </div>
+                <UploadLoader progress={downloadProgress} />
             ) : (
                 <div>
                     <nav className="navbar" style={{ position: 'unset' }}>

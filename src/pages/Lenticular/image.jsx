@@ -7,6 +7,7 @@ import ContactPageOutlinedIcon from '@mui/icons-material/ContactPageOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import Loader from '../../common/Loader/index';
+import UploadLoader from '../../common/Loader/uploadLoading';
 require('../DepthyViewer');
 let gv = require('./config');
 
@@ -26,6 +27,7 @@ const ImageComponent = () => {
     const [file, setFile] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [downloadProgress, setDownloadProgress] = useState(0); // For tracking download progress
     const dropdownRef = useRef(null);
 
     useEffect(() => {
@@ -131,49 +133,63 @@ const ImageComponent = () => {
         }
     };
 
-    async function depth_gen(file) {
+    const depth_gen = async (file) => {
         setIsLoading(true);
         try {
             const formData = new FormData();
             formData.append("file_in", file);
-    
-            // Use fetch instead of XMLHttpRequest
+
+            // Upload file to generate depth map
             const uploadResponse = await fetch("https://gatorswap.com/depth_map.php", {
                 method: "POST",
                 body: formData,
             });
-    
+
             if (!uploadResponse.ok) {
                 throw new Error("Error uploading image.");
             }
-    
+
             const f_data = await uploadResponse.text();
-    
-            // Fetch depth URL
+
+            // Fetch depth URL with progress tracking
             const depthResponse = await fetch(f_data);
             if (!depthResponse.ok) {
                 throw new Error("Error fetching depth URL.");
             }
-    
+
+            const contentLength = depthResponse.headers.get("Content-Length");
+            if (!contentLength) {
+                console.warn("Content-Length header is missing.");
+            }
+
+            const totalSize = contentLength ? parseInt(contentLength, 10) : 0;
+            let receivedSize = 0;
+            const reader = depthResponse.body.getReader();
+            const chunks = [];
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                chunks.push(value);
+                receivedSize += value.length;
+
+                if (totalSize > 0) {
+                    const progress = (receivedSize / totalSize) * 100;
+                    setDownloadProgress(progress); // Update progress state
+                }
+            }
+
             const depthURL = f_data; // Assuming f_data is the correct URL
-    
+
             // Send depthPath to API
             const axiosResponse = await axios.post('/api/depthImage', {
                 who: user.admin._id,
                 depthPath: depthURL,
             });
-    
-            dilateDepthMapFromUrl(gv.depthURL, gv.dilationSize)
-            .then(outputUrl => {
-                gv.tempDepth = outputUrl;
-                build_viewer();
-            })
-            .catch(error => {
-                console.error(error);
-            });
-            
+
             const { message } = axiosResponse.data;
-            if (message == 'success') {
+            if (message === 'success') {
                 localStorage.setItem('userInfo', JSON.stringify(axiosResponse.data));
                 return 'success';
             } else {
@@ -186,7 +202,7 @@ const ImageComponent = () => {
         } finally {
             setIsLoading(false);
         }
-    }
+    };
     async function dilateDepthMapFromUrl(imageUrl, strength, scaleFactor = 0.5) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
@@ -321,7 +337,7 @@ const ImageComponent = () => {
     return (
         <div>
             {isLoading ? (
-                <Loader />
+                <UploadLoader progress={downloadProgress} />
             ) : (
                 <div>
                     <nav className="navbar" style={{position: 'unset', paddingRight:10, padding:'5px 0'}}>
