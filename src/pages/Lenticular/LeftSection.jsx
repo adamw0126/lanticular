@@ -19,7 +19,7 @@ const LeftSection = ({ isMotion, isDepth, isAnagl }) => {
         ctx.drawImage(img, 0, 0, gv.canvasWidth, gv.canvasHeight);
 
         // Initialize DepthyDrawer after the image is loaded
-        gv.drawer = new window.DepthyDrawer(canvas);
+        gv.drawer = new DepthyDrawer(canvas);
       };
     }
   }, [isMotion, isDepth, isAnagl]);

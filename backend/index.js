@@ -7,8 +7,8 @@ const port = 5000;
 const path = require('path');
 
 // Connect to MongoDB
-// mongoose.connect('mongodb://127.0.0.1:27017/lanticular')
-mongoose.connect('mongodb+srv://kellanrowan179:QqOm2f4roaB9RRUw@cluster0.agtt7.mongodb.net/lanticular')
+mongoose.connect('mongodb://127.0.0.1:27017/lanticular')
+// mongoose.connect('mongodb+srv://kellanrowan179:QqOm2f4roaB9RRUw@cluster0.agtt7.mongodb.net/lanticular')
     .then(() => {
         console.log('Connected to MongoDB');
     })

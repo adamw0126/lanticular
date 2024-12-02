@@ -64,7 +64,7 @@ const SectionTools = () => {
                                             <div className="motion_3d-wrapper">
                                                 {
                                                     is2D ? <img sizes="(max-width: 479px) 100vw, (max-width: 767px) 97vw, (max-width: 991px) 90vw, 91vw" srcSet="./anim_2.mp4 500w, ./anim_2.mp4 800w, ./anim_2.mp4 1024w" alt="immersity AI" src="./cat.jpg" loading="eager" className="motion_img-2d"/> :
-                                                    <video id="03bd3d16-fd9e-51dd-4083-176ce369b953-video" ref={videoRef} autoPlay loop style={{backgroundImage:"url(https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/66430b41f6faa67372647003_octopus_Horizontal_80_1024x720-poster-00001.jpg)"}} muted playsInline="" data-wf-ignore="true" data-object-fit="cover">
+                                                    <video id="03bd3d16-fd9e-51dd-4083-176ce369b953-video" ref={videoRef} autoPlay loop style={{backgroundImage:"url()"}} muted playsInline="" data-wf-ignore="true" data-object-fit="cover">
                                                         <source src="./anim_2.mp4" data-wf-ignore="true"/>
                                                         <source src="./anim_2.mp4" data-wf-ignore="true"/>
                                                     </video>
