@@ -346,6 +346,9 @@ const ImageComponent = () => {
         gv.stageWidth = stage.clientWidth;
         gv.stageHeight = stage.clientHeight;
         response_size();
+        gv.viewer.setOptions({
+            size: {width: gv.canvasWidth, height: gv.canvasHeight},
+        });
     });
 
     return (

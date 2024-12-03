@@ -207,8 +207,8 @@ void main(void)
        vec2 disCords = vTextureCoord;
        disCords += offset * map * scale2;
        gl_FragColor = texture2D(uSampler, disCords);
-    //    gl_FragColor = vec4(1,1,1,0.5);
-    //    gl_FragColor *= texture2D(displacementMap, mapCords);
+      //  gl_FragColor = vec4(1,1,1,0.5);
+      //  gl_FragColor *= texture2D(displacementMap, mapCords);
     }
 
   `;
