@@ -6,19 +6,13 @@
     var ctx = canvasElement.getContext("2d");
     var drawing = false;
     var brushDirty = false;
-
-    // Load saved options from localStorage or use defaults
-    var savedOptions = JSON.parse(localStorage.getItem('DepthyDrawerOptions')) || {};
     var options = {
-      depth: savedOptions.depth || 0.5, // Greyscale value (0 to 1)
-      size: savedOptions.size || 20,   // Brush size in pixels
-      hardness: savedOptions.hardness || 0.0, // Brush softness (0: soft, 1: hard)
-      opacity: savedOptions.opacity || 1.0,  // Brush opacity (0 to 1)
+      depth: 0.5, // Greyscale value (0 to 1)
+      size: 20,   // Brush size in pixels
+      hardness: 0.0, // Brush softness (0: soft, 1: hard)
+      opacity: 1.0,  // Brush opacity (0 to 1)
     };
-
     var imageToDraw = null;  // To hold the image being drawn on the canvas
-    var history = []; // Stack for undo/redo
-    var historyIndex = -1; // Index for tracking the current history state
 
     // Create brush
     function createBrush() {
@@ -41,62 +35,28 @@
 
     var brushCanvas = createBrush();
 
-    function createSvgCursor(size) {
-      var radius = size / 2;
-      var svg = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-          <circle cx="${radius}" cy="${radius}" r="${radius - 2}" stroke="black" stroke-width="2" fill="none"/>
-        </svg>
-      `;
-      return `url('data:image/svg+xml;base64,${btoa(svg)}') ${radius} ${radius}, auto`;
-    }
+    // Brush cursor element
+    var brushCursor = document.createElement('div');
+    brushCursor.style.position = 'absolute';
+    brushCursor.style.borderRadius = '50%';
+    brushCursor.style.border = '2px solid rgba(0,0,0,0.5)';
+    brushCursor.style.pointerEvents = 'none';  // Prevent interaction with the cursor
+    brushCursor.style.zIndex = 9999;  // Ensure it's above the canvas
+    document.body.appendChild(brushCursor);  // Append to body to follow the mouse
 
-    function updateCursor() {
+    function updateBrushCursor(x, y) {
       var size = options.size;
-      canvasElement.style.cursor = createSvgCursor(size);
+      brushCursor.style.width = size + 'px';
+      brushCursor.style.height = size + 'px';
+      brushCursor.style.left = (x - size / 2) + 'px';
+      brushCursor.style.top = (y - size / 2) + 'px';
     }
 
-    // Draw function
     function draw(x, y) {
       var size = options.size;
       ctx.globalCompositeOperation = "source-over";
       ctx.drawImage(brushCanvas, x - size / 2, y - size / 2);
     }
-
-    // Save current canvas state to history
-    function saveState() {
-      if (historyIndex < history.length - 1) {
-        history = history.slice(0, historyIndex + 1);  // Remove any redo steps if new actions are taken
-      }
-      history.push(canvasElement.toDataURL('image/png')); // Save canvas as data URL
-      historyIndex++;
-    }
-
-    // Undo last action
-    this.undo = function() {
-      if (historyIndex > 0) {
-        historyIndex--;
-        var img = new Image();
-        img.onload = function() {
-          ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-          ctx.drawImage(img, 0, 0, canvasElement.width, canvasElement.height);
-        };
-        img.src = history[historyIndex];
-      }
-    };
-
-    // Redo last undone action
-    this.redo = function() {
-      if (historyIndex < history.length - 1) {
-        historyIndex++;
-        var img = new Image();
-        img.onload = function() {
-          ctx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-          ctx.drawImage(img, 0, 0, canvasElement.width, canvasElement.height);
-        };
-        img.src = history[historyIndex];
-      }
-    };
 
     // Event listeners
     function onMouseDown(e) {
@@ -104,7 +64,6 @@
       var rect = canvasElement.getBoundingClientRect();
       var x = e.clientX - rect.left;
       var y = e.clientY - rect.top;
-      saveState();  // Save state before drawing
       draw(x, y);
     }
 
@@ -112,6 +71,7 @@
       var rect = canvasElement.getBoundingClientRect();
       var x = e.clientX - rect.left;
       var y = e.clientY - rect.top;
+      updateBrushCursor(e.clientX, e.clientY);  // Update cursor position
       if (drawing) {
         draw(x, y);
       }
@@ -125,10 +85,9 @@
     canvasElement.addEventListener("mousedown", onMouseDown);
     canvasElement.addEventListener("mousemove", onMouseMove);
     canvasElement.addEventListener("mouseup", onMouseUp);
-    canvasElement.addEventListener("mouseenter", updateCursor);
-    canvasElement.addEventListener("mouseleave", function() {
-      canvasElement.style.cursor = 'default';
-    });
+    canvasElement.addEventListener("mouseleave", onMouseUp);
+
+    canvasElement.style.cursor = 'none';
 
     // Set canvas image from URL
     this.setCanvasImageFromURL = function(url) {
@@ -163,11 +122,7 @@
       }
       if (brushDirty) {
         brushCanvas = createBrush();
-        updateCursor();
         brushDirty = false;
-
-        // Save updated options to localStorage
-        localStorage.setItem('DepthyDrawerOptions', JSON.stringify(options));
       }
     };
 
@@ -182,9 +137,6 @@
     this.getCanvasDataURL = function() {
       return canvasElement.toDataURL('image/png');
     };
-
-    // Initialize cursor
-    updateCursor();
   };
 
 })(window);
