@@ -1058,6 +1058,8 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       
       imageTextureSprite.position.set(stageSize.width / 2, stageSize.height / 2);
 
+      console.log(`Image render info /  scale : ${scale}, position : ${stageSize.width / 2}, ${stageSize.height / 2}`);
+
       imageTextureSprite.filters = [sharpenFilter];
       imageTextureContainer = new PIXI.Container();
       imageTextureContainer.addChild(imageTextureSprite);
@@ -1097,6 +1099,8 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         depthTextureSprite.renderable = !!depth.texture;
         depthTextureSprite.anchor.set(0.5, 0.5);
         depthTextureSprite.position.set(stageSize.width / 2, stageSize.height / 2);
+
+        console.log(`Image render info /  scale : ${scale}, position : ${stageSize.width / 2}, ${stageSize.height / 2}`);
 
         if (depth.useAlpha) {
           // move inverted alpha to rgb, set alpha to 1
@@ -1244,6 +1248,13 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
               y: Math.cos(angle) * options.animateScale.y
             };
             break;
+          
+          case 'zoom':
+            console.log(imageTextureSprite);
+            const zoomFactor = 0.7 + Math.abs(Math.sin(now * Math.PI * 2 / 5.0)) * (1.5 - 0.7);
+            imageTextureSprite.scale.set(zoomFactor, zoomFactor);
+            break;
+        
         }
         renderDirty = true;
       }
