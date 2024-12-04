@@ -10,6 +10,7 @@ const adminsSchema = new mongoose.Schema({
         width: { type: Number, default: 0 },
         height: { type: Number, default: 0 }
     },
+    videoPath: { type: String, default: false },
     isLogin: { type: Boolean, default: false },
     wallet_score: { type: Number, default: 25 },
     credits: { type: Number, default: 100 },

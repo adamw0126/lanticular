@@ -3,13 +3,24 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Box, Button, TextField, Typography, Stack, Grid, Container } from '@mui/material';
 import VideoThumbnails from './videoThumb'; // Placeholder component for thumbnails
 import Dropdown from './dropdown';
+import axios from 'axios';
 
 const user = JSON.parse(localStorage.getItem('userInfo'));
 
 const App = () => {
+  const user = JSON.parse(localStorage.getItem('userInfo'));
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [frameCount, setFrameCount] = useState(12);
+
+  useEffect(() => {
+    getFile();
+  }, []);
+
+  const getFile = async () => {
+    const response = await axios.post('/api/getVideoUrl', { who: user.admin._id });
+    console.log('response.data ==>', response.data)
+  }
 
   const handleFileChange = (event) => {
     setSelectedFile(event.target.files[0]);

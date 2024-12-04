@@ -24,7 +24,9 @@ router.post('/signup', AdminController.addAdmin);
 router.post('/signin', AdminController.login);
 router.get('/getAdmins', AdminController.getAdmins);
 router.post('/uploadImage', upload.single('file'), AdminController.imageSet);
+router.post('/uploadVideo', upload.single('file'), AdminController.VideoSet);
 router.post('/setAdminPassword', AdminController.setAdminPassword);
+router.post('/getVideoUrl', AdminController.getVideoUrl);
 router.post('/depthImage', AdminController.depthImage);
 router.post('/logout', AdminController.logout);
 

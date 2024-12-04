@@ -3,7 +3,7 @@ const path = require('path');
 const AdminMdl = require('../models/Admin');
 
 // Assuming the images are stored in a folder called 'uploads'
-const imageFolderPath = path.join(__dirname, '..', 'uploads');
+const dataFolderPath = path.join(__dirname, '..', 'uploads');
 
 const serverUrl = 'localhost:5000';
 
@@ -31,7 +31,7 @@ exports.login = async (req, res) => {
         const admin = await AdminMdl.findOne({ userId });
         if (admin) {
             const fileUrl = `${req.protocol}://${serverUrl}/uploads/${admin.currentImg}`;
-            const imagePath = path.join(imageFolderPath, admin.currentImg);
+            const imagePath = path.join(dataFolderPath, admin.currentImg);
             if(admin.isLogin){
                 return res.json({ message: 'Already login User.' });
             }
@@ -88,7 +88,7 @@ exports.imageSet = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
-        const { filename, originalname } = req.file;
+        const { filename } = req.file;
         // Fetch the admin record by userId
         const { userId, img_w, img_h } = req.body;
         const admin = await AdminMdl.findOne({ userId: userId }); // Ensure userId exists in req.body
@@ -97,7 +97,7 @@ exports.imageSet = async (req, res) => {
         }
         // Check and delete existing image if present
         if (admin.currentImg) {
-            const imagePath = path.join(imageFolderPath, admin.currentImg);
+            const imagePath = path.join(dataFolderPath, admin.currentImg);
 
             if (fs.existsSync(imagePath)) {
                 try {
@@ -110,7 +110,6 @@ exports.imageSet = async (req, res) => {
         }
         // Update admin record
         admin.currentImg = filename;
-        admin.originalname = originalname;
         admin.w_h.width = Number(img_w);
         admin.w_h.height = Number(img_h);
         await admin.save();
@@ -189,5 +188,55 @@ exports.buyCredits = async (req, res) => {
         user.wallet_score = user.wallet_score - price;
         await user.save();
         return res.json({ message: 'success', admin: user, filePath: fileUrl });
+    }
+}
+
+exports.VideoSet = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        const { filename } = req.file;
+        const { userId } = req.body;
+        const user = await AdminMdl.findOne({ userId: userId }); // Ensure userId exists in req.body
+        if (!user) {
+            return res.status(404).json({ message: 'Unregistered User!' });
+        }
+        if (user.videoPath) {
+            const videoPath = path.join(dataFolderPath, user.videoPath);
+
+            if (fs.existsSync(videoPath)) {
+                try {
+                    await fs.promises.unlink(videoPath);
+                } catch (err) {
+                    console.error('Failed to delete existing image:', err);
+                    return res.status(500).json({ message: 'Failed to delete existing file', error: err });
+                }
+            }
+        }
+        user.videoPath = filename;
+        await user.save();
+
+        const fileUrl = `${req.protocol}://${serverUrl}/uploads/${req.file.filename}`;
+
+        return res.status(200).json({
+            message: 'File uploaded successfully',
+        });
+    } catch (error) {
+        console.error('Error during file upload:', error);
+        return res.status(500).json({ message: 'Failed to upload file', error });
+    }
+};
+
+exports.getVideoUrl = async (req, res) => {
+    try {
+        const { who } = req.body;
+        let user = await AdminMdl.findById(who);
+        if(user){
+            const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.videoPath}`;
+            return res.json({ message: 'success', filePath: fileUrl });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'failed_get', error });
     }
 }
