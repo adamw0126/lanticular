@@ -1,168 +1,104 @@
-import React, { useState } from "react";
-import { Box, Stepper, Step, StepLabel, List, ListItemButton, ListItemText, Menu, MenuItem, Typography, Button } from "@mui/material";
-const steps = ["Settings", "Upload", "Conversion", "Your 3D Video"];
-const videoDetails = {
-  uploadedFileName: "18.09.2024_03_32.mp4",
-  resolution: "3840x938",
-  duration: "00:00:27",
-  conversionTime: "00:00:32",
-  fps: 30,
-  costPerMinute: "200 Credits",
-  costFullConversion: "200 Credits",
-};
-// Reusable Dropdown Component
-const Dropdown = ({ label, options, selectedIndex, setSelectedIndex }) => {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+import { useState, useEffect, useRef } from "react";
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Box, Button, TextField, Typography, Stack, Grid, Container } from '@mui/material';
+import VideoThumbnails from './videoThumb'; // Placeholder component for thumbnails
+import Dropdown from './dropdown';
 
-  const handleClick = (event) => setAnchorEl(event.currentTarget);
-  const handleClose = () => setAnchorEl(null);
+const user = JSON.parse(localStorage.getItem('userInfo'));
 
-  const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
-    handleClose();
+const App = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [frameCount, setFrameCount] = useState(12);
+
+  const handleFileChange = (event) => {
+    setSelectedFile(event.target.files[0]);
+  };
+
+  const handleFrameCountChange = (event) => {
+    setFrameCount(parseInt(event.target.value, 10) || 12); // Default to 12 if invalid
   };
 
   return (
-    <Box>
-      <span>{label}</span>
-      <List component="nav" sx={{ bgcolor: "#121224" }}>
-        <ListItemButton
-          aria-haspopup="listbox"
-          aria-controls={`${label}-menu`}
-          aria-expanded={open ? "true" : undefined}
-          onClick={handleClick}
-        >
-          <ListItemText secondary={options[selectedIndex]} sx={{ color: 'white' }} />
-        </ListItemButton>
-      </List>
-      <Menu
-        id={`${label}-menu`}
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{ "aria-labelledby": `${label}-button`, role: "listbox" }}
-      >
-        {options.map((option, index) => (
-          <MenuItem
-            key={option}
-            selected={index === selectedIndex}
-            onClick={(event) => handleMenuItemClick(event, index)}
-          >
-            {option}
-          </MenuItem>
-        ))}
-      </Menu>
-    </Box>
-  );
-};
+    <div>
+      <nav className="navbar" style={{position: 'unset', paddingRight:10, padding:'5px 0'}}>
+        <div className="nav-wrapper">
+            <div className="nav-container">
+                <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
+                    <img src="./logo.png" 
+                        loading="eager" alt="" className="nav-brand" style={{height:'2.2rem'}} />
+                </a>
+                <div className="nav-container-right" style={{paddingRight:10}}>
+                    <div
+                        onClick={() => setIsOpen(!isOpen)}
+                        aria-haspopup="true"
+                        aria-expanded={isOpen}
+                        className="bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                    >
+                        <img
+                            src="./userlogo.png"
+                            width={40}
+                            style={{
+                                borderRadius: "50%",
+                                cursor: "pointer",
+                            }}
+                        />
+                    </div>
+                    <Dropdown isOpenDrop={isOpen} setIsOpenDrop={setIsOpen} />
+                </div>
+            </div>
+        </div>
+      </nav>
 
-const Video = () => {
-  // Unique options for each dropdown
-  const outputFormatOptions = ["MP4 SBS Full", "MP4 SBS Full(Cross-Eyed)", "MP4 SBS Half", "MKV SBS Full", "MOV MV-HEVC (Apple Vision Pro)", "MP4 Top-Bottom", "MP4 Anaglyph", "MP4 Depth Map"];
-  const depthOptions = ["Soft (1.1)", "Regular (1.2)", "Strong (1.3)"];
-  const convergenceOptions = ["OFF", "ON"];
-  const fieldOfViewOptions = ["Regular", "360"];
-
-  // State for each dropdown
-  const [selectedOutputFormat, setSelectedOutputFormat] = useState(0);
-  const [selectedDepth, setSelectedDepth] = useState(0);
-  const [selectedConvergence, setSelectedConvergence] = useState(0);
-  const [selectedFieldOfView, setSelectedFieldOfView] = useState(0);
-
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      {/* Header */}
-      <Box sx={{ textAlign: "center", marginTop: "120px" }}>
-        <h2>Convert 2D Video to 3D</h2>
-        <h4>Power your XR experience using our state-of-the-art Neural Depth Engine</h4>
-      </Box>
-
-      {/* Stepper */}
-      <Stepper
-        activeStep={0}
-        alternativeLabel
-        sx={{
-          marginTop: "50px",
-          "& .MuiStepIcon-root": { fontSize: "2.5rem" },
-          "& .MuiStepIcon-text": { fontSize: "1.2rem" },
-        }}
-      >
-        {steps.map((label) => (
-          <Step key={label}>
-            <StepLabel>{label}</StepLabel>
-          </Step>
-        ))}
-      </Stepper>
-
-      {/* Dropdown Grid */}
-      <Box sx={{ width: "100%", maxWidth: "640px", marginTop: "50px" }}>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gridGap: "32px",
-            bgcolor: "#181833",
-            padding: "32px",
-            borderRadius: "8px 8px 0px 0px",
-          }}
-        >
-          <Dropdown
-            label="Output Format"
-            options={outputFormatOptions}
-            selectedIndex={selectedOutputFormat}
-            setSelectedIndex={setSelectedOutputFormat}
-          />
-          <Dropdown
-            label="Depth"
-            options={depthOptions}
-            selectedIndex={selectedDepth}
-            setSelectedIndex={setSelectedDepth}
-          />
-          <Dropdown
-            label="Convergence"
-            options={convergenceOptions}
-            selectedIndex={selectedConvergence}
-            setSelectedIndex={setSelectedConvergence}
-          />
-          <Dropdown
-            label="Field of View"
-            options={fieldOfViewOptions}
-            selectedIndex={selectedFieldOfView}
-            setSelectedIndex={setSelectedFieldOfView}
-          />
-        </Box>
-        <Box sx={{ padding: '32px', borderRadius: '0px 0px 8px 8px', display: 'flex', gap: '10px', flexDirection: 'column', justifyContent: 'space-between', bgcolor: '#232338' }}>
-            {/* Render each detail */}
-            <Typography variant="body2">
-              <strong>Video Uploaded:</strong> {videoDetails.uploadedFileName}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Output Resolution:</strong> {videoDetails.resolution}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Total video duration:</strong> {videoDetails.duration}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Estimated Conversion Time:</strong> {videoDetails.conversionTime}
-            </Typography>
-            <Typography variant="body2">
-              <strong>FPS:</strong> {videoDetails.fps}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Cost per minute:</strong> {videoDetails.costPerMinute}
-            </Typography>
-            <Typography variant="body2" sx={{ color: "#E94084" }}>
-              <strong>Cost full conversion:</strong> {videoDetails.costFullConversion}
-            </Typography>
-        </Box>
-      </Box>
-          <Box sx={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '32px', marginTop: '32px'}}>
-            <Button variant="contained">Download Sample</Button>
-            <Button variant="contained" color="secondary">Full Conversion</Button>
+      <div className="app-container">
+        <div className="left-section">
+          <div>
+            <video controls muted playsInline="" data-wf-ignore="true" data-object-fit="cover" style={{maxWidth:800}}>
+                <source src="./anim_1.mp4" data-wf-ignore="true"/>
+                <source src="./anim_1.mp4" data-wf-ignore="true"/>
+            </video>
+            <VideoThumbnails />
+          </div>
+        </div>
+        <div className="right-sidebar">
+          <Box sx={{ p: 2, height: 300, overflowY: 'auto' }}>
+            <Box>
+              <Button variant="contained" component="label">
+                Choose File
+                <input type="file" hidden onChange={handleFileChange} />
+              </Button>
+              {selectedFile && <Typography variant="body2">{selectedFile.name}</Typography>}
+            </Box>
+            <Stack direction="row" spacing={2} mb={2} mt={3}>
+              <TextField
+                label="Number of Frames"
+                type="number"
+                value={frameCount}
+                onChange={handleFrameCountChange}
+                inputProps={{ min: 1 }}
+                sx={{
+                  input: { color: "white" }, // Text color
+                  label: { color: "white" }, // Label color
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Default border color
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "white", // Border color on hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "white", // Border color when focused
+                    },
+                  },
+                }}
+              />
+            </Stack>
+            <Button variant="contained" >Export Frames</Button>
           </Box>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default Video;
+export default App;

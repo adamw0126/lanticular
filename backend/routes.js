@@ -17,6 +17,7 @@ const upload = multer({ storage });
 
 // controller
 const AdminController = require('./controllers/adminCtrl');
+const exportController = require('./controllers/exportsCtrl');
 
 // Define the routes
 router.post('/signup', AdminController.addAdmin);
@@ -30,6 +31,9 @@ router.post('/logout', AdminController.logout);
 router.post('/acc/changeName', AdminController.changeName);
 router.post('/acc/changePassword', AdminController.changePassword);
 router.post('/buyCredits', AdminController.buyCredits);
+
+router.post('/exportsAdd', exportController.exportsAdd);
+router.post('/getHistory', exportController.getHistory);
 
 // Define a route with a URL parameter
 router.get('/user/:id', (req, res) => {

@@ -23,7 +23,6 @@ const FormLayout = () => {
   });
   
   const autoLogin = async(signupInfo: any) => {
-    console.log(123123123123, signupInfo)
     if(!signupInfo.userId || !signupInfo.password)
       return toast.error('Enter information conrrectly.');
     try {
@@ -60,9 +59,9 @@ const FormLayout = () => {
                 </h3>
               </div>
               <div>
-                <div className="p-6.5">
-                  <div className="mb-4.5">
-                    <label className="mb-2.5 block dark:text-white">
+                <div style={{padding:'0.3rem 1.5rem'}}>
+                  <div className="mb-2.5">
+                    <label className="block dark:text-white">
                       UserId
                     </label>
                     <input
@@ -71,12 +70,12 @@ const FormLayout = () => {
                         onChange={e => setSigninInfo((data) => {
                           return { ...data, userId: e.target.value };
                         })}
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                   </div>
 
                   <div>
-                    <label className="mb-2.5 block dark:text-white">
+                    <label className="block dark:text-white">
                       Password
                     </label>
                     <input
@@ -86,7 +85,7 @@ const FormLayout = () => {
                         onChange={e => setSigninInfo((data) => {
                           return { ...data, password: e.target.value };
                         })}
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                     />
                   </div>
 
@@ -124,7 +123,7 @@ const FormLayout = () => {
                     Sign In
                   </button>
                   
-                  <div className="mt-5 flex justify-center items-center">
+                  <div className="mt-3 mb-1 flex justify-center items-center">
                     <NavLink to="/signup" className="text-sm text-primary" style={{textDecoration: 'none',color:'#ffd800'}}>
                       Click here to Sign Up
                     </NavLink>
@@ -142,9 +141,9 @@ const FormLayout = () => {
               </h3>
             </div>
             <div>
-              <div className="p-6.5">
-                <div className="mb-4.5">
-                  <label className="mb-2.5 block dark:text-white">
+              <div  style={{padding:'0.3rem 1.5rem'}}>
+                <div className="mb-1.5">
+                  <label className="block dark:text-white">
                     Name
                   </label>
                   <input
@@ -154,12 +153,12 @@ const FormLayout = () => {
                     onChange={e => setSignupInfo((data) => {
                       return { ...data, name: e.target.value }
                     })}
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
                 </div>
 
-                <div className="mb-4.5">
-                  <label className="mb-2.5 block dark:text-white">
+                <div className="mb-1.5">
+                  <label className="block dark:text-white">
                     UserId
                   </label>
                   <input
@@ -168,12 +167,12 @@ const FormLayout = () => {
                     onChange={e => setSignupInfo((data) => {
                       return { ...data, userId: e.target.value }
                     })}
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
                 </div>
 
-                <div className="mb-4.5">
-                  <label className="mb-2.5 block dark:text-white">
+                <div className="mb-1.5">
+                  <label className="block dark:text-white">
                     Password
                   </label>
                   <input
@@ -183,12 +182,12 @@ const FormLayout = () => {
                     onChange={e => setSignupInfo((data) => {
                       return { ...data, password: e.target.value }
                     })}
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
                 </div>
 
                 <div className="mb-5.5">
-                  <label className="mb-2.5 block dark:text-white">
+                  <label className="block dark:text-white">
                     Re-type Password
                   </label>
                   <input
@@ -198,7 +197,7 @@ const FormLayout = () => {
                     onChange={e => setSignupInfo((data) => {
                       return { ...data, conform: e.target.value }
                     })}
-                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-2 px-3 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                   />
                 </div>
 
@@ -237,7 +236,7 @@ const FormLayout = () => {
                   Sign Up
                 </button>
               </div>
-              <div className='justify-center flex pb-5'>
+              <div className='justify-center flex pb-2 pt-2'>
                 <NavLink to="/signin" className="text-sm text-primary" style={{textDecoration: 'none',color:'#ffd800'}}>
                   Click here to Sign In
                 </NavLink>

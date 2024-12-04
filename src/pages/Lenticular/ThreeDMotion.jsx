@@ -17,6 +17,7 @@ import {
   FileUpload,
   Refresh,
 } from '@mui/icons-material';
+import axios from 'axios';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -246,8 +247,20 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
         gv.drawer.setCanvasImageFromURL(gv.tempDepth);
     };
 
-
-
+    const exportslistAdd = async (whatExport) => {
+      try {
+          console.log('whatExport ===>', whatExport);
+          
+          const result = await axios.post('/api/exportsAdd', { 
+              who: user.admin._id, 
+              whatExport 
+          });
+          
+          console.log('result.data', result.data);
+      } catch (error) {
+          console.error('Error during export list addition:', error);
+      }
+  };
 
   return (
     <div>
@@ -868,8 +881,15 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                 border: '1px solid',
               }}
               onClick={() => {
-                gv.viewer.exportToPNG().then(function () {
-                  console.log('PNG exported and downloaded successfully.');
+                gv.viewer.exportToPNG()
+                .then(() => {
+                    return exportslistAdd('.png'); // Call the API after setting the state
+                })
+                .then(() => {
+                    console.log('PNG exported and downloaded successfully.');
+                })
+                .catch((error) => {
+                    console.error('Error during PNG export or API call:', error);
                 });
               }}
             >
@@ -915,6 +935,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                   )
                   .then((blob) => {
                     console.log('MP4 export completed:', gv.viewer.getOptions());
+                    return exportslistAdd('.mp4');
                   })
                   .catch((error) => {
                     console.error('Export failed:', error);
@@ -963,6 +984,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                   )
                   .then((blob) => {
                     console.log('Frames export completed:');
+                    return exportslistAdd('frames');
                   })
                   .catch((error) => {
                     console.error('Export failed:', error);

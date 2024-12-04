@@ -176,6 +176,7 @@ span.flatpickr-weekday,
   align-items: center;
   background-color: rgb(12, 12, 24);
   padding: 5px;
+  overflow: auto;
 }
 
 .image-container img.centered-image {

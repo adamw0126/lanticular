@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Modal,
     Box,
@@ -10,6 +10,10 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { toast } from 'react-hot-toast';
+import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
+import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
+import TollIcon from '@mui/icons-material/Toll';
+// import PricingPage from './checkout';
 
 function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
     const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -19,12 +23,30 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
+    const [isPayMode, setIsPayMode] = useState(false);
+    const [countries, setCountries] = useState([]);
 
     const increment = (setter, value) => setter(value + 1);
     const decrement = (setter, value) => setter(value > 0 ? value - 1 : 0);
 
     const totalCredits = 1200 * quantity1 + 500 * quantity2;
     const totalPrice = (10 * quantity1 + 5 * quantity2).toFixed(2);
+
+    const paymentDetails = () => setIsPayMode(true);
+
+    const clearModal = () => {
+        setIsPayMode(false);
+        handleClose();
+    }
+
+    useEffect(() => {
+        let countryNames;
+        fetch('https://restcountries.com/v3.1/all').then(response => response.json())
+        .then(data => {
+            countryNames = data.map(country => country.name.common);
+            setCountries(countryNames);
+        }).catch(error => console.error('Error fetching country data:', error));
+    }, [])
 
     const buyCredits = async () => {
         try {
@@ -54,86 +76,182 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
     return (
         <div>
             <Modal open={open} onClose={handleClose} className='modal-style'>
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: 400,
-                        bgcolor: 'background.paper',
-                        borderRadius: 2,
-                        boxShadow: 24,
-                        p: 4,
-                    }}
-                >
-                    {/* Header with Title and Close Button */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                        <Typography variant="h6">Buy Credits</Typography>
-                        <IconButton onClick={handleClose} style={{color:'white'}}>
-                            <CloseIcon />
-                        </IconButton>
-                    </Box>
-
-                    {/* Credit Options */}
-                    <div className='modal-body'>
-                        <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={8}>
-                                <Typography>1,200 &nbsp;&nbsp;<span className='bonustip'>Bonus Credits</span></Typography>
-                                <Typography variant="body2" color="white">
-                                    $10.00
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Button onClick={() => decrement(setQuantity1, quantity1)}>-</Button>
-                                <Typography>{quantity1}</Typography>
-                                <Button onClick={() => increment(setQuantity1, quantity1)}>+</Button>
-                            </Grid>
-
-                            <Grid item xs={8}>
-                                <Typography>500 Credits</Typography>
-                                <Typography variant="body2" color="white">
-                                    $5.00
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                <Button onClick={() => decrement(setQuantity2, quantity2)}>-</Button>
-                                <Typography>{quantity2}</Typography>
-                                <Button onClick={() => increment(setQuantity2, quantity2)}>+</Button>
-                            </Grid>
-                        </Grid>
-                        {/* Summary Section */}
-                        <Box sx={{ mt: 3, mb: 2, textAlign: 'center' }} className='modal-footer'>
-                            <Typography variant="h6">
-                                {totalCredits} Credits
-                            </Typography>
-                            <Typography variant="h6" color="primary">
-                                ${totalPrice}
-                            </Typography>
+                {
+                    !isPayMode ?
+                    <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            bgcolor: 'background.paper',
+                            borderRadius: 2,
+                            boxShadow: 24,
+                            p: 4,
+                        }}
+                    >
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                            <Typography variant="h6">Buy Credits</Typography>
+                            <IconButton onClick={handleClose} style={{color:'white'}}>
+                                <CloseIcon />
+                            </IconButton>
                         </Box>
-                    </div>
-
-
-                    {/* Action Buttons */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            sx={{ flex: 1, mr: 1 }}
-                            onClick={buyCredits}
-                        >
-                            Buy
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            sx={{ flex: 1 }}
-                            onClick={handleClose}
-                        >
-                            Cancel
-                        </Button>
+                        <div className='modal-body'>
+                            <Grid container spacing={2} alignItems="center">
+                                <Grid item xs={8}>
+                                    <Typography>1,200 &nbsp;&nbsp;<span className='bonustip'>Bonus Credits</span></Typography>
+                                    <Typography variant="body2" color="white">
+                                        $10.00
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Button onClick={() => decrement(setQuantity1, quantity1)}>-</Button>
+                                    <Typography>{quantity1}</Typography>
+                                    <Button onClick={() => increment(setQuantity1, quantity1)}>+</Button>
+                                </Grid>
+    
+                                <Grid item xs={8}>
+                                    <Typography>500 Credits</Typography>
+                                    <Typography variant="body2" color="white">
+                                        $5.00
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                                    <Button onClick={() => decrement(setQuantity2, quantity2)}>-</Button>
+                                    <Typography>{quantity2}</Typography>
+                                    <Button onClick={() => increment(setQuantity2, quantity2)}>+</Button>
+                                </Grid>
+                            </Grid>
+                            {/* Summary Section */}
+                            <Box sx={{ mt: 3, mb: 2, textAlign: 'center' }} className='modal-footer'>
+                                <Typography variant="h6">
+                                    {totalCredits} Credits
+                                </Typography>
+                                <Typography variant="h6" color="primary">
+                                    ${totalPrice}
+                                </Typography>
+                            </Box>
+                        </div>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ flex: 1, mr: 1 }}
+                                onClick={paymentDetails}
+                            >
+                                Continue
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="secondary"
+                                sx={{ flex: 1 }}
+                                onClick={handleClose}
+                            >
+                                Cancel
+                            </Button>
+                        </Box>
                     </Box>
-                </Box>
+                    : <Box
+                        sx={{
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 400,
+                            bgcolor: 'background.paper',
+                            borderRadius: 2,
+                            boxShadow: 24,
+                            p: 4,
+                        }}
+                    >
+                        <div className='payMode-main'>
+                            <div className='payMode-header'>
+                                <Button className='modalhead-btn' onClick={() => setIsPayMode(false)}><ArrowBackIosOutlinedIcon /></Button>
+                                <div>Payment Details</div>
+                                <Button className='modalhead-btn' onClick={clearModal}><ClearOutlinedIcon /></Button>
+                            </div>
+                            <div className='payMode-body'>
+                                <div className='flex justify-between' style={{padding:'10px 0'}}>
+                                    <div>
+                                        <h5 style={{fontSize:16,fontWeight:400}}>Description</h5>
+                                        <div><TollIcon /> {`${totalCredits} Credits`}</div>
+                                    </div>
+                                    <div>
+                                        <h5 style={{fontSize:16,fontWeight:400,textAlign:'right'}}>Amount</h5>
+                                        <div>{`$${totalPrice} Credits`}</div>
+                                    </div>
+                                </div>
+                                <div className='flex justify-between' style={{padding:'10px 0'}}>
+                                    <div>
+                                        <h5 style={{fontSize:14,fontWeight:400}}>Tax</h5>
+                                        <div>{`Total due`}</div>
+                                    </div>
+                                    <div>
+                                        <h5 style={{fontSize:14,fontWeight:400,textAlign:'right'}}>$0</h5>
+                                        {`$${totalPrice}`}
+                                    </div>
+                                </div>
+                                <hr />
+                                <div className='checkout'>
+                                    <div className="payment-form">
+                                        <div className="form-group">
+                                        <label htmlFor="cardNumber">Card number</label>
+                                        <div className="input-container">
+                                            <input
+                                            type="text"
+                                            id="cardNumber"
+                                            placeholder="1234 1234 1234 1234"
+                                            maxLength="19"
+                                            />
+                                            <div className="card-icons">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" alt="Mastercard" />
+                                            <img src="/american-express-svgrepo-com.svg" alt="Amex" />
+                                            <img src="discover-3-svgrepo-com.svg" alt="Discover" />
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <div className="form-group">
+                                        <div className="input-row">
+                                            <div className="input-wrapper">
+                                            <label htmlFor="expirationDate">Expiration date</label>
+                                            <input type="text" id="expirationDate" placeholder="MM / YY" />
+                                            </div>
+                                            <div className="input-wrapper">
+                                            <label htmlFor="securityCode">Security code</label>
+                                            <input type="text" id="securityCode" placeholder="CVC" maxLength="4" />
+                                            <span className="cvc-icon">💳</span>
+                                            </div>
+                                        </div>
+                                        </div>
+
+                                        <div className="form-group">
+                                        <label htmlFor="country">Country</label>
+                                        <select id="country">
+                                            {
+                                                countries.map(val => (<option value={val} key={val}>{val}</option>))
+                                            }
+                                            {/* <option value="France">France</option>
+                                            <option value="USA">USA</option>
+                                            <option value="Canada">Canada</option>
+                                            <option value="Germany">Germany</option> */}
+                                        </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className='payMode-footer'>
+                                <div style={{margin:'8px 3px'}}>
+                                    <Button sx={{width:'100%',bgcolor:'rgb(72, 43, 217)',color:'white',borderRadius:20,fontSize:18}}>
+                                        Pay
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </Box>
+                }
             </Modal>
         </div>
     );

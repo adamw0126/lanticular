@@ -92,10 +92,10 @@ const SectionApp = () => {
                             </div>
                             <div className="container_secondary">
                                 <div className="container gap-normal">
-                                    <h3 className="heading-style-h3">Generate Apple Music® Album Motion covers with Immersity AI</h3>
+                                    <h3 className="heading-style-h3">Generate Apple Music® Album Motion covers with Lenticular</h3>
                                     <p id="w-node-_8de0b1b9-8d2a-0bdf-67aa-59a8151eff3f-7b225824" className="text-size-large text-color-light500">
                                         <em>‍</em>
-                                        With our dedicated Apple Music® Album Motion export function in Immersity AI, artists and labels are able to easily transform their album art with 3D depth and motion. Create your immersive animated graphic without a significant label design budget or 3D experience — all within minutes.<br/>
+                                        With our dedicated Apple Music® Album Motion export function in Lenticular, artists and labels are able to easily transform their album art with 3D depth and motion. Create your immersive animated graphic without a significant label design budget or 3D experience — all within minutes.<br/>
                                         <br/>
                                         These Apple Music® Album Motion artworks will be available and sized according to the technical guidelines set forth by Apple Music, including the required 3:4 and 1:1 formats and the platform’s preferred blurred backgrounds. Within minutes you can upload your immersive art to Apple for approval and distribution.<br/>
                                         <br/>

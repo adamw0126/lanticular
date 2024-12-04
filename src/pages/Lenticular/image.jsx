@@ -12,6 +12,7 @@ import Loader from '../../common/Loader/index';
 import UploadLoader from '../../common/Loader/uploadLoading';
 require('../DepthyViewer');
 let gv = require('./config');
+import Dropdown from './dropdown';
 
 let stage = null;
 let viewerContainer = null;
@@ -392,70 +393,7 @@ const ImageComponent = () => {
                                             }}
                                         />
                                     </div>
-                                    {isOpen && (
-                                        <div
-                                            ref={dropdownRef}
-                                            className="absolute right-0 mt-2 w-max bg-white border rounded shadow-lg z-10 top-11"
-                                            role="menu"
-                                        >
-                                            <div >
-                                                <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
-                                                    {`${user.admin.name} (${user.admin.userId})` }
-                                                </button>
-                                            </div>
-                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('/account');
-                                                window.location.reload();
-                                            }}>
-                                                <ManageAccountsOutlinedIcon />
-                                                Manage Account
-                                            </button>
-                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('/newsroom');
-                                                window.location.reload();
-                                            }}>
-                                                <NewspaperOutlinedIcon />
-                                                News
-                                            </button>
-                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('/faqs');
-                                                window.location.reload();
-                                            }}>
-                                                <LiveHelpOutlinedIcon />
-                                                FAQs
-                                            </button>
-                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate('/contact');
-                                                window.location.reload();
-                                            }}>
-                                                <ContactPageOutlinedIcon />
-                                                Contact Us
-                                            </button>
-                                            <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
-                                            onClick={async (e) => {
-                                                e.preventDefault();
-                                                const result = await axios.post('/api/logout', { who: user.admin._id });
-
-                                                if (result.data.message == 'logout') {
-                                                    console.log('logout')
-                                                }
-                                                localStorage.removeItem("userInfo");
-                                                navigate('/');
-                                                window.location.reload();
-                                            }}>
-                                                <LogoutOutlinedIcon />
-                                                Log Out
-                                            </button>
-                                        </div>
-                                    )}
+                                    <Dropdown isOpenDrop={isOpen} setIsOpenDrop={setIsOpen} />
                                 </div>
                             </div>
                         </div>

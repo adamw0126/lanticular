@@ -13,6 +13,7 @@ const adminsSchema = new mongoose.Schema({
     isLogin: { type: Boolean, default: false },
     wallet_score: { type: Number, default: 25 },
     credits: { type: Number, default: 100 },
+    exports: { type: Array, default: [] },
     joinedAt: { type: Date, default: Date.now }
 });
 const Admin = mongoose.model('Admin', adminsSchema);

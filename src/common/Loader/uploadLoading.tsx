@@ -47,7 +47,7 @@ const Loader = ({ progress = 0 }: { progress?: number }) => {
         {/* Progress text */}
         <div
           className="absolute inset-0 flex items-center justify-center text-black text-sm font-semibold"
-          style={{ color: "black" }}
+          style={{ color: "white" }}
         >
           {`${Math.round(downloadProgress)}%`}
         </div>

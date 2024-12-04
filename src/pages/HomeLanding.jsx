@@ -5,12 +5,14 @@ import SectionApp from './LandingPages/sectionApp'
 import SectionCreators from './LandingPages/sectionCreators'
 import SectionNeural from './LandingPages/sectionNeural'
 import Footer from './LandingPages/footer'
+import LandingDropdown from './LandingPages/landingDrop'
 
 const HomeLanding = () => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
     let [valByScroll, setValByScroll] = useState(0);
     let [logoSize, setLogoSize] = useState(0);
     const videoRef = useRef(null);
+    const [isOpen, setIsOpen] = useState(false);
 
     window.onscroll = function () {
         dspByScroll();
@@ -53,11 +55,12 @@ const HomeLanding = () => {
                                     : <></>
                                 }
                                 <NavLink to={!user ? "/signin" : "/upload"} className="navbar-button w-button">Try Now</NavLink>
-                                <div data-w-id="5818b669-6883-997b-dea1-ad9b9145464a" className="burger">
+                                <div data-w-id="5818b669-6883-997b-dea1-ad9b9145464a" className="burger" onClick={() => setIsOpen(!isOpen)}>
                                     <div className="burger-line-top"></div>
                                     <div className="burger-line-middle"></div>
                                     <div className="burger-line-bottom"></div>
                                 </div>
+                                <LandingDropdown isOpen={isOpen} setIsOpen={setIsOpen} />
                             </div>
                         </div>
                     </div>
@@ -109,7 +112,7 @@ const HomeLanding = () => {
                         </div>
                     </div>
                 </nav>
-                
+
                 <div className="main-wrapper">
                     <section className="section_hero">
                         <div className="hero">

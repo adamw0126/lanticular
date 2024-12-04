@@ -1,5 +1,7 @@
 import { Box, Button } from '@mui/material'
 import React from 'react'
+import FaqItem from './FaqItem'
+
 function Faq() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '150px', paddingLeft: '2rem', paddingRight: '2rem' }}>
@@ -109,7 +111,7 @@ function Faq() {
                         <Button color='secondary' variant='contained' sx={{marginLeft: '16px', marginRight: '16px', minWidth: '40%'}}>General & 3D Motion</Button>
                         <Button color='secondary' variant='contained' sx={{marginLeft: '16px', marginRight: '16px', minWidth: '40%'}}>
                             <span style={{ padding: '1px', borderRadius: '3px', backgroundColor: '#e0c2ff', color: 'black' }}>NEW</span>
-                            2D to 3D Video
+                            &nbsp; 2D to 3D Video
                         </Button>
                         <Button color='secondary' variant='contained' sx={{marginLeft: '16px', marginRight: '16px', minWidth: '40%'}}>2D to 3D Image</Button>
                     </Box>
@@ -135,7 +137,7 @@ function Faq() {
                                 marginRight: 'auto',
                                 display: 'flex'
                             }}>
-
+                                <FaqItem />
                             </Box>
                         </Box>
                     </Box>

@@ -84,9 +84,9 @@ function Profile() {
                 <div>Name</div>
                 <div>
                     {isEditName ? (
-                        <div ref={inputRef}>
+                        <div ref={inputRef} className='flex'>
                             <input
-                                type="text" style={{color:'#22222d'}}
+                                type="text" className='profile-input'
                                 value={editName}
                                 onChange={(e) => setEditName(e.target.value)}
                                 autoFocus
@@ -110,9 +110,9 @@ function Profile() {
             <div className="edit_bar">
                 <div>Password</div>
                 <div>{isEditPassword ? (
-                        <div ref={inputRef}>
+                        <div ref={inputRef} className='flex'>
                             <input
-                                type="password" style={{color:'#22222d'}}
+                                type="password" className='profile-input'
                                 value={editPassword}
                                 onChange={(e) => setEditPassword(e.target.value)}
                                 autoFocus
