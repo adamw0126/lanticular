@@ -18,7 +18,7 @@ let stage = null;
 let viewerContainer = null;
 let depthPreview = null;
 let previewContainer = null;
-
+let loaded = 0;
 const AnimationPage = lazy(() => import('./animPage'));
 const user = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -304,6 +304,8 @@ const ImageComponent = () => {
           );
         gv.origin_viewer.setImage(gv.imageURL);
         gv.origin_viewer.setDepthmap(gv.tempDepth);
+        loaded = 1;
+        console.log("load complete.....");
     }
     function fitImageToStage(stageWidth, stageHeight, imageWidth, imageHeight) {
         const imageAspectRatio = imageWidth / imageHeight;
@@ -347,6 +349,11 @@ const ImageComponent = () => {
         gv.stageWidth = stage.clientWidth;
         gv.stageHeight = stage.clientHeight;
         response_size();
+        if(loaded == 1){
+            gv.viewer.setOptions({
+                size: {width: gv.canvasWidth, height: gv.canvasHeight},
+            });
+        }
     });
 
     return (

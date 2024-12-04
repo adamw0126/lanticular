@@ -116,13 +116,13 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     { label: 'Vertical', icon: <ArrowUpward />, style: 'Vertical' },
     { label: 'Horizontal', icon: <ArrowForward />, style: 'Horizontal' },
     { label: 'Circle', icon: <RotateRight />, style: 'Circle' },
-    // { label: 'Perspective', icon: <Panorama />, style: 'Perspective' },
-    // { label: 'Zoom', icon: <ZoomOutMap />, style: 'Zoom' },
-    // { label: 'Dolly', icon: <ZoomIn />, style: 'Dolly' },
-    // { label: 'Zoom Left', icon: <ArrowLeft />, style: 'Zoom Left' },
-    // { label: 'Zoom Center', icon: <ZoomOutMap />, style: 'Zoom Center' },
-    // { label: 'Zoom Right', icon: <ArrowRight />, style: 'Zoom Right' },
-    // { label: 'Custom', icon: <Tune />, style: 'Custom' },
+    { label: 'Perspective', icon: <Panorama />, style: 'Perspective' },
+    { label: 'Zoom', icon: <ZoomOutMap />, style: 'Zoom' },
+    { label: 'Dolly', icon: <ZoomIn />, style: 'Dolly' },
+    { label: 'Zoom Left', icon: <ArrowLeft />, style: 'Zoom Left' },
+    { label: 'Zoom Center', icon: <ZoomOutMap />, style: 'Zoom Center' },
+    { label: 'Zoom Right', icon: <ArrowRight />, style: 'Zoom Right' },
+    { label: 'Custom', icon: <Tune />, style: 'Custom' },
   ];
   const [previewStyle, setPreviewStyle] = useState('Circle');
   const [amountValue, setAmountValue] = useState(50); // Default value is 50
