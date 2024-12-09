@@ -13,7 +13,13 @@ import { toast } from 'react-hot-toast';
 import ArrowBackIosOutlinedIcon from '@mui/icons-material/ArrowBackIosOutlined';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import TollIcon from '@mui/icons-material/Toll';
-// import PricingPage from './checkout';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import Checkout from './checkout';
+import Paypal from './paypal';
 
 function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
     const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -24,7 +30,31 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
     const [isPayMode, setIsPayMode] = useState(false);
-    const [countries, setCountries] = useState([]);
+    const [value, setValue] = React.useState(0);
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+    const [standardCredit, setStandardCredit] = useState(0);
+    const [bonusCredit, setBonusCredit] = useState(0);
+    const [standardPrice, setStandardPrice] = useState(0);
+    const [bonusPrice, setBonusPrice] = useState(0);
+
+    useEffect(() => {
+        return () => {
+            axios.get('/api/getSettingData')
+            .then(response => {
+                const { setting } = response.data;
+                console.log('setting ===>', setting)
+                setStandardCredit(setting.common.creditCnt);
+                setStandardPrice(setting.common.price);
+                setBonusCredit(setting.bonus.creditCnt);
+                setBonusPrice(setting.bonus.price);
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+            });
+        }
+    }, []);
 
     const increment = (setter, value) => setter(value + 1);
     const decrement = (setter, value) => setter(value > 0 ? value - 1 : 0);
@@ -34,19 +64,14 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
 
     const paymentDetails = () => setIsPayMode(true);
 
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
     const clearModal = () => {
         setIsPayMode(false);
         handleClose();
     }
-
-    useEffect(() => {
-        let countryNames;
-        fetch('https://restcountries.com/v3.1/all').then(response => response.json())
-        .then(data => {
-            countryNames = data.map(country => country.name.common);
-            setCountries(countryNames);
-        }).catch(error => console.error('Error fetching country data:', error));
-    }, [])
 
     const buyCredits = async () => {
         try {
@@ -100,9 +125,9 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                         <div className='modal-body'>
                             <Grid container spacing={2} alignItems="center">
                                 <Grid item xs={8}>
-                                    <Typography>1,200 &nbsp;&nbsp;<span className='bonustip'>Bonus Credits</span></Typography>
+                                    <Typography>{bonusCredit} &nbsp;&nbsp;<span className='bonustip'>Bonus Credits</span></Typography>
                                     <Typography variant="body2" color="white">
-                                        $10.00
+                                        {`$${bonusPrice}.00`}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -112,9 +137,9 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                 </Grid>
     
                                 <Grid item xs={8}>
-                                    <Typography>500 Credits</Typography>
+                                    <Typography>{standardCredit} Credits</Typography>
                                     <Typography variant="body2" color="white">
-                                        $5.00
+                                        {`$${standardPrice}.00`}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -192,10 +217,28 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                         {`$${totalPrice}`}
                                     </div>
                                 </div>
-                                <hr />
+
+                                <Tabs
+                                    value={value}
+                                    onChange={handleChange}
+                                    aria-label="basic tabs example"
+                                    variant={isMobile ? 'scrollable' : 'fullWidth'}
+                                    scrollButtons={isMobile ? 'auto' : false}
+                                >
+                                    <Tab label="Card" {...a11yProps(0)} />
+                                    <Tab label="Paypal" {...a11yProps(1)} />
+                                    {/* <Tab label="Activity" {...a11yProps(2)} /> */}
+                                </Tabs>
+                                <CustomTabPanel value={value} index={0}>
+                                    <Checkout totalPrice={totalPrice} buyCredits={buyCredits} />
+                                </CustomTabPanel>
+                                <CustomTabPanel value={value} index={1}>
+                                    <Paypal totalPrice={totalPrice} buyCredits={buyCredits} />
+                                </CustomTabPanel>
+                                
                                 <div className='checkout'>
                                     <div className="payment-form">
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                         <label htmlFor="cardNumber">Card number</label>
                                         <div className="input-container">
                                             <input
@@ -211,9 +254,9 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                             <img src="discover-3-svgrepo-com.svg" alt="Discover" />
                                             </div>
                                         </div>
-                                        </div>
+                                        </div> */}
 
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                         <div className="input-row">
                                             <div className="input-wrapper">
                                             <label htmlFor="expirationDate">Expiration date</label>
@@ -225,28 +268,21 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                             <span className="cvc-icon">💳</span>
                                             </div>
                                         </div>
-                                        </div>
+                                        </div> */}
 
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                         <label htmlFor="country">Country</label>
                                         <select id="country">
                                             {
                                                 countries.map(val => (<option value={val} key={val}>{val}</option>))
                                             }
-                                            {/* <option value="France">France</option>
-                                            <option value="USA">USA</option>
-                                            <option value="Canada">Canada</option>
-                                            <option value="Germany">Germany</option> */}
                                         </select>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                             </div>
                             <div className='payMode-footer'>
                                 <div style={{margin:'8px 3px'}}>
-                                    <Button sx={{width:'100%',bgcolor:'rgb(72, 43, 217)',color:'white',borderRadius:20,fontSize:18}}>
-                                        Pay
-                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -258,3 +294,32 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
 }
 
 export default BuyCreditsModal;
+
+function CustomTabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`simple-tabpanel-${index}`}
+            aria-labelledby={`simple-tab-${index}`}
+            {...other}
+        >
+            {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
+        </div>
+    );
+}
+
+CustomTabPanel.propTypes = {
+    children: PropTypes.node,
+    index: PropTypes.number.isRequired,
+    value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+    return {
+        id: `simple-tab-${index}`,
+        'aria-controls': `simple-tabpanel-${index}`,
+    };
+}

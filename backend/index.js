@@ -5,6 +5,7 @@ const app = express();
 const router = require('./routes');
 const port = 5000;
 const path = require('path');
+const fs = require("fs");
 
 // Connect to MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/lanticular')
@@ -25,6 +26,15 @@ app.use(express.json()); // Parses incoming JSON requests
 app.use('/', router);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use("/outputs", express.static(path.join(__dirname, "outputs")));
+
+if (!fs.existsSync(path.join(__dirname, "uploads"))) {
+    fs.mkdirSync(path.join(__dirname, "uploads"));
+}
+if (!fs.existsSync(path.join(__dirname, "outputs"))) {
+    fs.mkdirSync(path.join(__dirname, "outputs"));
+}
 
 // app.use(express.static(path.join(__dirname, '..', 'dist')));
 

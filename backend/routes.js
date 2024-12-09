@@ -15,9 +15,17 @@ const storage = multer.diskStorage({
 // Initialize upload
 const upload = multer({ storage });
 
+const interlace_upload = multer({ dest: "interlace_uploads/" });
+
 // controller
 const AdminController = require('./controllers/adminCtrl');
 const exportController = require('./controllers/exportsCtrl');
+const checkoutController = require('./controllers/checkoutCtrl');
+const faqsController = require('./controllers/FaqsCtrl');
+const SettingController = require('./controllers/settingCtrl');
+const interlaceController = require('./controllers/interlaceCtrl');
+
+router.post('/interlace', interlace_upload.none(), interlaceController.interlace);
 
 // Define the routes
 router.post('/signup', AdminController.addAdmin);
@@ -29,6 +37,7 @@ router.post('/setAdminPassword', AdminController.setAdminPassword);
 router.post('/getVideoUrl', AdminController.getVideoUrl);
 router.post('/depthImage', AdminController.depthImage);
 router.post('/logout', AdminController.logout);
+router.post('/setPermission', AdminController.setPermission);
 
 router.post('/acc/changeName', AdminController.changeName);
 router.post('/acc/changePassword', AdminController.changePassword);
@@ -36,6 +45,16 @@ router.post('/buyCredits', AdminController.buyCredits);
 
 router.post('/exportsAdd', exportController.exportsAdd);
 router.post('/getHistory', exportController.getHistory);
+
+router.post('/create-payment-intent', checkoutController.paymentIntent);
+
+router.post('/addFAQ', faqsController.addFAQ);
+router.get('/getFAQsData', faqsController.getFAQsData);
+router.post('/deleteFAQ', faqsController.deleteFAQ);
+
+router.post('/setCredit', SettingController.setCredit);
+router.post('/setBonusCredit', SettingController.setBonusCredit);
+router.get('/getSettingData', SettingController.getSettingData);
 
 // Define a route with a URL parameter
 router.get('/user/:id', (req, res) => {

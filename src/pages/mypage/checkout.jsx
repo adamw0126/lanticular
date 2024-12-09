@@ -1,180 +1,135 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Grid, Paper, TextField } from "@mui/material";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
 // Initialize Stripe with your publishable key
-const stripePromise = loadStripe("YOUR_STRIPE_PUBLISHABLE_KEY");
+const stripePromise = loadStripe("pk_test_51QRZ3WGMAEaY209O8cXUXK1BQ0vPxKVWA0iQmwv6OXZ3OHaIUtUQ8b3ZEvfOiKgsbxxEg1FlgAVO7MXf2ADnacb100or86dNnu");
 
-function CheckoutForm() {
-    const stripe = useStripe();
-    const elements = useElements();
-    const [isLoading, setIsLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-    const [paymentStatus, setPaymentStatus] = useState("");
+function CheckoutForm({ totalPrice, buyCredits }) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
+  const [countries, setCountries] = useState([]);
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        setIsLoading(true);
+  useEffect(() => {
+    let countryNames;
+    fetch('https://restcountries.com/v3.1/all').then(response => response.json())
+      .then(data => {
+        countryNames = data.map(country => country.name.common);
+        setCountries(countryNames);
+      }).catch(error => console.error('Error fetching country data:', error));
+  }, []);
 
-        if (!stripe || !elements) {
-            return;
-        }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setIsLoading(true);
 
-        const cardElement = elements.getElement(CardElement);
+    if (!stripe || !elements) {
+      return;
+    }
 
-        try {
-            // Replace this URL with your backend endpoint to handle payment intent creation
-            const response = await fetch("https://your-backend.com/create-payment-intent", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    amount: 500, // Amount in cents (e.g., $5.00 = 500 cents)
-                    currency: "usd",
-                }),
-            });
+    const cardElement = elements.getElement(CardElement);
 
-            const { clientSecret } = await response.json();
+    try {
+      // Replace this URL with your backend endpoint to handle payment intent creation
+      const response = await fetch("/api/create-payment-intent", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: Number(totalPrice) * 100, // Amount in cents (e.g., $5.00 = 500 cents)
+          currency: "usd",
+        }),
+      });
 
-            const result = await stripe.confirmCardPayment(clientSecret, {
-                payment_method: {
-                    card: cardElement,
-                    billing_details: {
-                        name: "Customer Name", // Replace with the user's name
-                    },
-                },
-            });
+      const { clientSecret } = await response.json();
 
-            if (result.error) {
-                setErrorMessage(result.error.message);
-            } else if (result.paymentIntent.status === "succeeded") {
-                setPaymentStatus("Payment successful!");
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: "Customer Name", // Replace with the user's name
+          },
+        },
+      });
+
+      if (result.error) {
+        setErrorMessage(result.error.message);
+      } else if (result.paymentIntent.status === "succeeded") {
+        setPaymentStatus("Payment successful!");
+        buyCredits();
+      }
+    } catch (error) {
+      setErrorMessage("An error occurred during payment.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <Box>
+        <Box
+          sx={{
+            backgroundColor: "#FFF",
+            borderRadius: 1,
+            p: 2,
+            mb: 2,
+          }}
+        >
+          <CardElement options={{ style: { base: { fontSize: "16px" } } }} />
+        </Box>
+
+        {/* <div className="form-group">
+          <label htmlFor="country">Country</label>
+          <select id="country">
+            {
+              countries.map(val => (<option value={val} key={val}>{val}</option>))
             }
-        } catch (error) {
-            setErrorMessage("An error occurred during payment.");
-        } finally {
-            setIsLoading(false);
-        }
-    };
+          </select>
+        </div> */}
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <Box
-                sx={{
-                    backgroundColor: "#1A1A1A",
-                    p: 3,
-                    borderRadius: 2,
-                    textAlign: "center",
-                    mb: 2,
-                }}
-            >
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                    Enter Payment Details
-                </Typography>
-                <Box
-                    sx={{
-                        backgroundColor: "#FFF",
-                        borderRadius: 1,
-                        p: 2,
-                        mb: 2,
-                    }}
-                >
-                    <CardElement options={{ style: { base: { fontSize: "16px" } } }} />
-                </Box>
-                <Button
-                    type="submit"
-                    variant="contained"
-                    sx={{
-                        backgroundColor: "#7D6FF0",
-                        color: "#FFF",
-                        textTransform: "none",
-                        width: "100%",
-                        fontWeight: "bold",
-                    }}
-                    disabled={!stripe || isLoading}
-                >
-                    {isLoading ? "Processing..." : "Pay $5.00"}
-                </Button>
-                {errorMessage && (
-                    <Typography variant="body2" sx={{ color: "red", mt: 2 }}>
-                        {errorMessage}
-                    </Typography>
-                )}
-                {paymentStatus && (
-                    <Typography variant="body2" sx={{ color: "green", mt: 2 }}>
-                        {paymentStatus}
-                    </Typography>
-                )}
-            </Box>
-        </form>
-    );
+        <Button
+          type="submit"
+          variant="contained"
+          sx={{
+            backgroundColor: "#482bd9",
+            color: "white",
+            textTransform: "none",
+            width: "100%",
+            fontWeight: "bold",
+          }}
+          disabled={!stripe || isLoading}
+        >
+          {isLoading ? <div style={{color:'white'}}>{"Processing..."}</div> : `Pay $${totalPrice}`}
+        </Button>
+        {errorMessage && (
+          <Typography variant="body2" sx={{ color: "red", mt: 2 }}>
+            {errorMessage}
+          </Typography>
+        )}
+        {paymentStatus && (
+          <Typography variant="body2" sx={{ color: "green", mt: 2 }}>
+            {paymentStatus}
+          </Typography>
+        )}
+      </Box>
+    </form>
+  );
 }
 
-function PricingPage() {
-    return (
-        <Elements stripe={stripePromise}>
-            <Box
-                sx={{
-                    color: "#FFF",
-                    minHeight: "100vh",
-                    backgroundColor: "#0A0A0A",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    px: 2,
-                    py: 4,
-                }}
-            >
-                {/* Title */}
-                <Typography variant="h2" sx={{ fontWeight: "bold", mb: 3 }}>
-                    Pricing
-                </Typography>
-
-                {/* Pricing Section */}
-                <Paper
-                    elevation={3}
-                    sx={{
-                        backgroundColor: "#1A1A1A",
-                        color: "#FFF",
-                        borderRadius: 2,
-                        p: 3,
-                        textAlign: "center",
-                        width: "100%",
-                        maxWidth: 500,
-                        mb: 4,
-                    }}
-                >
-                    <Grid container sx={{ mb: 2 }}>
-                        <Grid item xs={6}>
-                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                Credits
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                                Price
-                            </Typography>
-                        </Grid>
-                    </Grid>
-                    <Box sx={{ mb: 2 }}>
-                        <Grid container sx={{ mb: 1 }}>
-                            <Grid item xs={6}>
-                                <Typography>500</Typography>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Typography>$5.00</Typography>
-                            </Grid>
-                        </Grid>
-                    </Box>
-                </Paper>
-
-                {/* Checkout Form */}
-                <CheckoutForm />
-            </Box>
-        </Elements>
-    );
+function PricingPage({ totalPrice, buyCredits }) {
+  return (
+    <Elements stripe={stripePromise}>
+      <Box>
+        <CheckoutForm totalPrice={totalPrice} buyCredits={buyCredits} />
+      </Box>
+    </Elements>
+  );
 }
 
 export default PricingPage;

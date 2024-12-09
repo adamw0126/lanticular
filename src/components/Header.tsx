@@ -60,6 +60,7 @@ const Header = (props: {
         </div>
 
         <div className="hidden sm:block">
+          <h3>Admin Page</h3>
         </div>
 
         <div className="flex items-center gap-3 2xsm:gap-7">

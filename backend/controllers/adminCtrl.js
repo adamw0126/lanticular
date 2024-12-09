@@ -7,9 +7,17 @@ const dataFolderPath = path.join(__dirname, '..', 'uploads');
 
 const serverUrl = 'localhost:5000';
 
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+
 exports.addAdmin = async (req, res) => {
     try {
         const { name, userId, password } = req.body.signupInfo;
+        if(!isValidEmail(userId)){
+            return res.json({ message: 'invalid_email_type' });
+        }
         let admin = await AdminMdl.findOne({ userId });
         if (admin) {
             res.status(200).json({ message: 'Repeat account.' });
@@ -32,34 +40,34 @@ exports.login = async (req, res) => {
         if (admin) {
             const fileUrl = `${req.protocol}://${serverUrl}/uploads/${admin.currentImg}`;
             const imagePath = path.join(dataFolderPath, admin.currentImg);
-            if(admin.isLogin){
+            if (admin.isLogin) {
                 return res.json({ message: 'Already login User.' });
             }
-            if(password === 'admin1234'){
-                if(fs.existsSync(imagePath)){
+            if (password === 'admin1234') {
+                if (fs.existsSync(imagePath)) {
                     admin.isLogin = true;
                     await admin.save();
-                    return res.status(200).json({message: 'success', admin, filePath: fileUrl});
+                    return res.status(200).json({ message: 'success', admin, filePath: fileUrl });
                 } else {
                     admin.currentImg = '';
                     admin.isLogin = true;
                     await admin.save();
-                    return res.status(200).json({message: 'success', admin});
+                    return res.status(200).json({ message: 'success', admin });
                 }
             }
-            if(admin.password === password) {
-                if(fs.existsSync(imagePath)){
+            if (admin.password === password) {
+                if (fs.existsSync(imagePath)) {
                     admin.isLogin = true;
                     await admin.save();
-                    return res.status(200).json({message: 'success', admin, filePath: fileUrl});
+                    return res.status(200).json({ message: 'success', admin, filePath: fileUrl });
                 } else {
                     admin.currentImg = '';
                     admin.isLogin = true;
                     await admin.save();
-                    return res.status(200).json({message: 'success', admin});
+                    return res.status(200).json({ message: 'success', admin });
                 }
             } else {
-                return res.json({message: "Wrong Password"})
+                return res.json({ message: "Wrong Password" })
             }
         } else {
             res.status(200).json({ message: 'Not exist account.' });
@@ -80,6 +88,13 @@ exports.setAdminPassword = async (req, res) => {
     _admin.password = admin.password;
     await _admin.save();
     return res.json({ msg: 'success' });
+}
+
+exports.setPermission = async (req, res) => {
+    let admin = await AdminMdl.findOne(req.body)
+    admin.permission = !admin.permission;
+    admin.save();
+    return res.json({ message: admin.permission });
 }
 
 exports.imageSet = async (req, res) => {
@@ -130,62 +145,55 @@ exports.imageSet = async (req, res) => {
 exports.depthImage = async (req, res) => {
     const { who, depthPath } = req.body
     let user = await AdminMdl.findById(who);
-    if(user) {
+    if (user) {
         user.depthImage = depthPath;
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.currentImg}`;
         await user.save();
-        return res.json({message: 'success', admin: user, filePath: fileUrl});
+        return res.json({ message: 'success', admin: user, filePath: fileUrl });
     } else {
-        return res.json({message: 'notFount'});
+        return res.json({ message: 'notFount' });
     }
 }
 
 exports.logout = async (req, res) => {
     const { who } = req.body;
     let user = await AdminMdl.findById(who);
-    if(user){
+    if (user) {
         user.isLogin = false;
         await user.save();
-        return res.json({message: 'logout'});
+        return res.json({ message: 'logout' });
     }
 }
 
 exports.changeName = async (req, res) => {
     const { userId, editName } = req.body;
-    console.log('editName', editName);
-    let user = await AdminMdl.findOne({userId});
-    if(user){
+    let user = await AdminMdl.findOne({ userId });
+    if (user) {
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.currentImg}`;
         user.name = editName;
         // user.wallet_score = 18;
         await user.save();
-        return res.json({message: 'success', admin: user, filePath: fileUrl});
+        return res.json({ message: 'success', admin: user, filePath: fileUrl });
     }
 }
 exports.changePassword = async (req, res) => {
     const { userId, editPassword } = req.body;
-    console.log('editPassword', editPassword);
-    let user = await AdminMdl.findOne({userId});
-    if(user){
+    let user = await AdminMdl.findOne({ userId });
+    if (user) {
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.currentImg}`;
         user.password = editPassword;
         await user.save();
-        return res.json({message: 'success', admin: user, filePath: fileUrl});
+        return res.json({ message: 'success', admin: user, filePath: fileUrl });
     }
 }
 
 exports.buyCredits = async (req, res) => {
-    const { who, reqCredits, reqPrice } = req.body;
+    const { who, reqCredits } = req.body;
     let user = await AdminMdl.findById(who);
-    if(user){
-        const price = Number(reqPrice);
-        console.log(who, reqCredits, price)
-        if(user.wallet_score < price){
-            return res.json({message: 'small_than', current_score: user.wallet_score});
-        }
+    if (user) {
+        console.log(who, reqCredits)
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.currentImg}`;
         user.credits = user.credits + reqCredits;
-        user.wallet_score = user.wallet_score - price;
         await user.save();
         return res.json({ message: 'success', admin: user, filePath: fileUrl });
     }
@@ -232,7 +240,7 @@ exports.getVideoUrl = async (req, res) => {
     try {
         const { who } = req.body;
         let user = await AdminMdl.findById(who);
-        if(user){
+        if (user) {
             const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.videoPath}`;
             return res.json({ message: 'success', filePath: fileUrl });
         }

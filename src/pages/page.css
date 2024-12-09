@@ -224,7 +224,7 @@ label {
 }
 
 .modal-style .css-1olaq31 {
-    padding: 10px;
+    padding: 20px;
 }
 
 .modal-body {
@@ -365,4 +365,55 @@ input::placeholder {
     .myacc {
         margin: 0;
     }
+}
+
+.jss155 {
+    margin: 24px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.jss156 {
+    width: 141px;
+    height: 0.5px;
+    background: #AFAFB6;
+}
+.jss157 {
+    color: #AFAFB6;
+    margin: 0 10px;
+}
+.jss156 {
+    width: 141px;
+    height: 0.5px;
+    background: #AFAFB6;
+}
+
+.icon-google {
+    height: 25px;
+    width: 25px;
+    margin-right: 0px;
+    position: absolute;
+    left: 30px;
+    align-items: center;
+}
+.button-google {
+    cursor: pointer;
+    display: block;
+    border: 1px solid;
+    color: white;
+    box-shadow: 0px 16px 60px rgba(78, 79, 114, 0.08);
+    position: relative;
+}
+.button-google:hover {
+    background: white;
+    transition-duration: .4s;
+}
+
+.buttonText {
+    color: #4285f4;
+    font-weight: bolder;
+}
+
+.css-17t9h4f-MuiModal-root-MuiDialog-root .MuiPaper-root {
+    width: 400px;
 }

@@ -45,6 +45,13 @@ const Dropdown = ({ isOpenDrop, setIsOpenDrop }) => {
                         <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
                             {`${user.admin.name} (${user.admin.userId})` }
                         </button>
+                        {
+                            user.admin.role == 'admin'
+                            ? <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
+                                {`${user.admin.name} (${user.admin.userId})` }
+                            </button>
+                            : <></>
+                        }
                     </div>
                     <div className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
                         <div className='flex justify-between'>
