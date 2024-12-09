@@ -44,7 +44,7 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
             axios.get('/api/getSettingData')
             .then(response => {
                 const { setting } = response.data;
-                console.log('setting ===>', setting)
+                // console.log('setting ===>', setting)
                 setStandardCredit(setting.common.creditCnt);
                 setStandardPrice(setting.common.price);
                 setBonusCredit(setting.bonus.creditCnt);

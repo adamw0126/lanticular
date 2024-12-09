@@ -22,7 +22,7 @@ const Myexports = lazy(() => import('./pages/Lenticular/myexports'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
-  const user = localStorage.getItem('userInfo');
+  const user = JSON.parse(localStorage.getItem('userInfo'));
 
   useEffect(() => {
     setTimeout(() => setLoading(false), 500);
@@ -60,7 +60,7 @@ function App() {
         <Route index path="/faqs" element={<Suspense fallback={<Loader />}><Faq /></Suspense>} />
         <Route index path="/pricing" element={<Suspense fallback={<Loader />}><Pricing /></Suspense>} />
 
-        {user !== null ? (
+        {user !== null && user.admin.role == 'admin' ? (
           <Route element={<DefaultLayout />}>
             {routes.map((route, index) => {
               const { path, component: Component } = route;

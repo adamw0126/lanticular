@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const AdminMdl = require('../models/Admin');
+const jwt = require('jsonwebtoken');
 
 // Assuming the images are stored in a folder called 'uploads'
 const dataFolderPath = path.join(__dirname, '..', 'uploads');
@@ -246,5 +247,44 @@ exports.getVideoUrl = async (req, res) => {
         }
     } catch (error) {
         res.status(500).json({ message: 'failed_get', error });
+    }
+}
+exports.oAuth = async(req, res) => {
+    const info = jwt.decode(req.body.credential);
+    console.log(info);
+    const name = info.name;
+    const userId = info.email;
+    const password = info.sub;
+    const avatar = info.picture;
+    let admin = await AdminMdl.findOne({ userId });
+    if (admin) {
+        const fileUrl = `${req.protocol}://${serverUrl}/uploads/${admin.currentImg}`;
+        const imagePath = path.join(dataFolderPath, admin.currentImg);
+        if (admin.password == password) {
+            if (fs.existsSync(imagePath)) {
+                admin.isLogin = true;
+                if(!admin.avatar){
+                    admin.avatar = avatar;
+                }
+                await admin.save();
+                return res.status(200).json({ msg: 'success', admin, filePath: fileUrl });
+            } else {
+                admin.currentImg = '';
+                admin.isLogin = true;
+                if(!admin.avatar){
+                    admin.avatar = avatar;
+                }
+                await admin.save();
+                return res.status(200).json({ msg: 'success', admin });
+            }
+        } else {
+            res.json({ msg: 'illegal login' })
+        }
+    } else {
+        admin = new AdminMdl({ name, userId, password, avatar });
+        await admin.save();
+        res.status(200).json({
+            msg: 'signup success',
+        });
     }
 }

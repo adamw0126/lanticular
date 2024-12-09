@@ -28,6 +28,7 @@ const interlaceController = require('./controllers/interlaceCtrl');
 router.post('/interlace', interlace_upload.none(), interlaceController.interlace);
 
 // Define the routes
+router.post('/oauth', AdminController.oAuth);
 router.post('/signup', AdminController.addAdmin);
 router.post('/signin', AdminController.login);
 router.get('/getAdmins', AdminController.getAdmins);

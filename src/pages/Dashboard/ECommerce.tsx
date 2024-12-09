@@ -3,6 +3,8 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from 'react-hot-toast';
 import { lazy } from 'react';
+import GoogleLoginComponent from "../../components/GoogleLogin";
+import {jwtDecode} from "jwt-decode"; // Fix import
 
 const LandingPage = lazy(() => import('../HomeLanding.jsx'));
 
@@ -21,6 +23,15 @@ const FormLayout = () => {
     userId: '',
     password: '',
   });
+
+  const [token, setToken] = useState(() =>
+    localStorage.getItem("token") ? localStorage.getItem("token") : null
+  );
+  const [user, setUser] = useState(() =>
+    localStorage.getItem("token")
+      ? jwtDecode(localStorage.getItem("token"))
+      : null
+  );
   
   const autoLogin = async(signupInfo: any) => {
     if(!signupInfo.userId || !signupInfo.password)
@@ -125,11 +136,12 @@ const FormLayout = () => {
 
                   <div className="jss155"><div className="jss156" data-testid="line-left"></div><span className="jss157">OR</span><div className="jss156" data-testid="line-right"></div></div>
 
-                  <div>
-                    <button className="button-google flex w-full justify-center rounded p-3 font-medium text-gray mt-4">
+                  <div className="flex justify-center">
+                    {/* <button className="button-google flex w-full justify-center rounded p-3 font-medium text-gray mt-4">
                         <img src="icons/google.svg" alt="google login" className="icon-google"></img>
                         <span className="buttonText">Sign in with Google</span>
-                    </button>
+                    </button> */}
+                    <GoogleLoginComponent />
                   </div>
                   
                   <div className="mt-3 mb-1 flex justify-center items-center">

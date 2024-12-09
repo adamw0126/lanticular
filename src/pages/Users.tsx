@@ -95,7 +95,7 @@ const Users = () => {
                   <div className="hidden items-center justify-center p-0.5 sm:flex">
                   <input
                     className="w-full rounded border border-stroke bg-gray py-1.5 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                    id="reward"
+                    id="reward" type='password'
                     placeholder="Password"
                     value={admin.password}
                     onChange={(e) => changePassword(admin.userId, e)}

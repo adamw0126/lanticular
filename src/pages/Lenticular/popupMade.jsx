@@ -239,7 +239,7 @@ const DimensionsModal = ({ open, onClose }) => {
 
                     {/* Image Type Radio Buttons */}
                     <FormControl>
-                        <FormLabel id="demo-row-radio-buttons-group-label" sx={{color: 'white'}}>Image Type</FormLabel>
+                        <FormLabel id="demo-row-radio-buttons-group-label" sx={{ color: 'white' }}>Image Type</FormLabel>
                         <RadioGroup
                             row aria-labelledby="demo-row-radio-buttons-group-label"
                             name="imageType"
