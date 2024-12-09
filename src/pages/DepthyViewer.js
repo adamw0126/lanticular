@@ -1597,81 +1597,6 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       );
     }
 
-    // this.exportWebmAnimation = function(duration, fps)  {
-    //   return new Promise((resolve, reject) => {
-    //     const canvas = this.getCanvas();  // Get the canvas from the current DepthyViewer instance
-    //     if (!canvas) {
-    //       reject(new Error("Canvas is not available."));
-    //       return;
-    //     }
-    
-    //     const stream = canvas.captureStream(fps);
-    //     const mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/mp4' });
-    //     const chunks = [];
-    
-    //     let frame = 0;
-    //     const totalFrames = duration * fps;
-    //     let animationFrameRequest;
-    
-    //     // Save the current state to restore later
-    //     const originalOptions = this.getOptions();
-    
-    //     // Collect recorded video chunks
-    //     mediaRecorder.ondataavailable = (e) => {
-    //       if (e.data.size > 0) chunks.push(e.data);
-    //     };
-    
-    //     // Handle recording stop: Combine chunks and download the video
-    //     mediaRecorder.onstop = () => {
-    //       const blob = new Blob(chunks, { type: 'video/mp4' });
-          
-    //       // Create and trigger a download link
-    //       const url = URL.createObjectURL(blob);
-    //       const link = document.createElement('a');
-    //       link.href = url;
-    //       link.download = 'animation.mp4';
-    //       document.body.appendChild(link);
-    //       link.click();
-    //       document.body.removeChild(link);
-    //       URL.revokeObjectURL(url);  // Free up memory
-          
-    //       // Restore original viewer state
-    //       this.setOptions(originalOptions);
-          
-    //       resolve(blob);  // Resolve with the final video blob
-    //     };
-    
-    //     // Handle recording errors
-    //     mediaRecorder.onerror = (e) => {
-    //       this.setOptions(originalOptions);  // Restore state on error
-    //       reject(new Error(`MediaRecorder error: ${e.message}`));
-    //     };
-    
-    //     // Capture and render each frame
-    //     const captureFrame = () => {
-    //       if (frame < totalFrames) {
-    //         this.setOptions({ animatePosition: frame / totalFrames });
-    //         this.render(true);  // Update the canvas
-    //         frame++;
-    //         animationFrameRequest = requestAnimationFrame(captureFrame);
-    //       } else {
-    //         mediaRecorder.stop();  // Stop recording after the last frame
-    //       }
-    //     };
-    
-    //     // Start recording and frame capture
-    //     mediaRecorder.start();
-    //     captureFrame();
-    
-    //     // Provide a method to abort the recording process
-    //     this.abortExport = () => {
-    //       cancelAnimationFrame(animationFrameRequest);
-    //       mediaRecorder.stop();
-    //       this.setOptions(originalOptions);  // Restore state on abort
-    //       reject(new Error('Export aborted'));
-    //     };
-    //   });
-    // }
 
     this.exportWebmAnimation = function(targetCanvas, duration, fps, options) {
       return new Promise((resolve, reject) => {
@@ -1811,7 +1736,9 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
           reject(new Error("Export aborted"));
         };
       });
-    };    
+    };
+
+    
 
     this.exportDepthmapAsTexture = function (maxSize) {
       var size = sizeCopy(image.size);

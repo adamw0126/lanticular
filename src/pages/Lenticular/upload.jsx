@@ -41,15 +41,36 @@ const UploadPage = () => {
     };
 
     const handleUpload = async (file) => {
-        if(file.type.includes('video/')){
-            navigate('/video')
-            window.location.reload();
-            return;
-        }
         if (!file) {
             toast.error('Please select a file first');
             return;
         }
+    // Video Section
+        if(file.type.includes('video/')){
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('userId', user.admin.userId);
+        
+                const response = await axios.post('/api/uploadVideo', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+        
+                if (response.status === 200) {
+                    toast.success(response.data.message);
+                    // setFile(null);
+                    navigate('/video')
+                    window.location.reload();
+                    return
+                }
+            } catch (error) {
+                toast.error('File upload failed');
+                return console.error('Upload error:', error);
+            }
+        }
+    // Image Section
         if (!file.type.includes('image/')) {
             toast.error('File type must be an image.');
             return;
@@ -66,7 +87,7 @@ const UploadPage = () => {
             return new Promise((resolve) => {
                 img.onload = () => {
                     const dimensions = { width: img.width, height: img.height };
-                    URL.revokeObjectURL(img.src); // Clean up blob URL
+                    URL.revokeObjectURL(img.src);
                     resolve(dimensions);
                 };
             });
@@ -76,19 +97,17 @@ const UploadPage = () => {
             const { width, height } = await getImageDimensions();
     
             const formData = new FormData();
-            formData.append('file', file); // Correctly append file
-            formData.append('userId', user.admin.userId); // Correctly append userId
+            formData.append('file', file);
+            formData.append('userId', user.admin.userId);
             formData.append('img_w', width);
             formData.append('img_h', height);
     
-            // Upload the file
             const response = await axios.post('/api/uploadImage', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },
             });
     
-            // Call depth_gen function
             const depthGen = await depth_gen(file);
 
             if (response.status === 200) {

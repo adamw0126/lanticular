@@ -1,10 +1,3 @@
-<<<<<<< Updated upstream
-import { useState, useEffect, useRef } from "react";
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Box, Button, TextField, Typography, Stack, Grid, Container } from '@mui/material';
-import VideoThumbnails from './videoThumb'; // Placeholder component for thumbnails
-import Dropdown from './dropdown';
-=======
 import { useState, useEffect } from "react";
 import { Box, Button, TextField, Typography, Stack, CircularProgress } from '@mui/material';
 import VideoThumbnails from './videoThumb';
@@ -12,7 +5,6 @@ import axios from 'axios';
 import { VideoToFrames } from './VideoToFrame';
 import Dropdown from './dropdown';
 import JSZip from "jszip";
->>>>>>> Stashed changes
 
 const user = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -24,9 +16,7 @@ const App = () => {
   const [thumbnails, setThumbnails] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isVideoReady, setIsVideoReady] = useState(false); // New state for controlling video loading
-
-<<<<<<< Updated upstream
-=======
+  
   useEffect(() => {
     if (!selectedFile) {
       getFile();
@@ -36,20 +26,20 @@ const App = () => {
   const getFile = async () => {
     const response = await axios.post('/api/getVideoUrl', { who: user.admin._id });
     setVideoURL(response.data.filePath);
-    await generateFrames(response.data.filePath);  // Generate frames after fetching the video URL
+    console.log("url ===>", response.data.filePath);
+    await generateFrames(response.data.filePath);
   };
 
->>>>>>> Stashed changes
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
     const videoUrl = URL.createObjectURL(file);
     setVideoURL(videoUrl);
-    generateFrames(videoUrl);  // Generate frames immediately after file upload
+    generateFrames(videoUrl);
   };
 
   const handleFrameCountChange = (event) => {
-    setFrameCount(parseInt(event.target.value, 10) || 24);
+    setFrameCount(parseInt(event.target.value) || 24);
   };
 
   const generateFrames = async (videoUrl) => {
