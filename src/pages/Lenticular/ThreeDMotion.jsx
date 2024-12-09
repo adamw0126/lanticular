@@ -24,6 +24,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Switch from '@mui/material/Switch';
 import { useNavigate, useNavigation } from 'react-router-dom';
+import { grey } from '@mui/material/colors';
 require('../DepthyViewer');
 require('../DepthyDrawer');
 let gv = require('./config');
@@ -31,10 +32,10 @@ let gv = require('./config');
 let viewerContainer = null;
 
 function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
-  const [isFocus, setIsFocus] = useState(false);
-
+  
   useEffect(() => {
     viewerContainer = document.getElementById('depth-viewer');
+    document.getElementById('depth-viewer').style.pointerEvents = 'none';
     const handleCanvasClick = viewerContainer.addEventListener(
       'click',
       function (event) {
@@ -55,12 +56,35 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
             });
 
           document.getElementsByTagName('canvas')[0].style.cursor = 'default';
+          document.getElementById('depth-viewer').style.pointerEvents = 'none';
           setIsFocus(false);
         }
       },
     );
     return () => {
       viewerContainer.removeEventListener('click', handleCanvasClick);
+    };
+  }, []);
+
+  useEffect(() => {
+    viewerContainer = document.getElementById('depth-viewer');
+    document.getElementById('depth-viewer').style.pointerEvents = 'none';
+    const handleDepthClick = viewerContainer.addEventListener(
+      'click',
+      function (event) {
+        if (isEyeDrop && event.target.tagName === 'CANVAS') {
+          const mouseX = event.offsetX;
+          const mouseY = event.offsetY;
+          let pickerColor = getColorFromCanvas(document.getElementById('depth_edit'), mouseX, mouseY);
+          document.getElementById('depthBrush').getContext('2d').fillStyle = pickerColor;
+          document.getElementById('depth_edit').style.cursor = 'default';
+          gv.enableEyedrop = false;
+          setIsFocus(false);
+        }
+      },
+    );
+    return () => {
+      viewerContainer.removeEventListener('click', handleDepthClick);
     };
   }, []);
 
@@ -128,6 +152,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const [amountValue, setAmountValue] = useState(50); // Default value is 50
   const [lengthValue, setLengthValue] = useState(5);
   const [focusValue, setFocusValue] = useState(50);
+  const [isFocus, setIsFocus] = useState(false);
   const [dilationValue, setDilationValue] = useState(50);
   const [isDepthmap, setIsDepthmap] = useState(false);
   const [isAnaglyph, setIsAnaglyph] = useState(false);
@@ -137,6 +162,42 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const [hardValue, setHardValue] = useState(0.5);
   const [bsizeValue, setBsizeValue] = useState(20);
   const [opacityValue, setOpacityValue] = useState(1.0);
+  const [showFPSInput, setShowFPSInput] = useState(false); // State for displaying input
+  const [fPSInputValue, setFPSInputValue] = useState(10); // Value of the input field
+  const [isEyeDrop, setIsEyeDrop] = useState(false);
+
+  const handleEyeDrop = () => {
+    setIsEyeDrop(true);
+    gv.enableEyedrop = true;
+  };
+
+  const handleFPSInputChange = (event) => {
+    setFPSInputValue(event.target.value);
+  };
+
+  const handleConfirmFrame = () => {
+    gv.viewer
+      .exportFramesToZip(
+        document.getElementById('origin_view'),
+        5,
+        fPSInputValue,
+        gv.viewer.getOptions(),
+      )
+      .then((blob) => {
+        console.log('Frames export completed:');
+        return exportslistAdd('frames');
+      })
+      .catch((error) => {
+        console.error('Export failed:', error);
+      });
+
+    setFPSInputValue(0);
+    setShowFPSInput(false); // Hide the input field after logging value
+  };
+
+  const toggleInput = () => {
+    setShowFPSInput((prev) => !prev); // Toggle input visibility
+  };
 
   const handleSliderChange = (event, newValue) => {
     setAmountValue(newValue); // Update state with the new slider value
@@ -223,43 +284,43 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     { value: 100, label: '100%' },
   ];
 
-    const handleDepthUpload  = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        gv.upload_depth = url;
-        gv.drawer.setCanvasImageFromURL(gv.upload_depth);
-      }
-    };
+  const handleDepthUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      gv.upload_depth = url;
+      gv.drawer.setCanvasImageFromURL(gv.upload_depth);
+    }
+  };
 
-    const depthUpload = () => {
-      document.getElementById('depth_upload').click();
-    };
+  const depthUpload = () => {
+    document.getElementById('depth_upload').click();
+  };
 
-    const restoreDepth = () => {
-        gv.upload_depth = gv.tempDepth;
-        gv.drawer.setCanvasImageFromURL(gv.tempDepth);
-        gv.viewer.setDepthmap(gv.tempDepth);
-    };
+  const restoreDepth = () => {
+    gv.upload_depth = gv.tempDepth;
+    gv.drawer.setCanvasImageFromURL(gv.tempDepth);
+    gv.viewer.setDepthmap(gv.tempDepth);
+  };
 
-    const discardDepth = () => {
-        gv.viewer.setDepthmap(gv.tempDepth);
-        gv.drawer.setCanvasImageFromURL(gv.tempDepth);
-    };
+  const discardDepth = () => {
+    gv.viewer.setDepthmap(gv.tempDepth);
+    gv.drawer.setCanvasImageFromURL(gv.tempDepth);
+  };
 
-    const exportslistAdd = async (whatExport) => {
-      try {
-          console.log('whatExport ===>', whatExport);
-          
-          const result = await axios.post('/api/exportsAdd', { 
-              who: user.admin._id, 
-              whatExport 
-          });
-          
-          console.log('result.data', result.data);
-      } catch (error) {
-          console.error('Error during export list addition:', error);
-      }
+  const exportslistAdd = async (whatExport) => {
+    try {
+      console.log('whatExport ===>', whatExport);
+
+      const result = await axios.post('/api/exportsAdd', {
+        who: user.admin._id,
+        whatExport,
+      });
+
+      console.log('result.data', result.data);
+    } catch (error) {
+      console.error('Error during export list addition:', error);
+    }
   };
 
   return (
@@ -355,110 +416,128 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                         <ReportProblem />
                         <span>Need help using animation styles?</span>
                     </div> */}
-          <Accordion style={{ backgroundColor: "transparent", padding: 0, margin: 0}}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />} sx={{ color: "rgb(175, 175, 182)" }} >
-                            Manual Settings
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ color: "rgb(175, 175, 182)" }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '14px' }}>
-                                <button className="btn-setting">Circular</button>
-                                <button className="btn-setting">Linear</button>
-                                <button className="btn-setting">Arc</button>
-                            </div>
-                            <div>
-                                <p style={{ fontSize: '16px', marginTop: '10px' }}>Starting Point</p>
-                                <div>
-                                    <span style={{ fontSize: '12px' }}>Position-X</span>
-                                </div>
-                                <Slider
-                                    aria-label="Temperature"
-                                    defaultValue={0}
-                                    valueLabelDisplay="auto"
-                                    shiftStep={0.01}
-                                    step={0.01}
-                                    marks={positionValues}
-                                    min={-1}
-                                    max={1}
-                                />
-                            </div>
-                            <div>
-                                <div>
-                                    <span style={{ fontSize: '12px' }}>Position-Y</span>
-                                </div>
-                                <Slider
-                                    aria-label="Temperature"
-                                    defaultValue={0}
-                                    valueLabelDisplay="auto"
-                                    shiftStep={0.01}
-                                    step={0.01}
-                                    marks={positionValues}
-                                    min={-1}
-                                    max={1}
-                                />
-                            </div>
-                            <div>
-                                <div>
-                                    <span style={{ fontSize: '12px' }}>Position-Z</span>
-                                </div>
-                                <Slider
-                                    aria-label="Temperature"
-                                    defaultValue={0}
-                                    valueLabelDisplay="auto"
-                                    shiftStep={0.01}
-                                    step={0.01}
-                                    marks={positionValues}
-                                    min={-1}
-                                    max={1}
-                                />
-                            </div>
-                            <div>
-                                <p style={{ fontSize: '16px', marginTop: '10px' }}>Ending Point</p>
-                                <div>
-                                    <span style={{ fontSize: '12px' }}>Position-X</span>
-                                </div>
-                                <Slider
-                                    aria-label="Temperature"
-                                    defaultValue={0}
-                                    valueLabelDisplay="auto"
-                                    shiftStep={0.01}
-                                    step={0.01}
-                                    marks={positionValues}
-                                    min={-1}
-                                    max={1}
-                                />
-                            </div>
-                            <div>
-                                <div>
-                                    <span style={{ fontSize: '12px' }}>Position-Y</span>
-                                </div>
-                                <Slider
-                                    aria-label="Temperature"
-                                    defaultValue={0}
-                                    valueLabelDisplay="auto"
-                                    shiftStep={0.01}
-                                    step={0.01}
-                                    marks={positionValues}
-                                    min={-1}
-                                    max={1}
-                                />
-                            </div>
-                            <div>
-                                <div>
-                                    <span style={{ fontSize: '12px' }}>Position-Z</span>
-                                </div>
-                                <Slider
-                                    aria-label="Temperature"
-                                    defaultValue={0}
-                                    valueLabelDisplay="auto"
-                                    shiftStep={0.01}
-                                    step={0.01}
-                                    marks={positionValues}
-                                    min={-1}
-                                    max={1}
-                                />
-                            </div>
-                        </AccordionDetails>
-                    </Accordion>
+          <Accordion
+            style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}
+          >
+            <AccordionSummary
+              expandIcon={
+                <ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />
+              }
+              sx={{ color: 'rgb(175, 175, 182)' }}
+            >
+              Manual Settings
+            </AccordionSummary>
+            <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  fontSize: '14px',
+                }}
+              >
+                <button className="btn-setting">Circular</button>
+                <button className="btn-setting">Linear</button>
+                <button className="btn-setting">Arc</button>
+              </div>
+              <div>
+                <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                  Starting Point
+                </p>
+                <div>
+                  <span style={{ fontSize: '12px' }}>Position-X</span>
+                </div>
+                <Slider
+                  aria-label="Temperature"
+                  defaultValue={0}
+                  valueLabelDisplay="auto"
+                  shiftStep={0.01}
+                  step={0.01}
+                  marks={positionValues}
+                  min={-1}
+                  max={1}
+                />
+              </div>
+              <div>
+                <div>
+                  <span style={{ fontSize: '12px' }}>Position-Y</span>
+                </div>
+                <Slider
+                  aria-label="Temperature"
+                  defaultValue={0}
+                  valueLabelDisplay="auto"
+                  shiftStep={0.01}
+                  step={0.01}
+                  marks={positionValues}
+                  min={-1}
+                  max={1}
+                />
+              </div>
+              <div>
+                <div>
+                  <span style={{ fontSize: '12px' }}>Position-Z</span>
+                </div>
+                <Slider
+                  aria-label="Temperature"
+                  defaultValue={0}
+                  valueLabelDisplay="auto"
+                  shiftStep={0.01}
+                  step={0.01}
+                  marks={positionValues}
+                  min={-1}
+                  max={1}
+                />
+              </div>
+              <div>
+                <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                  Ending Point
+                </p>
+                <div>
+                  <span style={{ fontSize: '12px' }}>Position-X</span>
+                </div>
+                <Slider
+                  aria-label="Temperature"
+                  defaultValue={0}
+                  valueLabelDisplay="auto"
+                  shiftStep={0.01}
+                  step={0.01}
+                  marks={positionValues}
+                  min={-1}
+                  max={1}
+                />
+              </div>
+              <div>
+                <div>
+                  <span style={{ fontSize: '12px' }}>Position-Y</span>
+                </div>
+                <Slider
+                  aria-label="Temperature"
+                  defaultValue={0}
+                  valueLabelDisplay="auto"
+                  shiftStep={0.01}
+                  step={0.01}
+                  marks={positionValues}
+                  min={-1}
+                  max={1}
+                />
+              </div>
+              <div>
+                <div>
+                  <span style={{ fontSize: '12px' }}>Position-Z</span>
+                </div>
+                <Slider
+                  aria-label="Temperature"
+                  defaultValue={0}
+                  valueLabelDisplay="auto"
+                  shiftStep={0.01}
+                  step={0.01}
+                  marks={positionValues}
+                  min={-1}
+                  max={1}
+                />
+              </div>
+            </AccordionDetails>
+          </Accordion>
         </AccordionDetails>
       </Accordion>
       <Accordion
@@ -532,6 +611,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
             onClick={() => {
               if (!isFocus) {
                 setIsFocus(true);
+                document.getElementById('depth-viewer').style.pointerEvents = 'auto';
                 document.getElementsByTagName('canvas')[0].style.cursor =
                   'crosshair';
                 gv.temp_amt_mot = amountValue;
@@ -539,11 +619,13 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
               } else {
                 handleSliderChange(null, gv.temp_amt_mot);
               }
-              // setAmountValue(0);
-              // const event = new Event("change", { bubbles: true });
-              // document.getElementById('amountSlider').value = 0; // Set the new value
-              // document.getElementById('amountSlider').dispatchEvent(event);
-              // document.getElementById('amountSlider').dispatchEvent(new Event('change'));
+              setAmountValue(0);
+              const event = new Event('change', { bubbles: true });
+              document.getElementById('amountSlider').value = 0; // Set the new value
+              document.getElementById('amountSlider').dispatchEvent(event);
+              document
+                .getElementById('amountSlider')
+                .dispatchEvent(new Event('change'));
             }}
           >
             Set focus point
@@ -644,6 +726,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                   }}
                 >
                   <div
+                    id='eyeDrop'
                     style={{
                       width: '20px',
                       height: '20px',
@@ -652,11 +735,21 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                     }}
                   ></div>
                   <div>
-                    <Colorize />
+                  <Colorize
+                    onClick={handleEyeDrop}
+                    sx={{
+                      cursor: 'default',
+                      color: isEyeDrop ? 'white' : 'grey',
+                      '&:hover': {
+                        cursor: 'pointer',
+                        color: 'white',
+                      },
+                    }}
+                  />
                   </div>
-                  <div>
-                    <Gavel />
-                  </div>
+                  {/* <div>
+                    <Gavel/>
+                  </div> */}
                 </div>
               </div>
               <Slider
@@ -804,7 +897,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
               }}
             >
               <span>Replace Depth Map</span>
-              <span style={{cursor: 'pointer'}} onClick={depthUpload}>
+              <span style={{ cursor: 'pointer' }} onClick={depthUpload}>
                 <FileUpload />
               </span>
               <input
@@ -825,7 +918,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
               }}
             >
               <span>Restore Depth Map</span>
-              <span style={{cursor: 'pointer'}} onClick={restoreDepth}>
+              <span style={{ cursor: 'pointer' }} onClick={restoreDepth}>
                 <Refresh />
               </span>
             </div>
@@ -841,7 +934,9 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                 paddingTop: '20px',
               }}
             >
-              <button className="btn-enabled" onClick={discardDepth}>Discard</button>
+              <button className="btn-enabled" onClick={discardDepth}>
+                Discard
+              </button>
               {/* <button className={isSavable ? 'btn-enabled' : 'btn-disabled'} onClick={handleDepthSave}> */}
               <button className="btn-enabled" onClick={handleDepthSave}>
                 Save
@@ -881,16 +976,20 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                 border: '1px solid',
               }}
               onClick={() => {
-                gv.viewer.exportToPNG()
-                .then(() => {
+                gv.viewer
+                  .exportToPNG()
+                  .then(() => {
                     return exportslistAdd('.png'); // Call the API after setting the state
-                })
-                .then(() => {
+                  })
+                  .then(() => {
                     console.log('PNG exported and downloaded successfully.');
-                })
-                .catch((error) => {
-                    console.error('Error during PNG export or API call:', error);
-                });
+                  })
+                  .catch((error) => {
+                    console.error(
+                      'Error during PNG export or API call:',
+                      error,
+                    );
+                  });
               }}
             >
               <Download /> Export (.png)
@@ -931,10 +1030,13 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                     document.getElementById('origin_view'),
                     5,
                     60,
-                    gv.viewer.getOptions()
+                    gv.viewer.getOptions(),
                   )
                   .then((blob) => {
-                    console.log('MP4 export completed:', gv.viewer.getOptions());
+                    console.log(
+                      'MP4 export completed:',
+                      gv.viewer.getOptions(),
+                    );
                     return exportslistAdd('.mp4');
                   })
                   .catch((error) => {
@@ -975,25 +1077,47 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
                 let options = gv.viewer.getOptions();
                 delete options.size;
                 gv.origin_viewer.setOptions(options);
-                gv.viewer
-                  .exportFramesToZip(
-                    document.getElementById('origin_view'),
-                    5,
-                    10,
-                    gv.viewer.getOptions()
-                  )
-                  .then((blob) => {
-                    console.log('Frames export completed:');
-                    return exportslistAdd('frames');
-                  })
-                  .catch((error) => {
-                    console.error('Export failed:', error);
-                  });
+                toggleInput();
               }}
             >
               <Download /> Export (Frames)
             </Button>
           </div>
+          {showFPSInput && (
+            <div
+              style={{
+                display: 'flex',
+                gap: '10px',
+                marginTop: '10px',
+                justifyContent: 'center',
+              }}
+            >
+              <input
+                type="number"
+                value={fPSInputValue}
+                onChange={handleFPSInputChange}
+                placeholder="Enter FPS"
+                min={1}
+                max={30}
+                style={{
+                  width: '140px',
+                  padding: '5px',
+                  borderRadius: '5px',
+                  border: '1px solid gray',
+                }}
+              />
+              <button
+                onClick={handleConfirmFrame}
+                style={{
+                  padding: '5px 10px',
+                  border: '1px solid gray',
+                  borderRadius: '5px',
+                }}
+              >
+                OK
+              </button>
+            </div>
+          )}
         </AccordionDetails>
       </Accordion>
     </div>
@@ -1122,3 +1246,19 @@ function getBrightnessAtPosition(x, y, imageUrl) {
     };
   });
 }
+
+function getColorFromCanvas(canvas, x, y) {
+  var ctx = canvas.getContext('2d');
+  var imageData = ctx.getImageData(x, y, 1, 1).data; // Get pixel data at the specified position
+
+  // Convert to RGBA format
+  var color = {
+    r: imageData[0],
+    g: imageData[1],
+    b: imageData[2],
+    a: imageData[3] / 255 // Normalize alpha to 0-1 range
+  };
+
+  return color;
+}
+
