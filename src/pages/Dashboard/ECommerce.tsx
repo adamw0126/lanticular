@@ -3,6 +3,8 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { toast } from 'react-hot-toast';
 import { lazy } from 'react';
+import GoogleLoginComponent from "../../components/GoogleLogin";
+import {jwtDecode} from "jwt-decode"; // Fix import
 
 const LandingPage = lazy(() => import('../HomeLanding.jsx'));
 
@@ -21,6 +23,15 @@ const FormLayout = () => {
     userId: '',
     password: '',
   });
+
+  const [token, setToken] = useState(() =>
+    localStorage.getItem("token") ? localStorage.getItem("token") : null
+  );
+  const [user, setUser] = useState(() =>
+    localStorage.getItem("token")
+      ? jwtDecode(localStorage.getItem("token"))
+      : null
+  );
   
   const autoLogin = async(signupInfo: any) => {
     if(!signupInfo.userId || !signupInfo.password)
@@ -62,10 +73,10 @@ const FormLayout = () => {
                 <div style={{padding:'0.3rem 1.5rem'}}>
                   <div className="mb-2.5">
                     <label className="block dark:text-white">
-                      UserId
+                      Email
                     </label>
                     <input
-                      placeholder="Enter your UserId"
+                      placeholder="Enter your Email"
                         value={signinInfo.userId}
                         onChange={e => setSigninInfo((data) => {
                           return { ...data, userId: e.target.value };
@@ -122,6 +133,16 @@ const FormLayout = () => {
                         }}>
                     Sign In
                   </button>
+
+                  <div className="jss155"><div className="jss156" data-testid="line-left"></div><span className="jss157">OR</span><div className="jss156" data-testid="line-right"></div></div>
+
+                  <div className="flex justify-center">
+                    {/* <button className="button-google flex w-full justify-center rounded p-3 font-medium text-gray mt-4">
+                        <img src="icons/google.svg" alt="google login" className="icon-google"></img>
+                        <span className="buttonText">Sign in with Google</span>
+                    </button> */}
+                    <GoogleLoginComponent />
+                  </div>
                   
                   <div className="mt-3 mb-1 flex justify-center items-center">
                     <NavLink to="/signup" className="text-sm text-primary" style={{textDecoration: 'none',color:'#ffd800'}}>
@@ -159,10 +180,10 @@ const FormLayout = () => {
 
                 <div className="mb-1.5">
                   <label className="block dark:text-white">
-                    UserId
+                    Email
                   </label>
                   <input
-                    placeholder="Enter your UserId"
+                    placeholder="Enter your Email"
                     value={signupInfo.userId}
                     onChange={e => setSignupInfo((data) => {
                       return { ...data, userId: e.target.value }
@@ -210,6 +231,12 @@ const FormLayout = () => {
                       return toast.error('Password and Conform must be same.');
                     try {
                       const result = await axios.post('/api/signup', {signupInfo});
+                      if(result.data.message == 'invalid_email_type'){
+                        return toast.error('Invalid Email Type.',{
+                          duration: 1500,
+                          position: 'top-right'
+                        });
+                      }
                       if(result.data.message === 'Signup successfully'){
                         toast.success(`${result.data.message}`,{
                           duration: 3000,

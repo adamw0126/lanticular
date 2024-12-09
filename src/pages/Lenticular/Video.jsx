@@ -5,10 +5,12 @@ import axios from 'axios';
 import { VideoToFrames } from './VideoToFrame';
 import Dropdown from './dropdown';
 import JSZip from "jszip";
+import axios from 'axios';
 
 const user = JSON.parse(localStorage.getItem('userInfo'));
 
 const App = () => {
+  const user = JSON.parse(localStorage.getItem('userInfo'));
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [frameCount, setFrameCount] = useState(12);
@@ -29,6 +31,15 @@ const App = () => {
     console.log("url ===>", response.data.filePath);
     await generateFrames(response.data.filePath);
   };
+
+  useEffect(() => {
+    getFile();
+  }, []);
+
+  const getFile = async () => {
+    const response = await axios.post('/api/getVideoUrl', { who: user.admin._id });
+    console.log('response.data ==>', response.data)
+  }
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];

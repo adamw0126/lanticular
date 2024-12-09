@@ -25,6 +25,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Switch from '@mui/material/Switch';
 import { useNavigate, useNavigation } from 'react-router-dom';
 import { grey } from '@mui/material/colors';
+import PopupCreate from './popupMade';
+
 require('../DepthyViewer');
 require('../DepthyDrawer');
 let gv = require('./config');
@@ -33,6 +35,9 @@ let viewerContainer = null;
 
 function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   
+  const [isFocus, setIsFocus] = useState(false);
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     viewerContainer = document.getElementById('depth-viewer');
     document.getElementById('depth-viewer').style.pointerEvents = 'none';
@@ -1118,8 +1123,33 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
               </button>
             </div>
           )}
+
+          <div
+            style={{
+              width: '100%',
+              height: '60px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Button
+              color=""
+              variant="contained"
+              style={{
+                width: '74%',
+                borderRadius: '20px',
+                border: '1px solid',
+              }}
+              onClick={() => setOpen(true)}
+            >
+              <Download /> Interlation
+            </Button>
+          </div>
         </AccordionDetails>
       </Accordion>
+
+      <PopupCreate open={open} onClose={() => setOpen(false)} />
     </div>
   );
 }

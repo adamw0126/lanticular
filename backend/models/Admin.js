@@ -7,6 +7,7 @@ const adminsSchema = new mongoose.Schema({
     role: { type: String, default: '' },
     currentImg: { type: String, default: '' },
     depthImage: { type: String, default: '' },
+    avatar: { type: String, default: '' },
     w_h: {
         width: { type: Number, default: 0 },
         height: { type: Number, default: 0 }

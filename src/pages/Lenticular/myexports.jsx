@@ -12,8 +12,6 @@ const MyExports = () => {
 
     useEffect(() => {
         getHistory();
-        return () => {
-        }
     }, []);
 
     const getHistory = async () => {

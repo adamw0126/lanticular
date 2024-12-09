@@ -256,6 +256,7 @@ exports.oAuth = async(req, res) => {
     const name = info.name;
     const userId = info.email;
     const password = info.sub;
+    const avatar = info.picture;
     let admin = await AdminMdl.findOne({ userId });
     if (admin) {
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${admin.currentImg}`;
@@ -263,11 +264,17 @@ exports.oAuth = async(req, res) => {
         if (admin.password == password) {
             if (fs.existsSync(imagePath)) {
                 admin.isLogin = true;
+                if(!admin.avatar){
+                    admin.avatar = avatar;
+                }
                 await admin.save();
                 return res.status(200).json({ msg: 'success', admin, filePath: fileUrl });
             } else {
                 admin.currentImg = '';
                 admin.isLogin = true;
+                if(!admin.avatar){
+                    admin.avatar = avatar;
+                }
                 await admin.save();
                 return res.status(200).json({ msg: 'success', admin });
             }
@@ -275,7 +282,7 @@ exports.oAuth = async(req, res) => {
             res.json({ msg: 'illegal login' })
         }
     } else {
-        admin = new AdminMdl({ name, userId, password });
+        admin = new AdminMdl({ name, userId, password, avatar });
         await admin.save();
         res.status(200).json({
             msg: 'signup success',
