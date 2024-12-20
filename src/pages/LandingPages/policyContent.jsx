@@ -9,7 +9,7 @@ const PolicyContent = () => {
 
             {/* Introduction Section */}
             <section>
-                <h3 style={styles.sectionTitle}>Welcome to Immersity AI</h3>
+                <h3 style={styles.sectionTitle}>Welcome to Lenticular</h3>
                 <p style={styles.paragraph}>
                     This Privacy Policy discloses the privacy practices for{" "}
                     <a href="http://localhost:5173" style={styles.link}>

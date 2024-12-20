@@ -25,7 +25,7 @@ const avatarStore = multer.diskStorage({
 const upload = multer({ storage });
 const avatar = multer({ storage: avatarStore });
 
-const interlace_upload = multer({ dest: "interlace_uploads/" });
+// const interlace_upload = multer({ dest: "interlace_uploads/" });
 
 // controller
 const AdminController = require('./controllers/adminCtrl');
@@ -33,9 +33,9 @@ const exportController = require('./controllers/exportsCtrl');
 const checkoutController = require('./controllers/checkoutCtrl');
 const faqsController = require('./controllers/FaqsCtrl');
 const SettingController = require('./controllers/settingCtrl');
-const interlaceController = require('./controllers/interlaceCtrl');
+// const interlaceController = require('./controllers/interlaceCtrl');
 
-router.post('/interlace', interlace_upload.none(), interlaceController.interlace);
+// router.post('/interlace', interlace_upload.none(), interlaceController.interlace);
 
 // Define the routes
 router.post('/oauth', AdminController.oAuth);

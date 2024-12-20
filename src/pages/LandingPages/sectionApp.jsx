@@ -102,7 +102,7 @@ const SectionApp = () => {
                                     </p>
                                 </div>
                                 <div className="flex-h gap-xsmall">
-                                    <a href="https://app.immersity.ai/" className="button w-button">Try Now</a>
+                                    <a href="" className="button w-button">Try Now</a>
                                     <a href="/apple-music" className="button secondary w-button">Learn More</a>
                                 </div>
                             </div>

@@ -6,7 +6,7 @@ const SectionCreators = () => {
             <div className="padding-global">
                 <div className="container gap-large align-center">
                     <div className="container_header padding-h-xlarge">
-                        <h2 className="heading-style-h2">#immersityAI</h2>
+                        <h2 className="heading-style-h2">#</h2>
                         <p id="w-node-_79bd898c-5560-ebfc-80bc-35c49f7e405e-7b225824" className="text-size-large text-color-light500">Learn from creators around the world, and get the tips and tricks on how they create their stunning immersive experiences, and gain thousands of followers, and hundreds of millions of views.</p>
                     </div>
                     <div id="w-node-_2f3f6d49-8a15-57a8-2a05-0fd4784b6c68-7b225824" className="container_wrap">

@@ -36,22 +36,14 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-<<<<<<< HEAD
     const [standardCredit, setStandardCredit] = useState(500);
-    const [bonusCredit, setBonusCredit] = useState(1000);
+    const [bonusCredit, setBonusCredit] = useState(1200);
     const [standardPrice, setStandardPrice] = useState(5);
     const [bonusPrice, setBonusPrice] = useState(10);
-=======
-    const [standardCredit, setStandardCredit] = useState(0);
-    const [bonusCredit, setBonusCredit] = useState(0);
-    const [standardPrice, setStandardPrice] = useState(0);
-    const [bonusPrice, setBonusPrice] = useState(0);
->>>>>>> crs-dev
 
     useEffect(() => {
         return () => {
             axios.get('/api/getSettingData')
-<<<<<<< HEAD
                 .then(response => {
                     const { setting } = response.data;
                     // console.log('setting ===>', setting)
@@ -63,19 +55,6 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                 .catch(error => {
                     console.error('Error fetching data:', error);
                 });
-=======
-            .then(response => {
-                const { setting } = response.data;
-                // console.log('setting ===>', setting)
-                setStandardCredit(setting.common.creditCnt);
-                setStandardPrice(setting.common.price);
-                setBonusCredit(setting.bonus.creditCnt);
-                setBonusPrice(setting.bonus.price);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-            });
->>>>>>> crs-dev
         }
     }, []);
 
@@ -125,7 +104,6 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
         <div>
             <Modal open={open} onClose={handleClose} className='modal-style'>
                 {
-<<<<<<< HEAD
                     !isPayMode ? <>
                     {
                         !isMobile ?
@@ -235,62 +213,6 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                 >
                                     Cancel
                                 </Button>
-=======
-                    !isPayMode ?
-                    <Box
-                        sx={{
-                            position: 'absolute',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: 400,
-                            bgcolor: 'background.paper',
-                            borderRadius: 2,
-                            boxShadow: 24,
-                            p: 4,
-                        }}
-                    >
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                            <Typography variant="h6">Buy Credits</Typography>
-                            <IconButton onClick={handleClose} style={{color:'white'}}>
-                                <CloseIcon />
-                            </IconButton>
-                        </Box>
-                        <div className='modal-body'>
-                            <Grid container spacing={2} alignItems="center">
-                                <Grid item xs={8}>
-                                    <Typography>{bonusCredit} &nbsp;&nbsp;<span className='bonustip'>Bonus Credits</span></Typography>
-                                    <Typography variant="body2" color="white">
-                                        {`$${bonusPrice}.00`}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Button onClick={() => decrement(setQuantity1, quantity1)}>-</Button>
-                                    <Typography>{quantity1}</Typography>
-                                    <Button onClick={() => increment(setQuantity1, quantity1)}>+</Button>
-                                </Grid>
-    
-                                <Grid item xs={8}>
-                                    <Typography>{standardCredit} Credits</Typography>
-                                    <Typography variant="body2" color="white">
-                                        {`$${standardPrice}.00`}
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Button onClick={() => decrement(setQuantity2, quantity2)}>-</Button>
-                                    <Typography>{quantity2}</Typography>
-                                    <Button onClick={() => increment(setQuantity2, quantity2)}>+</Button>
-                                </Grid>
-                            </Grid>
-                            {/* Summary Section */}
-                            <Box sx={{ mt: 3, mb: 2, textAlign: 'center' }} className='modal-footer'>
-                                <Typography variant="h6">
-                                    {totalCredits} Credits
-                                </Typography>
-                                <Typography variant="h6" color="primary">
-                                    ${totalPrice}
-                                </Typography>
->>>>>>> crs-dev
                             </Box>
                         </Box>
                         : 
@@ -461,7 +383,6 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                 <CustomTabPanel value={value} index={1}>
                                     <Paypal totalPrice={totalPrice} buyCredits={buyCredits} />
                                 </CustomTabPanel>
-<<<<<<< HEAD
 
                                 <div className='checkout'>
                                     <div className="payment-form">
@@ -505,60 +426,11 @@ function BuyCreditsModal({ open, setOpen, SetCurrentCredits }) {
                                         }
                                     </select>
                                     </div> */}
-=======
-                                
-                                <div className='checkout'>
-                                    <div className="payment-form">
-                                        {/* <div className="form-group">
-                                        <label htmlFor="cardNumber">Card number</label>
-                                        <div className="input-container">
-                                            <input
-                                            type="text"
-                                            id="cardNumber"
-                                            placeholder="1234 1234 1234 1234"
-                                            maxLength="19"
-                                            />
-                                            <div className="card-icons">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg" alt="Visa" />
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Mastercard_2019_logo.svg" alt="Mastercard" />
-                                            <img src="/american-express-svgrepo-com.svg" alt="Amex" />
-                                            <img src="discover-3-svgrepo-com.svg" alt="Discover" />
-                                            </div>
-                                        </div>
-                                        </div> */}
-
-                                        {/* <div className="form-group">
-                                        <div className="input-row">
-                                            <div className="input-wrapper">
-                                            <label htmlFor="expirationDate">Expiration date</label>
-                                            <input type="text" id="expirationDate" placeholder="MM / YY" />
-                                            </div>
-                                            <div className="input-wrapper">
-                                            <label htmlFor="securityCode">Security code</label>
-                                            <input type="text" id="securityCode" placeholder="CVC" maxLength="4" />
-                                            <span className="cvc-icon">💳</span>
-                                            </div>
-                                        </div>
-                                        </div> */}
-
-                                        {/* <div className="form-group">
-                                        <label htmlFor="country">Country</label>
-                                        <select id="country">
-                                            {
-                                                countries.map(val => (<option value={val} key={val}>{val}</option>))
-                                            }
-                                        </select>
-                                        </div> */}
->>>>>>> crs-dev
                                     </div>
                                 </div>
                             </div>
                             <div className='payMode-footer'>
-<<<<<<< HEAD
                                 <div style={{ margin: '8px 3px' }}>
-=======
-                                <div style={{margin:'8px 3px'}}>
->>>>>>> crs-dev
                                 </div>
                             </div>
                         </div>
