@@ -33,6 +33,15 @@ const App = () => {
     await generateFrames(response.data.filePath);
   };
 
+  useEffect(() => {
+    getFile();
+  }, []);
+
+  // const getFile = async () => {
+  //   const response = await axios.post('/api/getVideoUrl', { who: user.admin._id });
+  //   console.log('response.data ==>', response.data)
+  // }
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);

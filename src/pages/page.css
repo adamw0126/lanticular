@@ -455,6 +455,7 @@ input::placeholder {
 
 .css-17t9h4f-MuiModal-root-MuiDialog-root .MuiPaper-root {
     width: 400px;
+<<<<<<< HEAD
 }
 
 .bar-tab {
@@ -612,4 +613,6 @@ input::placeholder {
 
 .sub-footer {
     padding: 30px 0 10px;
+=======
+>>>>>>> crs-dev
 }

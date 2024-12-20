@@ -5,8 +5,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App';
 import './index.css';
 import './satoshi.css';
-import './immersity.min.css';
-// import './immersity.min.js';
+import './style_mine.min.css';
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

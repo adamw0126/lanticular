@@ -169,7 +169,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const [lengthValue, setLengthValue] = useState(5);
   const [focusValue, setFocusValue] = useState(50);
   const [isFocus, setIsFocus] = useState(false);
-  const [dilationValue, setDilationValue] = useState(50);
+  const [dilationValue, setDilationValue] = useState(20);
   const [isDepthmap, setIsDepthmap] = useState(false);
   const [isAnaglyph, setIsAnaglyph] = useState(false);
   const [isSavable, setIsSavable] = useState(false);
@@ -228,7 +228,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const handleSliderChange = useCallback((event, newValue) => {
     setAmountValue(newValue); // Update state with the new slider value
     gv.viewer.setOptions({
-      animateScale: { x: (newValue * 3) / 100, y: (newValue * 3) / 100 },
+      animateScale: { x: (newValue * 6) / 100, y: (newValue * 6) / 100 },
     });
   }, []);
 
@@ -242,7 +242,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const handleFocusChange = (event, newValue) => {
     setFocusValue(newValue); // Update state with the new slider value
     gv.viewer.setOptions({
-      depthFocus: newValue / 100,
+      depthFocus: 1 - newValue / 100,
     });
   };
 
@@ -250,7 +250,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     setDilationValue(newValue); // Update state with the new slider value
   };
   const handleDilationCommit = (event, newValue) => {
-    dilateDepthMapFromUrl(gv.depthURL, parseInt(newValue / 40))
+    dilateDepthMapFromUrl(gv.depthURL, parseInt(newValue / 5))
       .then((outputUrl) => {
         gv.viewer.setDepthmap(outputUrl);
       })

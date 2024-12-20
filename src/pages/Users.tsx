@@ -69,7 +69,11 @@ const Users = () => {
                   <h5 className="text-sm font-medium xsm:text-base">Name</h5>
                 </div>
                 <div className="p-0.5 text-center">
+<<<<<<< HEAD
                   <h5 className="text-sm font-medium xsm:text-base">Email</h5>
+=======
+                  <h5 className="text-sm font-medium xsm:text-base">UserId</h5>
+>>>>>>> crs-dev
                 </div>
                 <div className="p-0.5 text-center">
                   <h5 className="text-sm font-medium xsm:text-base">Password</h5>
@@ -89,7 +93,11 @@ const Users = () => {
                   </div>
 
                   <div className="flex items-center justify-center p-0.5">
+<<<<<<< HEAD
                     <p className="text-meta-3" style={{fontSize:'small'}}>{admin.userId}</p>
+=======
+                    <p className="text-meta-3">{admin.userId}</p>
+>>>>>>> crs-dev
                   </div>
 
                   <div className="hidden items-center justify-center p-0.5 sm:flex">
