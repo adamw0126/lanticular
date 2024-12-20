@@ -4,9 +4,9 @@ import FaqItem from './FaqItem'
 
 function Faq() {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '150px', paddingLeft: '2rem', paddingRight: '2rem' }}>
-            <h1>Welcome to Lenticular FAQs</h1>
-            <h4 style={{ maxWidth: '765px', textAlign: 'center' }}>Dive into our FAQ for insights into both basic and advanced features, ensuring you get the most from our AI tool.</h4>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '80px', paddingLeft: '2rem', paddingRight: '2rem' }}>
+            <h2>Welcome to Lenticular FAQs</h2>
+            <h4 style={{ textAlign: 'center', marginTop: 10 }}>Dive into our FAQ for insights into both basic and advanced features, ensuring you get the most from our AI tool.</h4>
             <Box sx={{
                 gridArea: 'span 1 / span 1 / span 1 / span 1',
                 display: 'grid',
@@ -105,7 +105,7 @@ function Faq() {
                         overflow: 'auto',
                         width: '100%',
                         height: 'auto',
-                        overflowX: 'scroll',
+                        overflowX: 'auto',
                         marginBottom: '20px'
                     }}>
                         <Button color='secondary' variant='contained' sx={{marginLeft: '16px', marginRight: '16px', minWidth: '40%'}}>General & 3D Motion</Button>
@@ -113,7 +113,7 @@ function Faq() {
                             <span style={{ padding: '1px', borderRadius: '3px', backgroundColor: '#e0c2ff', color: 'black' }}>NEW</span>
                             &nbsp; 2D to 3D Video
                         </Button>
-                        <Button color='secondary' variant='contained' sx={{marginLeft: '16px', marginRight: '16px', minWidth: '40%'}}>2D to 3D Image</Button>
+                        {/* <Button color='secondary' variant='contained' sx={{marginLeft: '16px', marginRight: '16px', minWidth: '40%'}}>2D to 3D Image</Button> */}
                     </Box>
                     <Box sx={{
                         display: 'block',

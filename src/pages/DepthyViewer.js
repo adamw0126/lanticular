@@ -27,66 +27,66 @@ const sharpenFilter = new PIXI.Filter(null, `
   }
 `);
 
-PIXI.SharpLinearStretchFilter = function (strength) {
-  PIXI.Filter.call(this);
+// PIXI.SharpLinearStretchFilter = function (strength) {
+//   PIXI.Filter.call(this);
 
-  this.uniforms = {
-      uSampler: null,
-      strength: strength || 1.0  // Control the strength of the sharpening
-  };
+//   this.uniforms = {
+//       uSampler: null,
+//       strength: strength || 1.0  // Control the strength of the sharpening
+//   };
 
-  // Vertex shader
-  this.vertexSrc = `
-      attribute vec2 aVertexPosition;
-      attribute vec2 aTextureCoord;
+//   // Vertex shader
+//   this.vertexSrc = `
+//       attribute vec2 aVertexPosition;
+//       attribute vec2 aTextureCoord;
 
-      uniform mat3 projectionMatrix;
+//       uniform mat3 projectionMatrix;
 
-      varying vec2 vTextureCoord;
+//       varying vec2 vTextureCoord;
 
-      void main(void) {
-          gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
-          vTextureCoord = aTextureCoord;
-      }
-  `;
+//       void main(void) {
+//           gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+//           vTextureCoord = aTextureCoord;
+//       }
+//   `;
 
-  // Fragment shader
-  this.fragmentSrc = `
-      precision mediump float;
-      varying vec2 vTextureCoord;
-      uniform sampler2D uSampler;
-      uniform float strength;
+//   // Fragment shader
+//   this.fragmentSrc = `
+//       precision mediump float;
+//       varying vec2 vTextureCoord;
+//       uniform sampler2D uSampler;
+//       uniform float strength;
 
-      void main(void) {
-          vec4 color = texture2D(uSampler, vTextureCoord);
-          vec4 colorLeft = texture2D(uSampler, vTextureCoord + vec2(-1.0, 0.0) * strength);
-          vec4 colorRight = texture2D(uSampler, vTextureCoord + vec2(1.0, 0.0) * strength);
-          vec4 colorTop = texture2D(uSampler, vTextureCoord + vec2(0.0, -1.0) * strength);
-          vec4 colorBottom = texture2D(uSampler, vTextureCoord + vec2(0.0, 1.0) * strength);
+//       void main(void) {
+//           vec4 color = texture2D(uSampler, vTextureCoord);
+//           vec4 colorLeft = texture2D(uSampler, vTextureCoord + vec2(-1.0, 0.0) * strength);
+//           vec4 colorRight = texture2D(uSampler, vTextureCoord + vec2(1.0, 0.0) * strength);
+//           vec4 colorTop = texture2D(uSampler, vTextureCoord + vec2(0.0, -1.0) * strength);
+//           vec4 colorBottom = texture2D(uSampler, vTextureCoord + vec2(0.0, 1.0) * strength);
 
-          // Combine sampled colors
-          vec4 sharpenedColor = color * 5.0 - (colorLeft + colorRight + colorTop + colorBottom);
+//           // Combine sampled colors
+//           vec4 sharpenedColor = color * 5.0 - (colorLeft + colorRight + colorTop + colorBottom);
 
-          // Ensure the color stays in the valid range [0.0, 1.0]
-          sharpenedColor = clamp(sharpenedColor, 0.0, 1.0);
+//           // Ensure the color stays in the valid range [0.0, 1.0]
+//           sharpenedColor = clamp(sharpenedColor, 0.0, 1.0);
 
-          gl_FragColor = sharpenedColor;
-      }
-  `;
-};
+//           gl_FragColor = sharpenedColor;
+//       }
+//   `;
+// };
 
-PIXI.SharpLinearStretchFilter.prototype = Object.create(PIXI.Filter.prototype);
-PIXI.SharpLinearStretchFilter.prototype.constructor = PIXI.SharpLinearStretchFilter;
+// PIXI.SharpLinearStretchFilter.prototype = Object.create(PIXI.Filter.prototype);
+// PIXI.SharpLinearStretchFilter.prototype.constructor = PIXI.SharpLinearStretchFilter;
 
-// Property to manage the strength of the effect dynamically
-Object.defineProperty(PIXI.SharpLinearStretchFilter.prototype, 'strength', {
-  get: function () {
-      return this.uniforms.strength;
-  },
-  set: function (value) {
-      this.uniforms.strength = value;
-  }
-});
+// // Property to manage the strength of the effect dynamically
+// Object.defineProperty(PIXI.SharpLinearStretchFilter.prototype, 'strength', {
+//   get: function () {
+//       return this.uniforms.strength;
+//   },
+//   set: function (value) {
+//       this.uniforms.strength = value;
+//   }
+// });
 
 PIXI.ColorMatrixFilter2 = function () {
   'use strict';
@@ -321,314 +321,545 @@ Object.defineProperty(PIXI.DepthDisplacementFilter.prototype, 'offset', {
   }
 });
 
-PIXI.DepthPerspectiveFilter = function (texture, quality, sprite) {
+// PIXI.DepthPerspectiveFilter = function (texture, quality, sprite) {
 
+//   var fragSrc = `
+//   precision mediump float;
+  
+//   varying vec2 vTextureCoord;
+//   varying vec2 vFiterCoord;
+//   uniform sampler2D displacementMap;
+//   uniform sampler2D uSampler;
+//   uniform vec4 dimensions;
+//   uniform vec2 mapDimensions;
+//   uniform float scale;
+//   uniform vec2 offset;
+//   uniform float focus;
+  
+//   #if !defined(QUALITY)
+  
+//     #define METHOD 1
+//     #define CORRECT
+//   //     #define COLORAVG
+//     #define ENLARGE 1.5
+//     #define ANTIALIAS 1
+//     #define AA_TRIGGER 0.8
+//     #define AA_POWER 1.0
+//     #define AA_MAXITER 8.0
+//     #define MAXSTEPS 160.0
+//     #define CONFIDENCE_MAX 2.5
+  
+//   #elif QUALITY == 2
+  
+//     #define METHOD 1
+//     #define CORRECT
+//   //     #define COLORAVG
+//     #define MAXSTEPS 40.0
+//     #define ENLARGE 0.8
+//   //   #define ANTIALIAS 2
+//     #define CONFIDENCE_MAX 2.5
+  
+//   #elif QUALITY == 3
+  
+//     #define METHOD 1
+//     #define CORRECT
+//   //     #define COLORAVG
+//     #define MAXSTEPS 60.0
+//     #define ENLARGE 1.0
+//     #define ANTIALIAS 2
+//     #define CONFIDENCE_MAX 2.5
+  
+//   #elif QUALITY == 4
+  
+//     #define METHOD 1
+//     #define CORRECT
+//   //     #define COLORAVG
+//     #define MAXSTEPS 160.0
+//     #define ENLARGE 1.5
+//     #define ANTIALIAS 2
+//     #define CONFIDENCE_MAX 2.5
+  
+//   #elif QUALITY == 5
+  
+//     #define METHOD 1
+//     #define CORRECT
+//     #define COLORAVG
+//     #define MAXSTEPS 400.0
+//     #define ENLARGE 1.5
+//   //     #define ANTIALIAS 2
+//     #define AA_TRIGGER 0.8
+//     #define AA_POWER 1.0
+//     #define AA_MAXITER 8.0
+//     #define CONFIDENCE_MAX 4.5
+  
+//   #endif
+  
+  
+//   #define BRANCHLOOP  
+//   #define BRANCHSAMPLE 
+//   #define DEBUG 0
+//   // #define DEBUGBREAK 2
+  
+//   #ifndef METHOD
+//     #define METHOD 1
+//   #endif
+//   #ifndef MAXSTEPS
+//     #define MAXSTEPS 80.0
+//   #endif
+//   #ifndef ENLARGE
+//     #define ENLARGE 1.2
+//   #endif
+//   #ifndef PERSPECTIVE
+//     #define PERSPECTIVE 0.0
+//   #endif
+//   #ifndef UPSCALE
+//     #define UPSCALE 1.06
+//   #endif
+//   #ifndef CONFIDENCE_MAX
+//     #define CONFIDENCE_MAX 0.2
+//   #endif
+//   #ifndef COMPRESSION
+//     #define COMPRESSION 0.8
+//   #endif
+  
+//   const float perspective = PERSPECTIVE;
+//   const float upscale = UPSCALE;
+//   // float steps = clamp( ceil( max(abs(offset.x), abs(offset.y)) * maxSteps ), 1.0, maxSteps);
+//   float steps = MAXSTEPS;
+  
+//   #ifdef COLORAVG
+//   float maskPower = steps * 2.0;// 32.0;
+//   #else 
+//   float maskPower = steps * 1.0;// 32.0;
+//   #endif
+//   float correctPower = 1.0;//max(1.0, steps / 8.0);
+  
+//   const float compression = COMPRESSION;
+//   const float dmin = (1.0 - compression) / 2.0;
+//   const float dmax = (1.0 + compression) / 2.0;
+  
+//   const float vectorCutoff = 0.0 + dmin - 0.0001;
+  
+//   float aspect = dimensions.x / dimensions.y;
+//   vec2 scale2 = vec2(scale * min(1.0, 1.0 / aspect), scale * min(1.0, aspect)) * vec2(1, 1) * vec2(ENLARGE);
+//   // mat2 baseVector = mat2(vec2(-focus * offset) * scale2, vec2(offset - focus * offset) * scale2);
+//   mat2 baseVector = mat2(vec2((0.5 - focus) * offset - offset/2.0) * scale2, 
+//                          vec2((0.5 - focus) * offset + offset/2.0) * scale2);
+  
+  
+//   void main(void) {
+  
+//     vec2 pos = (vTextureCoord - vec2(0.5)) / vec2(upscale) + vec2(0.5);
+//     mat2 vector = baseVector;
+//     // perspective shift
+//     vector[1] += (vec2(2.0) * pos - vec2(1.0)) * vec2(perspective);
+    
+//     float dstep = compression / (steps - 1.0);
+//     vec2 vstep = (vector[1] - vector[0]) / vec2((steps - 1.0)) ;
+    
+//     #ifdef COLORAVG
+//       vec4 colSum = vec4(0.0);
+//     #else
+//       vec2 posSum = vec2(0.0);
+//     #endif
+  
+//     float confidenceSum = 0.0;
+//     float minConfidence = dstep / 2.0;
+      
+//     #ifdef ANTIALIAS
+//       #ifndef AA_TRIGGER
+//         #define AA_TRIGGER 0.8
+//       #endif
+//       #if ANTIALIAS == 11 || ANTIALIAS == 12
+//         #ifndef AA_POWER
+//           #define AA_POWER 0.5
+//         #endif
+//         #ifndef AA_MAXITER
+//           #define AA_MAXITER 16.0
+//         #endif
+//         float loopStep = 1.0;
+//       #endif
+      
+//       #define LOOP_INDEX j
+//       float j = 0.0;
+//     #endif
+  
+//     #ifndef LOOP_INDEX
+//       #define LOOP_INDEX i
+//     #endif
+  
+  
+//     for(float i = 0.0; i < MAXSTEPS; ++i) {
+//       vec2 vpos = pos + vector[1] - LOOP_INDEX * vstep;
+//       float dpos = 0.5 + compression / 2.0 - LOOP_INDEX * dstep;
+//       #ifdef BRANCHLOOP
+//       if (dpos >= vectorCutoff && confidenceSum < CONFIDENCE_MAX) {
+//       #endif
+//         // float depth = 1.0 - texture2D(displacementMap, vpos).r;
+//         float depth = texture2D(displacementMap, vpos).r;
+//         depth = clamp(depth, dmin, dmax);
+//         float confidence;
+  
+//         #if METHOD == 1
+//           confidence = step(dpos, depth + 0.001);
+  
+//         #elif METHOD == 2
+//           confidence = 1.0 - abs(dpos - depth);
+//           if (confidence < 1.0 - minConfidence * 2.0) confidence = 0.0;
+  
+//         #elif METHOD == 5
+//           confidence = 1.0 - abs(dpos - depth);
+//           confidence = pow(confidence, maskPower);
+  
+//         #endif
+  
+//         #ifndef BRANCHLOOP
+//          confidence *= step(vectorCutoff, dpos);
+//          confidence *= step(confidenceSum, CONFIDENCE_MAX);
+//         #endif
+          
+//         #ifndef ANTIALIAS
+//         #elif ANTIALIAS == 1 // go back halfstep, go forward fullstep - branched
+//           if (confidence > AA_TRIGGER && i == j) {
+//             j -= 0.5;
+//           } else {
+//             j += 1.0;
+//           }
+//           // confidence *= CONFIDENCE_MAX / 3.0;
+  
+//         #elif ANTIALIAS == 2 // go back halfstep, go forward fullstep - mult
+//           j += 1.0 + step(AA_TRIGGER, confidence) 
+//                * step(i, j) * -1.5; 
+//           // confidence *= CONFIDENCE_MAX / 3.0;
+  
+//         #elif ANTIALIAS == 11
+//           if (confidence >= AA_TRIGGER && i == j && steps - i > 1.0) {
+//             loopStep = AA_POWER * 2.0 / min(AA_MAXITER, steps - i - 1.0);
+//             j -= AA_POWER + loopStep;
+//           }
+//           confidence *= loopStep;
+//           j += loopStep;
+//         #elif ANTIALIAS == 12
+//           float _if_aa = step(AA_TRIGGER, confidence)
+//                        * step(i, j)
+//                        * step(1.5, steps - i);
+//           loopStep = _if_aa * (AA_POWER * 2.0 / min(AA_MAXITER, max(0.1, steps - i - 1.0)) - 1.0) + 1.0;
+//           confidence *= loopStep;
+//           j += _if_aa * -(AA_POWER + loopStep) + loopStep;
+//         #endif
+  
+          
+//         #ifdef BRANCHSAMPLE
+//         if (confidence > 0.0) {
+//         #endif
+          
+//           #ifdef CORRECT
+//             #define CORRECTION_MATH +( ( vec2((depth - dpos) / (dstep * correctPower)) * vstep ))
+//           #else
+//             #define CORRECTION_MATH
+//           #endif
+            
+//           #ifdef COLORAVG    
+//             colSum += texture2D(uSampler, vpos CORRECTION_MATH) * confidence;
+//           #else
+//             posSum += (vpos CORRECTION_MATH) * confidence;    
+//           #endif
+//             confidenceSum += confidence;
+            
+//         #ifdef BRANCHSAMPLE
+//         }
+//         #endif
+  
+          
+//         #if DEBUG > 2
+//           gl_FragColor = vec4(vector[0] / 2.0 + 1.0, vector[1].xy / 2.0 + 1.0);
+//         #elif DEBUG > 1
+//           gl_FragColor = vec4(confidenceSum, depth, dpos, 0);
+//         #elif DEBUG > 0
+//           gl_FragColor = vec4(confidence, depth, dpos, 0);
+//         #endif
+//         #ifdef DEBUGBREAK 
+//         if (i == float(DEBUGBREAK)) {
+//             dpos = 0.0;
+//         }     
+//         #endif
+  
+//       #ifdef BRANCHLOOP
+//       }
+//       #endif
+//     };
+  
+//     #if defined(COLORAVG) && DEBUG == 0
+//       gl_FragColor = colSum / vec4(confidenceSum);
+//     #elif !defined(COLORAVG) && DEBUG == 0
+//       gl_FragColor = texture2D(uSampler, posSum / confidenceSum);
+//     #endif
+  
+//   }
+//     `;
+
+
+//   const vertSrc = `
+//   attribute vec2 aVertexPosition;
+//   attribute vec2 aTextureCoord;
+  
+//   uniform mat3 projectionMatrix;
+//   uniform mat3 filterMatrix;
+  
+//   varying vec2 vTextureCoord;
+//   varying vec2 vFilterCoord;
+  
+//   void main(void)
+//   {
+//      gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+//      vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;
+//      vTextureCoord = aTextureCoord;
+//   }
+//   `;
+
+
+//   this.quality = quality;
+//   if (quality) {
+//     fragSrc = '#define QUALITY ' + quality + "\r\n" + fragSrc;
+//   }
+
+//   PIXI.Filter.call(
+//     this,
+//     vertSrc,
+//     fragSrc, // fragment shader
+//   );
+
+
+//   this.padding = 0;
+//   this.sprite = sprite;
+//   this.matrix = new PIXI.Matrix();
+
+//   this.uniforms.displacementMap = texture;
+//   this.uniforms.scale = 0.015;
+//   this.uniforms.offset = [0.0, 0.0];
+//   this.uniforms.focus = 0.5;
+//   this.uniforms.enlarge = 1.06;
+
+
+
+//   this.apply = function (filterManager, input, output, clear) {
+//     this.uniforms.dimensions[0] = input.sourceFrame.width;
+//     this.uniforms.dimensions[1] = input.sourceFrame.height;
+//     this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.matrix, this.sprite);
+
+//     // draw the filter...
+//     filterManager.applyFilter(this, input, output, clear);
+//   }
+
+// };
+
+PIXI.DepthPerspectiveFilter = function(texture, quality, sprite) {
   var fragSrc = `
   precision mediump float;
-  
-  varying vec2 vTextureCoord;
-  varying vec2 vFiterCoord;
-  uniform sampler2D displacementMap;
-  uniform sampler2D uSampler;
-  uniform vec4 dimensions;
-  uniform vec2 mapDimensions;
-  uniform float scale;
-  uniform vec2 offset;
-  uniform float focus;
-  
-  #if !defined(QUALITY)
-  
+
+varying vec2 vTextureCoord;
+varying vec2 vFiterCoord;
+uniform sampler2D displacementMap;
+uniform sampler2D uSampler;
+uniform vec4 dimensions;
+uniform vec2 mapDimensions;
+uniform float scale;
+uniform vec2 offset;
+uniform float focus;
+
+#if !defined(QUALITY)
+
+#define METHOD 1
+#define CORRECT
+//     #define COLORAVG
+#define ENLARGE 1.5
+#define ANTIALIAS 1
+#define AA_TRIGGER 0.8
+#define AA_POWER 1.0
+#define AA_MAXITER 8.0
+#define MAXSTEPS 80.0
+#define CONFIDENCE_MAX 2.5
+
+#elif QUALITY == 2
+
+#define METHOD 1
+#define CORRECT
+//     #define COLORAVG
+#define MAXSTEPS 20.0
+#define ENLARGE 0.8
+//   #define ANTIALIAS 2
+#define CONFIDENCE_MAX 2.5
+
+#elif QUALITY == 3
+
+#define METHOD 1
+#define CORRECT
+//     #define COLORAVG
+#define MAXSTEPS 30.0
+#define ENLARGE 1.0
+#define ANTIALIAS 2
+#define CONFIDENCE_MAX 2.5
+
+#elif QUALITY == 4
+
+#define METHOD 1
+#define CORRECT
+//     #define COLORAVG
+#define MAXSTEPS 80.0
+#define ENLARGE 1.5
+#define ANTIALIAS 2
+#define CONFIDENCE_MAX 2.5
+
+#elif QUALITY == 5
+
+#define METHOD 1
+#define CORRECT
+#define COLORAVG
+#define MAXSTEPS 200.0
+#define ENLARGE 1.5
+//     #define ANTIALIAS 2
+#define AA_TRIGGER 0.8
+#define AA_POWER 1.0
+#define AA_MAXITER 8.0
+#define CONFIDENCE_MAX 4.5
+
+#endif
+
+#define BRANCHLOOP  
+#define BRANCHSAMPLE 
+#define DEBUG 0
+// #define DEBUGBREAK 2
+
+#ifndef METHOD
     #define METHOD 1
-    #define CORRECT
-  //     #define COLORAVG
-    #define ENLARGE 1.5
-    #define ANTIALIAS 1
-    #define AA_TRIGGER 0.8
-    #define AA_POWER 1.0
-    #define AA_MAXITER 8.0
-    #define MAXSTEPS 16.0
-    #define CONFIDENCE_MAX 2.5
-  
-  #elif QUALITY == 2
-  
-    #define METHOD 1
-    #define CORRECT
-  //     #define COLORAVG
-    #define MAXSTEPS 4.0
-    #define ENLARGE 0.8
-  //   #define ANTIALIAS 2
-    #define CONFIDENCE_MAX 2.5
-  
-  #elif QUALITY == 3
-  
-    #define METHOD 1
-    #define CORRECT
-  //     #define COLORAVG
-    #define MAXSTEPS 6.0
-    #define ENLARGE 1.0
-    #define ANTIALIAS 2
-    #define CONFIDENCE_MAX 2.5
-  
-  #elif QUALITY == 4
-  
-    #define METHOD 1
-    #define CORRECT
-  //     #define COLORAVG
-    #define MAXSTEPS 16.0
-    #define ENLARGE 1.5
-    #define ANTIALIAS 2
-    #define CONFIDENCE_MAX 2.5
-  
-  #elif QUALITY == 5
-  
-    #define METHOD 1
-    #define CORRECT
-    #define COLORAVG
+#endif
+#ifndef MAXSTEPS
     #define MAXSTEPS 40.0
-    #define ENLARGE 1.5
-  //     #define ANTIALIAS 2
-    #define AA_TRIGGER 0.8
-    #define AA_POWER 1.0
-    #define AA_MAXITER 8.0
-    #define CONFIDENCE_MAX 4.5
-  
-  #endif
-  
-  
-  #define BRANCHLOOP  
-  #define BRANCHSAMPLE 
-  #define DEBUG 0
-  // #define DEBUGBREAK 2
-  
-  #ifndef METHOD
-    #define METHOD 1
-  #endif
-  #ifndef MAXSTEPS
-    #define MAXSTEPS 8.0
-  #endif
-  #ifndef ENLARGE
+#endif
+#ifndef ENLARGE
     #define ENLARGE 1.2
-  #endif
-  #ifndef PERSPECTIVE
+#endif
+#ifndef PERSPECTIVE
     #define PERSPECTIVE 0.0
-  #endif
-  #ifndef UPSCALE
+#endif
+#ifndef UPSCALE
     #define UPSCALE 1.06
-  #endif
-  #ifndef CONFIDENCE_MAX
+#endif
+#ifndef CONFIDENCE_MAX
     #define CONFIDENCE_MAX 0.2
-  #endif
-  #ifndef COMPRESSION
+#endif
+#ifndef COMPRESSION
     #define COMPRESSION 0.8
-  #endif
-  
-  const float perspective = PERSPECTIVE;
-  const float upscale = UPSCALE;
-  // float steps = clamp( ceil( max(abs(offset.x), abs(offset.y)) * maxSteps ), 1.0, maxSteps);
-  float steps = MAXSTEPS;
-  
-  #ifdef COLORAVG
-  float maskPower = steps * 2.0;// 32.0;
-  #else 
-  float maskPower = steps * 1.0;// 32.0;
-  #endif
-  float correctPower = 1.0;//max(1.0, steps / 8.0);
-  
-  const float compression = COMPRESSION;
-  const float dmin = (1.0 - compression) / 2.0;
-  const float dmax = (1.0 + compression) / 2.0;
-  
-  const float vectorCutoff = 0.0 + dmin - 0.0001;
-  
-  float aspect = dimensions.x / dimensions.y;
-  vec2 scale2 = vec2(scale * min(1.0, 1.0 / aspect), scale * min(1.0, aspect)) * vec2(1, 1) * vec2(ENLARGE);
-  // mat2 baseVector = mat2(vec2(-focus * offset) * scale2, vec2(offset - focus * offset) * scale2);
-  mat2 baseVector = mat2(vec2((0.5 - focus) * offset - offset/2.0) * scale2, 
-                         vec2((0.5 - focus) * offset + offset/2.0) * scale2);
-  
-  
-  void main(void) {
-  
+#endif
+
+const float perspective = PERSPECTIVE;
+const float upscale = UPSCALE;
+float steps = MAXSTEPS;
+
+#ifdef COLORAVG
+float maskPower = steps * 2.0;
+#else 
+float maskPower = steps * 1.0;
+#endif
+float correctPower = 1.0;
+
+const float compression = COMPRESSION;
+const float dmin = (1.0 - compression) / 2.0;
+const float dmax = (1.0 + compression) / 2.0;
+
+const float vectorCutoff = 0.0 - dmax - 0.0001;
+
+float aspect = dimensions.x / dimensions.y;
+vec2 scale2 = vec2(scale * min(1.0, 1.0 / aspect), scale * min(1.0, aspect)) * vec2(1, 1) * vec2(ENLARGE);
+mat2 baseVector = mat2(vec2((0.5 - focus) * offset - offset / 2.0) * scale2, 
+                           vec2((0.5 - focus) * offset + offset / 2.0) * scale2);
+
+void main(void) {
     vec2 pos = (vTextureCoord - vec2(0.5)) / vec2(upscale) + vec2(0.5);
     mat2 vector = baseVector;
-    // perspective shift
     vector[1] += (vec2(2.0) * pos - vec2(1.0)) * vec2(perspective);
-    
+
     float dstep = compression / (steps - 1.0);
-    vec2 vstep = (vector[1] - vector[0]) / vec2((steps - 1.0)) ;
-    
+    vec2 vstep = (vector[1] - vector[0]) / vec2((steps - 1.0));
+
     #ifdef COLORAVG
-      vec4 colSum = vec4(0.0);
+    vec4 colSum = vec4(0.0);
     #else
-      vec2 posSum = vec2(0.0);
+    vec2 posSum = vec2(0.0);
     #endif
-  
+
     float confidenceSum = 0.0;
     float minConfidence = dstep / 2.0;
-      
-    #ifdef ANTIALIAS
-      #ifndef AA_TRIGGER
-        #define AA_TRIGGER 0.8
-      #endif
-      #if ANTIALIAS == 11 || ANTIALIAS == 12
-        #ifndef AA_POWER
-          #define AA_POWER 0.5
-        #endif
-        #ifndef AA_MAXITER
-          #define AA_MAXITER 16.0
-        #endif
-        float loopStep = 1.0;
-      #endif
-      
-      #define LOOP_INDEX j
-      float j = 0.0;
-    #endif
-  
-    #ifndef LOOP_INDEX
-      #define LOOP_INDEX i
-    #endif
-  
-  
-    for(float i = 0.0; i < MAXSTEPS; ++i) {
-      vec2 vpos = pos + vector[1] - LOOP_INDEX * vstep;
-      float dpos = 0.5 + compression / 2.0 - LOOP_INDEX * dstep;
-      #ifdef BRANCHLOOP
-      if (dpos >= vectorCutoff && confidenceSum < CONFIDENCE_MAX) {
-      #endif
-        // float depth = 1.0 - texture2D(displacementMap, vpos).r;
-        float depth = texture2D(displacementMap, vpos).r;
-        depth = clamp(depth, dmin, dmax);
-        float confidence;
-  
-        #if METHOD == 1
-          confidence = step(dpos, depth + 0.001);
-  
-        #elif METHOD == 2
-          confidence = 1.0 - abs(dpos - depth);
-          if (confidence < 1.0 - minConfidence * 2.0) confidence = 0.0;
-  
-        #elif METHOD == 5
-          confidence = 1.0 - abs(dpos - depth);
-          confidence = pow(confidence, maskPower);
-  
-        #endif
-  
-        #ifndef BRANCHLOOP
-         confidence *= step(vectorCutoff, dpos);
-         confidence *= step(confidenceSum, CONFIDENCE_MAX);
-        #endif
-          
-        #ifndef ANTIALIAS
-        #elif ANTIALIAS == 1 // go back halfstep, go forward fullstep - branched
-          if (confidence > AA_TRIGGER && i == j) {
-            j -= 0.5;
-          } else {
-            j += 1.0;
-          }
-          // confidence *= CONFIDENCE_MAX / 3.0;
-  
-        #elif ANTIALIAS == 2 // go back halfstep, go forward fullstep - mult
-          j += 1.0 + step(AA_TRIGGER, confidence) 
-               * step(i, j) * -1.5; 
-          // confidence *= CONFIDENCE_MAX / 3.0;
-  
-        #elif ANTIALIAS == 11
-          if (confidence >= AA_TRIGGER && i == j && steps - i > 1.0) {
-            loopStep = AA_POWER * 2.0 / min(AA_MAXITER, steps - i - 1.0);
-            j -= AA_POWER + loopStep;
-          }
-          confidence *= loopStep;
-          j += loopStep;
-        #elif ANTIALIAS == 12
-          float _if_aa = step(AA_TRIGGER, confidence)
-                       * step(i, j)
-                       * step(1.5, steps - i);
-          loopStep = _if_aa * (AA_POWER * 2.0 / min(AA_MAXITER, max(0.1, steps - i - 1.0)) - 1.0) + 1.0;
-          confidence *= loopStep;
-          j += _if_aa * -(AA_POWER + loopStep) + loopStep;
-        #endif
-  
-          
-        #ifdef BRANCHSAMPLE
-        if (confidence > 0.0) {
-        #endif
-          
-          #ifdef CORRECT
-            #define CORRECTION_MATH +( ( vec2((depth - dpos) / (dstep * correctPower)) * vstep ))
-          #else
-            #define CORRECTION_MATH
-          #endif
-            
-          #ifdef COLORAVG    
-            colSum += texture2D(uSampler, vpos CORRECTION_MATH) * confidence;
-          #else
-            posSum += (vpos CORRECTION_MATH) * confidence;    
-          #endif
-            confidenceSum += confidence;
-            
-        #ifdef BRANCHSAMPLE
-        }
-        #endif
-  
-          
-        #if DEBUG > 2
-          gl_FragColor = vec4(vector[0] / 2.0 + 1.0, vector[1].xy / 2.0 + 1.0);
-        #elif DEBUG > 1
-          gl_FragColor = vec4(confidenceSum, depth, dpos, 0);
-        #elif DEBUG > 0
-          gl_FragColor = vec4(confidence, depth, dpos, 0);
-        #endif
-        #ifdef DEBUGBREAK 
-        if (i == float(DEBUGBREAK)) {
-            dpos = 0.0;
-        }     
-        #endif
-  
-      #ifdef BRANCHLOOP
-      }
-      #endif
-    };
-  
-    #if defined(COLORAVG) && DEBUG == 0
-      gl_FragColor = colSum / vec4(confidenceSum);
-    #elif !defined(COLORAVG) && DEBUG == 0
-      gl_FragColor = texture2D(uSampler, posSum / confidenceSum);
-    #endif
-  
-  }
-    `;
 
+    for(float i = 0.0; i < MAXSTEPS; ++i) {
+        vec2 vpos = pos + vector[1] - i * vstep;
+        float dpos = 0.5 + compression / 2.0 - i * dstep;
+
+        if (dpos >= vectorCutoff && confidenceSum < CONFIDENCE_MAX) {
+            float depth = texture2D(displacementMap, vpos).r;
+            depth = clamp(depth, dmin, dmax);
+            float confidence = step(dpos, depth + 0.001); // Replace with your confidence logic.
+
+            if (confidence > 0.0) {
+                vec2 originPos = pos; // Original Texture Coordinate
+                vec2 displacedPos = vpos; // Position based on the depth map
+                
+                // Use a linear interpolation between original position and displaced position
+                vec2 finalPosition = mix(originPos, displacedPos, confidence);
+
+                // Direction to sample from the "outside" (1 pixel away)
+                vec2 direction = normalize(finalPosition - vec2(0.5));  // Calculate direction from center
+
+                // Sample 1 pixel away in the "outside" direction
+                vec2 offsetFinalPosition = finalPosition + direction * (1.0 / dimensions.xy); // 1 pixel offset
+
+                #ifdef COLORAVG    
+                colSum += texture2D(uSampler, offsetFinalPosition) * confidence;
+                #else
+                posSum += offsetFinalPosition * confidence;
+                #endif                
+                confidenceSum += confidence;
+            }
+        }
+    }
+
+    #if defined(COLORAVG) && DEBUG == 0
+    gl_FragColor = colSum / vec4(confidenceSum);
+    #elif !defined(COLORAVG) && DEBUG == 0
+    gl_FragColor = texture2D(uSampler, posSum / confidenceSum);
+    #endif
+}
+
+  `;
 
   const vertSrc = `
   attribute vec2 aVertexPosition;
   attribute vec2 aTextureCoord;
-  
+
   uniform mat3 projectionMatrix;
   uniform mat3 filterMatrix;
-  
+
   varying vec2 vTextureCoord;
   varying vec2 vFilterCoord;
-  
+
   void main(void)
   {
-     gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
-     vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;
-     vTextureCoord = aTextureCoord;
+       gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);
+       vFilterCoord = ( filterMatrix * vec3( aTextureCoord, 1.0)  ).xy;
+       vTextureCoord = aTextureCoord;
   }
   `;
 
-
   this.quality = quality;
   if (quality) {
-    fragSrc = '#define QUALITY ' + quality + "\r\n" + fragSrc;
+      fragSrc = '#define QUALITY ' + quality + "\r\n" + fragSrc;
   }
 
   PIXI.Filter.call(
-    this,
-    vertSrc,
-    fragSrc, // fragment shader
+      this,
+      vertSrc,
+      fragSrc, // fragment shader
   );
-
 
   this.padding = 0;
   this.sprite = sprite;
@@ -640,17 +871,14 @@ PIXI.DepthPerspectiveFilter = function (texture, quality, sprite) {
   this.uniforms.focus = 0.5;
   this.uniforms.enlarge = 1.06;
 
+  this.apply = function(filterManager, input, output, clear) {
+      this.uniforms.dimensions[0] = input.sourceFrame.width;
+      this.uniforms.dimensions[1] = input.sourceFrame.height;
+      this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.matrix, this.sprite);
 
-
-  this.apply = function (filterManager, input, output, clear) {
-    this.uniforms.dimensions[0] = input.sourceFrame.width;
-    this.uniforms.dimensions[1] = input.sourceFrame.height;
-    this.uniforms.filterMatrix = filterManager.calculateSpriteMatrix(this.matrix, this.sprite);
-
-    // draw the filter...
-    filterManager.applyFilter(this, input, output, clear);
+      // draw the filter...
+      filterManager.applyFilter(this, input, output, clear);
   }
-
 };
 
 PIXI.DepthPerspectiveFilter.prototype = Object.create(PIXI.Filter.prototype);
@@ -760,9 +988,9 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     animate: true,
     animateDuration: 5,
     animatePosition: null,
-    animateScale: { x: 1.5, y: 1.5 },
+    animateScale: { x: 3, y: 3 },
 
-    depthScale: 1,
+    depthScale: 0.4,
     depthBlurSize: 0,
     depthFocus: 0.5,
     depthPreview: 0,
@@ -893,7 +1121,8 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     }
 
     function createDepthBlurFilter() {
-      return new PIXI.SharpLinearStretchFilter()
+      // return new PIXI.SharpLinearStretchFilter()
+      return new PIXI.filters.BlurFilter();
     }
 
     function sizeCopy(size, expand) {
@@ -1125,7 +1354,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
     }
 
     function renderDepthTexture() {
-      depthBlurFilter.strength = options.depthBlurSize;
+      depthBlurFilter.blur = options.depthBlurSize;
       renderer.render(depthTextureContainer, depthRender);
       depth.renderDirty = false;
       renderDirty = true;
@@ -1196,26 +1425,55 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       renderDirty = true;
     }
 
+    // function updateOffset() {
+    //   const horizontalIncreaseFactor = 1.4; // Factor to increase the horizontal motion
+    //   if (depthOffset.x !== easedOffset.x || depthOffset.y !== easedOffset.y) {
+    //     if (options.easeFactor && !options.animate) {
+    //       easedOffset.x =
+    //         easedOffset.x * options.easeFactor +
+    //         depthOffset.x * horizontalIncreaseFactor * (1 - options.easeFactor);
+    //       easedOffset.y =
+    //         easedOffset.y * options.easeFactor +
+    //         depthOffset.y * (1 - options.easeFactor);
+    //     } else {
+    //       easedOffset = {
+    //         x: depthOffset.x * horizontalIncreaseFactor,
+    //         y: depthOffset.y,
+    //       };
+    //     }
+    //     depthFilter.offset = {
+    //       x: easedOffset.x,
+    //       y: easedOffset.y,
+    //     };
+    //     renderDirty = true;
+    //   }
+    // }
+
     function updateOffset() {
-      const horizontalIncreaseFactor = 1.4; // Factor to increase the horizontal motion
+      //console.log(depthOffset);
       if (depthOffset.x !== easedOffset.x || depthOffset.y !== easedOffset.y) {
         if (options.easeFactor && !options.animate) {
           easedOffset.x =
             easedOffset.x * options.easeFactor +
-            depthOffset.x * horizontalIncreaseFactor * (1 - options.easeFactor);
+            depthOffset.x * (1 - options.easeFactor);
           easedOffset.y =
             easedOffset.y * options.easeFactor +
             depthOffset.y * (1 - options.easeFactor);
+          if (
+            Math.abs(easedOffset.x - depthOffset.x) < 0.0001 &&
+            Math.abs(easedOffset.y - depthOffset.y) < 0.0001
+          ) {
+            easedOffset = depthOffset;
+          }
         } else {
-          easedOffset = {
-            x: depthOffset.x * horizontalIncreaseFactor,
-            y: depthOffset.y,
-          };
+          easedOffset = depthOffset;
         }
+
         depthFilter.offset = {
           x: easedOffset.x,
           y: easedOffset.y,
         };
+
         renderDirty = true;
       }
     }
@@ -1670,7 +1928,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       });
     };
 
-    this.exportFramesToZip = function (targetCanvas, duration, fps, options) {
+    this.exportFramesToZip = function (targetCanvas, duration, totalFrames, options) {
       return new Promise((resolve, reject) => {
         const canvas = targetCanvas || this.getCanvas(); // Use the provided targetCanvas or default to the viewer's canvas
         if (!canvas) {
@@ -1679,7 +1937,6 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         }
     
         const frames = [];
-        const totalFrames = Math.floor(duration * fps);
         let frame = 0;
         let animationFrameRequest;
     
@@ -1737,8 +1994,6 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
         };
       });
     };
-
-    
 
     this.exportDepthmapAsTexture = function (maxSize) {
       var size = sizeCopy(image.size);

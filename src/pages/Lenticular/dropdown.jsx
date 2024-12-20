@@ -43,8 +43,19 @@ const Dropdown = ({ isOpenDrop, setIsOpenDrop }) => {
                 >
                     <div >
                         <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
-                            {`${user.admin.name} (${user.admin.userId})` }
+                            {`${user.admin.name}` }
                         </button>
+                        {
+                            user.admin.role == 'admin'
+                            ? <button className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item"
+                                onClick={() => {
+                                    navigate('/users');
+                                    window.location.reload();
+                                }}>
+                                {`Admin Page (${user.admin.name})` }
+                            </button>
+                            : <></>
+                        }
                     </div>
                     <div className="flex items-center gap-1.5 py-2 px-3 font-medium duration-300 ease-in-out lg:text-base drop-item">
                         <div className='flex justify-between'>

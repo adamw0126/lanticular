@@ -1,4 +1,3 @@
-import Breadcrumb from '../components/Breadcrumb';
 import axios from 'axios';
 import { useState, ChangeEvent, useEffect } from "react";
 import { toast } from 'react-hot-toast';
@@ -71,31 +70,31 @@ const Images = () => {
   };
 
   // Handle single image selection
-  const handleImageClick = (filename: string, _id: string) => {
-    setSelectedImage(filename); // Set the selected image
-    axios.post('/api/setCurrentImage', { _id })
-      .then(response => {
-        if (response.data.message) {
-          // setImageData(prevData => [...prevData, response.data.image]);
-          toast.success(`It's set correctly image.`, {
-            duration: 4000,
-            position: 'top-right',
-            // Customize styles
-            style: {
-              background: '#333',
-              color: '#fff',
-            },
-            // Add custom icon
-            icon: '👏',
-          });
-        } else {
-          console.log(response.data.message);
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-      });
-  };
+  // const handleImageClick = (filename: string, _id: string) => {
+  //   setSelectedImage(filename); // Set the selected image
+  //   axios.post('/api/setCurrentImage', { _id })
+  //     .then(response => {
+  //       if (response.data.message) {
+  //         // setImageData(prevData => [...prevData, response.data.image]);
+  //         toast.success(`It's set correctly image.`, {
+  //           duration: 4000,
+  //           position: 'top-right',
+  //           // Customize styles
+  //           style: {
+  //             background: '#333',
+  //             color: '#fff',
+  //           },
+  //           // Add custom icon
+  //           icon: '👏',
+  //         });
+  //       } else {
+  //         console.log(response.data.message);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching data:', error);
+  //     });
+  // };
 
   // Sorting and filtering images
   const sortedImages = () => {
@@ -124,23 +123,21 @@ const Images = () => {
       }
       if(lastFirstImg !== imageData[0].filename){
         setSelectedImage(imageData[0].filename);
-        handleImageClick(imageData[0].filename, imageData[0]._id);
+        // handleImageClick(imageData[0].filename, imageData[0]._id);
       } else {
         setSelectedImage(imageData[1].filename);
-        handleImageClick(imageData[1].filename, imageData[1]._id);
+        // handleImageClick(imageData[1].filename, imageData[1]._id);
       }
     }).catch(err => console.log(err));
   }
   return (
     <>
       <div className="mx-auto">
-        <Breadcrumb pageName="Images" />
-
         <div className="grid grid-cols-6 gap-5">
           <div className="col-span-5 xl:col-span-2">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">Upload Image</h3>
+              <div className="border-b border-stroke py-2 px-2 dark:border-strokedark">
+                <h4 className="font-medium text-black dark:text-white">Upload Image</h4>
               </div>
               <div className="p-2">
                 <div className="bg-white p-2 rounded-lg shadow-md w-full max-w-md">
@@ -152,6 +149,18 @@ const Images = () => {
                               file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                 </div>
+              <div className="border-b border-stroke py-1 px-2 dark:border-strokedark">
+                <h4 className="font-medium text-black dark:text-white">Enter News Content</h4>
+              </div>
+              <div className="p-2">
+                <input
+                  type="text"
+                  placeholder="Search by name..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="border border-gray-300 rounded p-2"
+                />
+              </div>
                 <div className="flex justify-end gap-4.5">
                   <button
                     className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1 mt-3"
@@ -162,21 +171,11 @@ const Images = () => {
                 </div>
               </div>
             </div>
-            <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark mt-2">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
-                <h3 className="font-medium text-black dark:text-white">Current Image</h3>
-              </div>
-              <div className="p-2">
-                {
-                  selectedImage ? <img src={uploadUrl + selectedImage} /> : <></>
-                }
-              </div>
-            </div>
           </div>
 
           <div className="col-span-5 xl:col-span-4">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-              <div className="border-b border-stroke py-4 px-7 dark:border-strokedark flex justify-between items-center">
+              <div className="border-b border-stroke py-2 px-2 dark:border-strokedark flex justify-between items-center">
                 <h3 className="font-medium text-black dark:text-white">Image List</h3>
                 <button
                   className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1"
@@ -211,7 +210,7 @@ const Images = () => {
                   <div
                     key={image.filename}
                     className={`relative cursor-pointer ${selectedImage === image.filename ? 'border-4 border-blue-500' : 'border-2 border-transparent'} rounded-lg`}
-                    onClick={() => handleImageClick(image.filename, image._id)}
+                    // onClick={() => handleImageClick(image.filename, image._id)}
                   >
                     <img
                       src={uploadUrl + image.filename}
