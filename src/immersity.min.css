@@ -2092,12 +2092,12 @@ textarea.w-input,textarea.w-select {
 }
 
 body {
-    background-color: #22222d;
+    background-color: #22222f;
     color: var(--light100);
     font-family: Campton Webfont,Arial,sans-serif;
     font-size: 18px;
     font-weight: 300;
-    line-height: 24px
+    /* line-height: 24px */
 }
 
 h1 {
@@ -3804,7 +3804,7 @@ img {
 }
 
 .footer_link:hover {
-    color: var(--secondary)
+    color: rgb(215, 153, 249);
 }
 
 .section_neural-depth {

@@ -2,17 +2,20 @@ import axios from 'axios';
 import { useState, useEffect, lazy } from "react";
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import AddIcon from '@mui/icons-material/Add';
 import Loader from '../../common/Loader/index';
 import UploadLoader from '../../common/Loader/uploadLoading';
 const Depthy = require('../DepthyViewer');
 let gv = require('./config');
 import Dropdown from './dropdown';
+import { useMediaQuery } from 'react-responsive';
 
 const UploadPage = () => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
     const location = useLocation();
     const { pathname } = location;
     const navigate = useNavigate();
+    const isMobile = useMediaQuery({ maxWidth: 440 });
 
     // const [file, setFile] = useState(null);
     const [isOpenDrop, setIsOpenDrop] = useState(false);
@@ -213,12 +216,12 @@ const UploadPage = () => {
                     <nav className="navbar" style={{ position: 'unset' }}>
                         <div className="nav-wrapper">
                             <div className="nav-container">
-                                <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
+                                <a href="/" aria-current="page" style={{paddingLeft: isMobile && '10px'}} className="nav-brand-wrapper w-inline-block w--current">
                                     <img src="./logo.png"
-                                        loading="eager" alt="" className="nav-brand" style={{ height: '2.2rem' }} />
+                                        loading="eager" alt="" className="nav-brand" style={{ height: '1.8rem' }} />
                                 </a>
                                 <div className="nav-container-right">
-                                    <div
+                                    {/* <div
                                         onClick={() => setIsOpenDrop(!isOpenDrop)}
                                         aria-haspopup="true"
                                         aria-expanded={isOpenDrop}
@@ -232,7 +235,7 @@ const UploadPage = () => {
                                                 cursor: "pointer",
                                             }}
                                         />
-                                    </div>
+                                    </div> */}
                                     <Dropdown isOpenDrop={isOpenDrop} setIsOpenDrop={setIsOpenDrop} />
                                 </div>
                             </div>
@@ -241,7 +244,7 @@ const UploadPage = () => {
         
                     <div className="flex flex-col items-center p-6">
                         <div className="border-dashed border-2 border-gray-600 rounded-lg w-full max-w-4xl flex flex-col items-center justify-center py-12 text-center mb-8">
-                            <h2 className="text-white text-2xl font-bold mb-2">Select an image here to start</h2>
+                            <h2 className="text-white text-2xl mb-2" style={{fontFamily:'Campton Webfont,Arial,sans-serif',fontWeight:500}}>Select an image here to start</h2>
                             <p className="text-gray-400 mb-4" style={{ color: 'rgb(240, 76, 120)' }}>Please use Google Chrome browser to ensure a seamless image upload process.</p>
         
                             <input
@@ -250,8 +253,8 @@ const UploadPage = () => {
                                 className="hidden"
                                 id="file-input"
                             />
-                            <label htmlFor="file-input" className="cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded mb-2">
-                                + Upload
+                            <label htmlFor="file-input" className="upload-btn cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded mb-2 w-35">
+                                <AddIcon />&nbsp;&nbsp; Upload
                             </label>
                             {/* <button
                                 onClick={handleUpload}
@@ -275,33 +278,65 @@ const UploadPage = () => {
                     </button> */}
         
                     {isOpen && (
-                        <div
-                            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                            onClick={() => setIsOpen(false)} // Close modal on background click
-                        >
+                        <>{
+                            !isMobile ? 
                             <div
-                                className="bg-white rounded-lg shadow-lg p-6"
-                                onClick={(e) => e.stopPropagation()} // Prevent click propagation
+                                className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-50"
+                                style={{background:'rgba(0, 0, 0, 0.8)'}}
+                                onClick={() => setIsOpen(false)} // Close modal on background click
                             >
-                                <h2 className="text-xl font-bold mb-4 text-black">Would you like to use the previous file?</h2>
-                                <p className="mb-4 text-black">
-                                    The file you were working on is archived.<br />
-                                    Would you like to use this file?
-                                </p>
-                                <div className="flex justify-end space-x-2">
-                                    <button className="bg-gray-500 text-black px-4 py-2 rounded modal-cancel"
-                                        onClick={usePrevFile} style={{ width: 90 }}
-                                    >
-                                        OK
-                                    </button>
-                                    <button className="bg-gray-500 text-black px-4 py-2 rounded modal-cancel"
-                                        onClick={() => setIsOpen(false)}
-                                    >
-                                        Close
-                                    </button>
+                                <div
+                                    className="rounded-lg shadow-lg p-6" style={{background:'rgb(23, 23, 38)'}}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <p className="text-xl mb-8 text-white" style={{fontWeight:500}}>Would you like to use the previous file?</p>
+                                    <p className="mb-8 text-whiteed" style={{fontWeight:400, fontSize:'16px'}}>
+                                        The file you were working on is archived.<br />
+                                        Would you like to use this file?
+                                    </p>
+                                    <div className="flex justify-end space-x-2">
+                                        <button className="bg-gray-500 text-white px-4 py-2 rounded modal-cancel"
+                                            onClick={() => setIsOpen(false)} style={{background:'rgb(50, 50, 67)', borderRadius:'25px', fontWeight:400,fontSize:'15px'}}
+                                        >
+                                            Start New
+                                        </button>
+                                        <button className="bg-gray-500 text-white px-4 py-2 rounded modal-ok"
+                                            onClick={usePrevFile} style={{fontWeight:400,fontSize:'15px'}}
+                                        >
+                                            OK
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                            : <div
+                                className="fixed inset-0 flex items-center justify-center bg-opacity-50 z-50"
+                                style={{background:'rgba(0, 0, 0, 0.8)', padding:'0 10px'}}
+                                onClick={() => setIsOpen(false)} // Close modal on background click
+                            >
+                                <div
+                                    className="rounded-lg shadow-lg p-6" style={{background:'rgb(23, 23, 38)'}}
+                                    onClick={(e) => e.stopPropagation()}
+                                >
+                                    <p className="text-xl mb-8 text-white" style={{fontWeight:500,textAlign:'center'}}>Would you like to use the previous file?</p>
+                                    <div className="mb-8 text-whiteed" style={{fontWeight:400, fontSize:'16px'}}>
+                                        <div style={{padding:'0 20px'}}>The file you were working on is archived.</div>
+                                        <div style={{padding:'0 20px'}}>Would you like to use this file?</div>
+                                    </div>
+                                    <div className="flex space-x-2" style={{flexDirection:'column', gap:10}}>
+                                        <button className="bg-gray-500 text-white px-4 py-2 rounded modal-cancel"
+                                            onClick={() => setIsOpen(false)} style={{background:'rgb(50, 50, 67)', borderRadius:'25px', fontWeight:400,fontSize:'15px',width:'100%'}}
+                                        >
+                                            Start New
+                                        </button>
+                                        <button className="bg-gray-500 text-white px-4 py-2 rounded modal-ok"
+                                            onClick={usePrevFile} style={{fontWeight:400,fontSize:'15px',width:'100%',margin:0}}
+                                        >
+                                            OK
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        }</>
                     )}
                 </div>
             )}

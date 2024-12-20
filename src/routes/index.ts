@@ -6,12 +6,18 @@ const EndingQ = lazy(() => import('../pages/EndingQ'));
 const Images = lazy(() => import('../pages/ImagesManage'));
 const Selling = lazy(() => import('../pages/Selling'));
 const BotIntro = lazy(() => import('../pages/BotIntro'));
+const ContactUs = lazy(() => import('../pages/ContactUsAdmin'));
 
 const coreRoutes = [
   {
     path: '/users',
     title: 'Users',
     component: Users,
+  },
+  {
+    path: '/contact_us',
+    title: 'ContactUs',
+    component: ContactUs
   },
   {
     path: '/botintro',

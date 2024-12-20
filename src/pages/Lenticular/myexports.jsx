@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { Container, Typography, Box, Paper, List, ListItem, ListItemText, ListItemAvatar, Avatar, IconButton, useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import Dropdown from './dropdown';
 
 const MyExports = () => {
     const user = JSON.parse(localStorage.getItem('userInfo'));
@@ -21,29 +22,27 @@ const MyExports = () => {
     
     return (
         <div>
-            <nav className="navbar">
-                    <div className="nav-wrapper">
-                        <div className="nav-container">
-                            <div className="nav-wrapper">
-                                <div className="nav-container">
-                                    <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
-                                        <img src="./logo.png"
-                                            loading="eager" alt="" className="nav-brand" style={{ height: '2.2rem' }} />
-                                    </a>
-                                </div>
-                            </div>
-                            <div className="nav-container-right">
-                                {
-                                    (user == null || !user)
-                                    ? <NavLink to="/signin" style={{width:120}} className="navlink w-inline-block">
-                                        <div>Sign In</div>
-                                    </NavLink>
-                                    : <></>
-                                }
-                                <NavLink to={!user ? "/signin" : "/upload"} style={{width:130}} className="navbar-button w-button">Try Now</NavLink>
+            <nav className="navbar in-navbar">
+                <div className="nav-wrapper">
+                    <div className="nav-container">
+                        <div className="nav-wrapper">
+                            <div className="nav-container">
+                                <a href="/" aria-current="page" style={{paddingLeft: isMobile && '0px'}} className="nav-brand-wrapper w-inline-block w--current">
+                                    <img
+                                        src="./logo.png"
+                                        loading="eager"
+                                        alt=""
+                                        className="nav-brand"
+                                        style={{ height: '1.8rem' }}
+                                    />
+                                </a>
                             </div>
                         </div>
+                        <div className="nav-container-right">
+                            <Dropdown />
+                        </div>
                     </div>
+                </div>
             </nav>
             
             <div className="no-fillpage">

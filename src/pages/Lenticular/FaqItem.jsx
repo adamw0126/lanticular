@@ -29,6 +29,7 @@ const FAQComponent = () => {
                         expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
+                        style={{background: '#141419', color: 'white'}}
                     >
                         <Typography>{faq.quiz}</Typography>
                     </AccordionSummary>

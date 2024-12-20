@@ -165,8 +165,14 @@ span.flatpickr-weekday,
 /* src/App.css */
 .app-container {
   display: flex;
-  height: calc(100vh - 68px);
+  height: calc(100vh - 50px);
   width: 100vw;
+}
+
+@media screen and (max-width: 699px) {
+  .app-container {
+      flex-direction: column;
+  }
 }
 
 .left-section {
@@ -193,10 +199,27 @@ span.flatpickr-weekday,
   color:rgb(175, 175, 182);
 }
 
+@media (max-width: 800px) {
+  .right-sidebar {
+    width: 325px;
+  }
+}
+
+@media (max-width: 699px) {
+  .right-sidebar {
+    width: 100%;
+    padding: 0 11px;
+  }
+}
+
 .sidebar-container .tab {
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 15px;
+}
+
+.sidebar-container {
+  font-weight: 400;
 }
 
 .tab-btn-selected {
@@ -228,6 +251,7 @@ span.flatpickr-weekday,
   border-radius: 5px;
   width: 90px;
   height: 32px;
+  font-weight: 400;
 }
 
 .btn-inactive {

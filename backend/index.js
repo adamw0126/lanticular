@@ -11,8 +11,8 @@ const fs = require("fs");
 
 dotenv.config();
 // Connect to MongoDB
-mongoose.connect('mongodb://127.0.0.1:27017/lanticular')
-// mongoose.connect('mongodb+srv://kellanrowan179:QqOm2f4roaB9RRUw@cluster0.agtt7.mongodb.net/lanticular')
+// mongoose.connect('mongodb://127.0.0.1:27017/lanticular')
+mongoose.connect('mongodb+srv://kellanrowan179:QqOm2f4roaB9RRUw@cluster0.agtt7.mongodb.net/lanticular')
     .then(() => {
         console.log('Connected to MongoDB');
     })
@@ -31,13 +31,13 @@ app.use('/', router);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use("/outputs", express.static(path.join(__dirname, "outputs")));
+app.use("/avatars", express.static(path.join(__dirname, "avatars")));
 
 if (!fs.existsSync(path.join(__dirname, "uploads"))) {
     fs.mkdirSync(path.join(__dirname, "uploads"));
 }
-if (!fs.existsSync(path.join(__dirname, "outputs"))) {
-    fs.mkdirSync(path.join(__dirname, "outputs"));
+if (!fs.existsSync(path.join(__dirname, "avatars"))) {
+    fs.mkdirSync(path.join(__dirname, "avatars"));
 }
 
 // app.use(express.static(path.join(__dirname, '..', 'dist')));

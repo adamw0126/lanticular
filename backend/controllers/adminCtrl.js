@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const AdminMdl = require('../models/Admin');
+const Contact = require('../models/Contact');
 const jwt = require('jsonwebtoken');
 
 // Assuming the images are stored in a folder called 'uploads'
 const dataFolderPath = path.join(__dirname, '..', 'uploads');
+const avatarFolderPath = path.join(__dirname, '..', 'avatars');
 
 const serverUrl = 'localhost:5000';
 
@@ -100,31 +102,29 @@ exports.setPermission = async (req, res) => {
 
 exports.imageSet = async (req, res) => {
     try {
-        // Ensure `req.file` exists
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
         const { filename } = req.file;
-        // Fetch the admin record by userId
         const { userId, img_w, img_h } = req.body;
-        const admin = await AdminMdl.findOne({ userId: userId }); // Ensure userId exists in req.body
+        const admin = await AdminMdl.findOne({ userId: userId });
         if (!admin) {
             return res.status(404).json({ message: 'Unregistered User!' });
         }
-        // Check and delete existing image if present
+
         if (admin.currentImg) {
             const imagePath = path.join(dataFolderPath, admin.currentImg);
 
             if (fs.existsSync(imagePath)) {
                 try {
-                    await fs.promises.unlink(imagePath); // Asynchronous file deletion
+                    await fs.promises.unlink(imagePath);
                 } catch (err) {
                     console.error('Failed to delete existing image:', err);
                     return res.status(500).json({ message: 'Failed to delete existing file', error: err });
                 }
             }
         }
-        // Update admin record
+        
         admin.currentImg = filename;
         admin.w_h.width = Number(img_w);
         admin.w_h.height = Number(img_h);
@@ -179,12 +179,15 @@ exports.changeName = async (req, res) => {
 }
 exports.changePassword = async (req, res) => {
     const { userId, editPassword } = req.body;
+    if(!editPassword){
+        return res.json({ message: 'noValue' });
+    }
     let user = await AdminMdl.findOne({ userId });
     if (user) {
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.currentImg}`;
         user.password = editPassword;
         await user.save();
-        return res.json({ message: 'success', admin: user, filePath: fileUrl });
+        return res.json({ message: 'success' });
     }
 }
 
@@ -242,7 +245,6 @@ exports.getVideoUrl = async (req, res) => {
         const { who } = req.body;
         let user = await AdminMdl.findById(who);
         if (user) {
-            console.log('userVideopath', user.videoPath)
             const fileUrl = `${req.protocol}://${serverUrl}/uploads/${user.videoPath}`;
             return res.json({ message: 'success', filePath: fileUrl });
         }
@@ -255,13 +257,13 @@ exports.oAuth = async(req, res) => {
     console.log(info);
     const name = info.name;
     const userId = info.email;
-    const password = info.sub;
+    const sub = info.sub;
     const avatar = info.picture;
     let admin = await AdminMdl.findOne({ userId });
     if (admin) {
         const fileUrl = `${req.protocol}://${serverUrl}/uploads/${admin.currentImg}`;
         const imagePath = path.join(dataFolderPath, admin.currentImg);
-        if (admin.password == password) {
+        if (admin.sub == sub) {
             if (fs.existsSync(imagePath)) {
                 admin.isLogin = true;
                 if(!admin.avatar){
@@ -282,10 +284,75 @@ exports.oAuth = async(req, res) => {
             res.json({ msg: 'illegal login' })
         }
     } else {
-        admin = new AdminMdl({ name, userId, password, avatar });
+        admin = new AdminMdl({ name, userId, sub, avatar });
         await admin.save();
         res.status(200).json({
             msg: 'signup success',
         });
     }
+}
+
+exports.uploadProfileAvatar = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: 'No file uploaded' });
+        }
+        const { filename } = req.file;
+        const { who } = req.body;
+        const admin = await AdminMdl.findById(who);
+        if (!admin) {
+            return res.status(404).json({ message: 'Unregistered User!' });
+        }
+
+        if (admin.avatar) {
+            let oldAvatar = admin.avatar.split("/").pop();
+            const avatarPath = path.join(avatarFolderPath, oldAvatar);
+
+            if (fs.existsSync(avatarPath)) {
+                try {
+                    await fs.promises.unlink(avatarPath);
+                } catch (err) {
+                    console.error('Failed to delete existing image:', err);
+                    return res.status(500).json({ message: 'Failed to delete existing file', error: err });
+                }
+            }
+        }
+        
+        const avatarUrl = `${req.protocol}://${serverUrl}/avatars/${filename}`;
+        admin.avatar = avatarUrl;
+        await admin.save();
+        
+        const fileUrl = `${req.protocol}://${serverUrl}/uploads/${admin.currentImg}`;
+
+        return res.status(200).json({
+            message: 'File uploaded successfully',
+            admin,
+            filePath: fileUrl,
+        });
+    } catch (error) {
+        console.error('Error during file upload:', error);
+        return res.status(500).json({ message: 'Failed to upload file', error });
+    }
+}
+
+exports.contactUs = async (req, res) => {
+    const { name, email, company, message } = req.body;
+    if(!isValidEmail(email)){
+        return res.json({ message: 'invalid_email_type' });
+    }
+    const user = await AdminMdl.findOne({ userId: email });
+    if(user) {
+        const contactUs = new Contact({
+            name, email, company, message
+        });
+        await contactUs.save();
+        return res.json({ message: 'success' });
+    } else {
+        return res.json({ message: 'notExistUser' });
+    }
+}
+
+exports.getContacts = async (req, res) => {
+    const contacts = await Contact.find();
+    return res.json({ contacts });
 }

@@ -77,11 +77,12 @@ function CheckoutForm({ totalPrice, buyCredits }) {
           sx={{
             backgroundColor: "#FFF",
             borderRadius: 1,
-            p: 2,
+            p: '10px',
             mb: 2,
+            fontFamily: 'Campton Webfont,Arial,sans-serif',
           }}
         >
-          <CardElement options={{ style: { base: { fontSize: "16px" } } }} />
+          <CardElement options={{ style: { base: { fontSize: "15px" } } }} />
         </Box>
 
         {/* <div className="form-group">
@@ -101,7 +102,10 @@ function CheckoutForm({ totalPrice, buyCredits }) {
             color: "white",
             textTransform: "none",
             width: "100%",
-            fontWeight: "bold",
+            fontWeight: "400",
+            fontFamily: 'Campton Webfont,Arial,sans-serif',
+            fontSize: 17,
+            borderRadius: 25
           }}
           disabled={!stripe || isLoading}
         >

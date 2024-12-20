@@ -19,6 +19,8 @@ const Pricing = lazy(() => import('./pages/Lenticular/Pricing'));
 const Newsroom = lazy(() => import('./pages/Lenticular/Newsroom'));
 const Faq = lazy(() => import('./pages/Lenticular/Faq'));
 const Myexports = lazy(() => import('./pages/Lenticular/myexports'));
+const Technology = lazy(() => import('./pages/Lenticular/Technology'));
+const PrivacyPolicy = lazy(() => import('./pages/LandingPages/privacypolicy'));
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,12 +55,14 @@ function App() {
             <Route index path="/account" element={<Suspense fallback={<Loader />}><Account /></Suspense>} />
             <Route index path="/image/depth-map" element={<Suspense fallback={<Loader/>}><DepthMap/></Suspense>} />
             <Route index path="/exports" element={<Suspense fallback={<Loader/>}><Myexports/></Suspense>} />
+            <Route index path="/pricing" element={<Suspense fallback={<Loader />}><Pricing /></Suspense>} />
+            <Route index path="/newsroom" element={<Suspense fallback={<Loader />}><Newsroom /></Suspense>} />
+            <Route index path="/faqs" element={<Suspense fallback={<Loader />}><Faq /></Suspense>} />
+            <Route index path="/technology" element={<Suspense fallback={<Loader/>}><Technology/></Suspense>} />
           </>) : <Route path="*" element={<Navigate to="/" replace />} />
         }
         <Route index path="/contact" element={<Suspense fallback={<Loader />}><Contact /></Suspense>} />
-        <Route index path="/newsroom" element={<Suspense fallback={<Loader />}><Newsroom /></Suspense>} />
-        <Route index path="/faqs" element={<Suspense fallback={<Loader />}><Faq /></Suspense>} />
-        <Route index path="/pricing" element={<Suspense fallback={<Loader />}><Pricing /></Suspense>} />
+        <Route index path="/privacy-policy" element={<Suspense fallback={<Loader />}><PrivacyPolicy /></Suspense>} />
 
         {user !== null && user.admin.role == 'admin' ? (
           <Route element={<DefaultLayout />}>

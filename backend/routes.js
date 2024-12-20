@@ -12,8 +12,18 @@ const storage = multer.diskStorage({
   },
 });
 
+const avatarStore = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'avatars/'); // Specify the folder to store uploaded files
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
+
 // Initialize upload
 const upload = multer({ storage });
+const avatar = multer({ storage: avatarStore });
 
 const interlace_upload = multer({ dest: "interlace_uploads/" });
 
@@ -43,6 +53,9 @@ router.post('/setPermission', AdminController.setPermission);
 router.post('/acc/changeName', AdminController.changeName);
 router.post('/acc/changePassword', AdminController.changePassword);
 router.post('/buyCredits', AdminController.buyCredits);
+router.post('/uploadProfileAvatar', avatar.single('file'), AdminController.uploadProfileAvatar);
+router.post('/contactUs', AdminController.contactUs);
+router.get('/getContacts', AdminController.getContacts);
 
 router.post('/exportsAdd', exportController.exportsAdd);
 router.post('/getHistory', exportController.getHistory);

@@ -30,8 +30,8 @@ const EndingQ = () => {
   return (
     <>
       <div className="mx-auto">
-        <div className="grid grid-cols-6 gap-5">
-          <div className="col-span-5 xl:col-span-2">
+        <div className="grid grid-cols-12 gap-2">
+          <div className="col-span-5 xl:col-span-3">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="border-b border-stroke py-4 px-7 dark:border-strokedark">
                 <h3 className="font-medium text-black dark:text-white">
@@ -49,7 +49,7 @@ const EndingQ = () => {
                     </label>
                     <textarea
                       className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      id="addQ"
+                      id="addQ" style={{fontSize:15}}
                       placeholder="Enter question." rows={3}
                       value={addQuestion}
                       onChange={(e) => setAddQuestion(e.target.value)}
@@ -66,7 +66,7 @@ const EndingQ = () => {
                     </label>
                     <textarea
                       className="w-full rounded border border-stroke bg-gray py-3 px-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
-                      id="addICA"
+                      id="addICA" style={{fontSize:15}}
                       placeholder="Enter answer." rows={4}
                       value={addAnswer}
                       onChange={(e) => setAddAnswer(e.target.value)}
@@ -76,7 +76,7 @@ const EndingQ = () => {
 
                 <div className="flex justify-end gap-4.5">
                   <button
-                    className="flex justify-center rounded bg-primary py-2 px-6 font-medium text-gray hover:shadow-1"
+                    className="flex justify-center rounded bg-primary py-2 px-6 font-small text-gray hover:shadow-1"
                     onClick={async (e) => {
                       e.preventDefault();
                       if(addQuestion !== '' && addAnswer !== ''){
@@ -112,31 +112,32 @@ const EndingQ = () => {
               </div>
             </div>
           </div>
-          <div className="col-span-5 xl:col-span-4">
+          <div className="col-span-5 xl:col-span-9">
             <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
               <div className="p-2">
                 <div className="flex flex-col">
                   <div className="grid grid-cols-2 rounded-sm bg-gray-2 dark:bg-meta-4 sm:grid-cols-3">
-                    <div className="text-center">
-                      <h5 className="text-sm font-medium uppercase xsm:text-base">Questions</h5>
+                    <div className="px-2">
+                      <h5 className="text-sm font-medium xsm:text-base">Questions</h5>
                     </div>
-                    <div className="text-center">
-                      <h5 className="text-sm font-medium uppercase xsm:text-base">Answers</h5>
+                    <div className="px-2">
+                      <h5 className="text-sm font-medium xsm:text-base">Answers</h5>
                     </div>
                   </div>
                 </div>
                 {
                   quizData.map((val, ind) => (
-                    <div className="grid grid-cols-3 sm:grid-cols-3" key={ind}>
-                      <div className="flex items-center justify-center p-1">
-                        <p className="text-black dark:text-white">{val.quiz}</p>
+                    <div className="grid grid-cols-3 sm:grid-cols-12" key={ind}>
+                      <div className="flex items-center p-1 col-span-5 xl:col-span-3">
+                        <p className="text-black dark:text-white" style={{fontSize:15}}>{val.quiz}</p>
                       </div>
-                      <div className="flex items-center justify-center p-1">
-                        <p className="text-black dark:text-white">{val.answer}</p>
+                      <div className="flex items-center p-1 col-span-5 xl:col-span-8">
+                        <p className="text-black dark:text-white" style={{fontSize:15}}>{val.answer}</p>
                       </div>
-                      <div className='flex item-center justify-center p-1'>
+                      <div className='flex items-center justify-center p-1'>
                         <button
-                          className="flex justify-center items-center rounded bg-primary py-1 px-4 font-medium text-gray hover:shadow-1"
+                          className="flex justify-center items-center rounded bg-primary py-1 px-4 font-small text-gray hover:shadow-1"
+                          style={{fontSize:15, height:'max-content'}}
                           onClick={() => {
                             axios.post('/api/deleteFAQ', val)
                               .then(response => {

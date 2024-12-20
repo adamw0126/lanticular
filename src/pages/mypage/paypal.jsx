@@ -15,16 +15,20 @@ const PayPalButton = ({ totalPrice, buyCredits }) => {
       // Initialize the PayPal button after the script has loaded
       window.paypal
         .Buttons({
+          fundingSource: window.paypal.FUNDING.PAYPAL,
           createOrder: (data, actions) => {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    value: totalPrice, // Replace with your item price
+            console.log('data.paymentSource ===>', data.paymentSource)
+            if(data.paymentSource != "card"){
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: totalPrice, // Replace with your item price
+                    },
                   },
-                },
-              ],
-            });
+                ],
+              });
+            }
           },
           onApprove: (data, actions) => {
             return actions.order.capture().then((details) => {
@@ -50,7 +54,7 @@ const PayPalButton = ({ totalPrice, buyCredits }) => {
       // Cleanup script when component unmounts
     //   document.body.removeChild(script);
     };
-  }, []);
+  }, [totalPrice, buyCredits]);
 
   return <div ref={paypalRef}></div>;
 };

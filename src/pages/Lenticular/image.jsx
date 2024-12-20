@@ -8,11 +8,14 @@ import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import ManageAccountsOutlinedIcon from '@mui/icons-material/ManageAccountsOutlined';
 import LiveHelpOutlinedIcon from '@mui/icons-material/LiveHelpOutlined';
 import NewspaperOutlinedIcon from '@mui/icons-material/NewspaperOutlined';
+import AddIcon from '@mui/icons-material/Add';
 import Loader from '../../common/Loader/index';
 import UploadLoader from '../../common/Loader/uploadLoading';
 require('../DepthyViewer');
 let gv = require('./config');
 import Dropdown from './dropdown';
+import {useMediaQuery} from 'react-responsive';
+import ImageDialog from './imageDialog';
 
 let stage = null;
 let viewerContainer = null;
@@ -27,11 +30,17 @@ const ImageComponent = () => {
     const { pathname } = location;
     const navigate = useNavigate();
 
-    const [file, setFile] = useState(null);
+    // const [file, setFile] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [downloadProgress, setDownloadProgress] = useState(0); // For tracking download progress
     const dropdownRef = useRef(null);
+    const isMobile = useMediaQuery({ maxWidth: 440 });
+    const [newModal, setNewModal] = useState(false);
+
+    const newFileUploadModal = () => {
+        setNewModal(!newModal);
+    }
 
     useEffect(() => {
         // console.log('user ===>', user)
@@ -70,7 +79,7 @@ const ImageComponent = () => {
 
     const handleFileChange = async (e) => {
         if (e.target.files && e.target.files.length > 0) {
-            setFile(e.target.files[0]);
+            // setFile(e.target.files[0]);
             const seletedFile = e.target.files[0];
             console.log('file===>', seletedFile)
             await handleUpload(seletedFile);
@@ -125,7 +134,7 @@ const ImageComponent = () => {
                 if(depthGen === 'success'){
                     toast.success(response.data.message);
                 }
-                setFile(null);
+                // setFile(null);
                 // localStorage.setItem('userInfo', JSON.stringify(response.data));
                 // navigate('/image'); // Navigate after success
                 window.location.reload()
@@ -362,22 +371,24 @@ const ImageComponent = () => {
                 <UploadLoader progress={downloadProgress} />
             ) : (
                 <div>
-                    <nav className="navbar" style={{position: 'unset', paddingRight:10, padding:'5px 0'}}>
+                    <nav className="navbar" style={{position: 'unset', paddingRight:10, padding:'5px 0', paddingLeft: isMobile && '0px'}}>
                         <div className="nav-wrapper">
                             <div className="nav-container">
-                                <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
+                                <a href="/" aria-current="page" style={{paddingLeft: isMobile && '0px'}} className="nav-brand-wrapper w-inline-block w--current">
                                     <img src="./logo.png" 
-                                        loading="eager" alt="" className="nav-brand" style={{height:'2.2rem'}} />
+                                        loading="eager" alt="" className="nav-brand" style={{height:'1.8rem'}} />
                                 </a>
-                                <div className="nav-container-right" style={{paddingRight:10}}>
-                                    <input
+                                <div className="nav-container-right" style={{paddingRight: isMobile ? 0 : 10}}>
+                                    {/* <input
                                         type="file"
                                         onChange={handleFileChange}
                                         className="hidden"
                                         id="file-input"
-                                    />
-                                    <label htmlFor="file-input" className="cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded" style={{marginBottom:0}}>
-                                        + Upload
+                                    /> */}
+                                    <label htmlFor="file-input" className="upload-btn cursor-pointer bg-white text-black hover:bg-gray-200 transition-colors py-2 px-4 rounded" style={{marginBottom:0, width: isMobile && 40}} onClick={newFileUploadModal}>
+                                        {
+                                            useMediaQuery({maxWidth: '500px'}) ? <AddIcon /> : <><AddIcon />&nbsp;&nbsp; Upload</>
+                                        }
                                     </label>
                                     {/* <button 
                                         onClick={handleUpload}
@@ -385,7 +396,7 @@ const ImageComponent = () => {
                                     >
                                         {file != null ? 'Play' : 'No File'}
                                     </button> */}
-                                    <div
+                                    {/* <div
                                         onClick={() => setIsOpen(!isOpen)}
                                         aria-haspopup="true"
                                         aria-expanded={isOpen}
@@ -399,7 +410,7 @@ const ImageComponent = () => {
                                                 cursor: "pointer",
                                             }}
                                         />
-                                    </div>
+                                    </div> */}
                                     <Dropdown isOpenDrop={isOpen} setIsOpenDrop={setIsOpen} />
                                 </div>
                             </div>
@@ -409,6 +420,7 @@ const ImageComponent = () => {
                     <div className="flex flex-col items-center">
                         <AnimationPage />
                     </div>
+                    <ImageDialog open={newModal} onClose={() => setNewModal(false)} />
                 </div>
             )}
         </div>

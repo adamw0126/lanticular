@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink } from 'react-router-dom';
-import SectionTools from './LandingPages/sectionTools'
-import SectionApp from './LandingPages/sectionApp'
-import SectionCreators from './LandingPages/sectionCreators'
-import SectionNeural from './LandingPages/sectionNeural'
-import Footer from './LandingPages/footer'
-import LandingDropdown from './LandingPages/landingDrop'
+import SectionTools from '../LandingPages/sectionTools'
+import Footer from '../LandingPages/footer'
+import LandingDropdown from '../LandingPages/landingDrop'
+import TechnologyItems from './TechComponent';
+import Dropdown from "./dropdown";
 import { useMediaQuery } from 'react-responsive';
 
 const HomeLanding = () => {
@@ -14,7 +13,7 @@ const HomeLanding = () => {
     let [logoSize, setLogoSize] = useState(0);
     const videoRef = useRef(null);
     const [isOpen, setIsOpen] = useState(false);
-    const isMobile = useMediaQuery({ maxWidth: 440 });
+    const isMobile = useMediaQuery({ maxWidth: 991 });
 
     window.onscroll = function () {
         dspByScroll();
@@ -50,30 +49,30 @@ const HomeLanding = () => {
                             </a>
                             <div className="nav-container-right">
                                 {
-                                    (user == null || !user)
-                                    ? <NavLink to="/signin" className="navlink w-inline-block">
-                                        <div>Sign In</div>
-                                    </NavLink>
-                                    : <></>
+                                    isMobile
+                                    ? <>{
+                                        user ? <Dropdown /> : <><div data-w-id="5818b669-6883-997b-dea1-ad9b9145464a" className="burger" onClick={() => setIsOpen(!isOpen)} style={{cursor:'pointer'}}>
+                                            <div className="burger-line-top"></div>
+                                            <div className="burger-line-middle"></div>
+                                            <div className="burger-line-bottom"></div>
+                                        </div>
+                                        <LandingDropdown isOpen={isOpen} setIsOpen={setIsOpen} /></>
+                                    }</> : <>{
+                                        user
+                                        ? <Dropdown />
+                                        : <NavLink
+                                            to={!user ? "/signin" : "/upload"}
+                                            style={{ width: 130 }}
+                                            className="navbar-button w-button"
+                                        >
+                                            Try Now
+                                        </NavLink>
+                                    }</>
                                 }
-                                <NavLink to={!user ? "/signin" : "/upload"} className="navbar-button w-button">Try Now</NavLink>
-                                <div data-w-id="5818b669-6883-997b-dea1-ad9b9145464a" className="burger" onClick={() => setIsOpen(!isOpen)} style={{cursor:'pointer'}}>
-                                    <div className="burger-line-top"></div>
-                                    <div className="burger-line-middle"></div>
-                                    <div className="burger-line-bottom"></div>
-                                </div>
-                                <LandingDropdown isOpen={isOpen} setIsOpen={setIsOpen} />
                             </div>
                         </div>
                     </div>
                     <div className="menu" style={{willChange: 'opacity',opacity:`calc(0 + ${valByScroll/378})`}}>
-                        <a href="/#motion" className="navlink w-inline-block">
-                            <div>2D to 3DMotion</div>
-                        </a>
-                        <NavLink to="/contact" className="navlink w-inline-block">Contact Us</NavLink>
-                        <a href="https://discord.gg/tokenstormfun" target="_blank" className="navlink w-inline-block">
-                            <div>Discord</div>
-                        </a>
                     </div>
                     <div className="navbar_menu-mobile">
                         <div className="container_large-copy">
@@ -121,8 +120,8 @@ const HomeLanding = () => {
                             <div className="hero-container">
                                 <div className="padding-global">
                                     <div className="container align-center gap-small" style={{willChange: 'opacity',opacity:`calc(0 + ${valByScroll/378})`}}>
-                                        <h1 id="w-node-_4146ae31-843e-6155-a933-3f3f49478edd-7b225824" className="heading-style-h1 large">Lenticular Content</h1>
-                                        <p id="w-node-_4146ae31-843e-6155-a933-3f3f49478edf-7b225824" className="text-size-xlarge">The platform converting images into 3D</p>
+                                        <h2 id="w-node-_4146ae31-843e-6155-a933-3f3f49478edd-7b225824" className="heading-style-h1 large" style={{fontSize:'3.5rem'}}>Neural Depth Technology</h2>
+                                        <p id="w-node-_4146ae31-843e-6155-a933-3f3f49478edf-7b225824" className="text-size-xlarge">Our Technology is the future of visual interactions. It enables an immersive experience tailored to your device, whether you're viewing on your mobile, a head-mounted display or a 3D display.</p>
                                     </div>
                                 </div>
                             </div>
@@ -135,23 +134,12 @@ const HomeLanding = () => {
                                     </video>
                                 </div>
                             </div>
-                            <div className="popup-wrap">
-                                <div className={`popup-inner ${valByScroll > 0 ? 'nonPopup' : 'dspPopup'}`}>
-                                    <div className="popup-text_wrap">
-                                        <p className="text-size-medium">Generate 2D image 3D Motion with Lenticular</p>
-                                    </div>
-                                    <a href="/#motion" className="button w-button">Learn More</a>
-                                </div>
-                            </div>
                         </div>
                     </section>
 
-                    <SectionTools />
-                    {/* <SectionApp /> */}
-                    {/* <SectionCreators /> */}
-                    {/* <SectionNeural /> */}
-                    <Footer />
-                    <img src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/663a4754e856524d9a4f0337_bg.svg" loading="eager" alt="" className="bg-home"/>
+                    <TechnologyItems />
+                    {/* <Footer /> */}
+                    {/* <img src="https://cdn.prod.website-files.com/6639cdf0b2b3923e2887386c/663a4754e856524d9a4f0337_bg.svg" loading="eager" alt="" className="bg-home"/> */}
                     <div className="loader"></div>
                 </div>
         </div>
