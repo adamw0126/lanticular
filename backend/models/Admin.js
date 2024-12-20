@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const adminsSchema = new mongoose.Schema({
     name: { type: String, default: '', required: true },
     userId: { type: String, default: '', unique : true, required: true },
-    password: { type: String, default: '', required: true },
+    sub: { type: String, default: '' },
+    password: { type: String, default: '' },
     role: { type: String, default: '' },
     currentImg: { type: String, default: '' },
     depthImage: { type: String, default: '' },
@@ -14,7 +15,7 @@ const adminsSchema = new mongoose.Schema({
     },
     videoPath: { type: String, default: '' },
     isLogin: { type: Boolean, default: false },
-    permission: { type: Boolean, default: false },
+    permission: { type: Boolean, default: true },
     credits: { type: Number, default: 100 },
     exports: { type: Array, default: [] },
     joinedAt: { type: Date, default: Date.now }

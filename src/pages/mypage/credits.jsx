@@ -6,10 +6,12 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import BuyCreditsModal from './BuyCreditsModal';
+import useMediaQuery from 'react-responsive';
 
 function Credits() {
     const user = JSON.parse(localStorage.getItem('userInfo'));
     const navigate = useNavigate();
+    const isMobile = useMediaQuery({maxWidth:600});
 
     const [editName, setEditName] = useState('');
     const [editPassword, setEditPassword] = useState('');
@@ -77,7 +79,9 @@ function Credits() {
             </div>
             <div style={{padding: '20px 5px 0', fontWeight:'normal'}}>Documentation</div>
             <div className="edit_bar launch">
-                <div>How Lenticular Credits Work</div>
+                <div onClick={() => {
+                    navigate('/pricing');
+                }}>How Lenticular Credits Work</div>
                 <div>
                     <span style={{paddingRight:'5px'}}><LaunchIcon /></span>
                 </div>

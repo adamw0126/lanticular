@@ -1,5 +1,6 @@
-import React, { useState, lazy, useEffect } from 'react';
+import React, { useState, lazy, useEffect, useCallback } from 'react';
 import { Button, Grid, Slider } from '@mui/material';
+import PropTypes from 'prop-types';
 import {
   Download,
   ArrowUpward,
@@ -17,6 +18,8 @@ import {
   FileUpload,
   Refresh,
 } from '@mui/icons-material';
+import CloseOutlinedIcon from '@mui/icons-material/CloseOutlined';
+import BrushIcon from '@mui/icons-material/Brush';
 import axios from 'axios';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -26,6 +29,13 @@ import Switch from '@mui/material/Switch';
 import { useNavigate, useNavigation } from 'react-router-dom';
 import { grey } from '@mui/material/colors';
 import PopupCreate from './popupMade';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
+import Box from '@mui/material/Box';
+import { useMediaQuery } from 'react-responsive';
 
 require('../DepthyViewer');
 require('../DepthyDrawer');
@@ -34,8 +44,8 @@ let gv = require('./config');
 let viewerContainer = null;
 
 function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
-  
-  const [isFocus, setIsFocus] = useState(false);
+
+  const isMobile = useMediaQuery({ maxWidth: 699 });
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -153,6 +163,7 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     { label: 'Zoom Right', icon: <ArrowRight />, style: 'Zoom Right' },
     { label: 'Custom', icon: <Tune />, style: 'Custom' },
   ];
+
   const [previewStyle, setPreviewStyle] = useState('Circle');
   const [amountValue, setAmountValue] = useState(50); // Default value is 50
   const [lengthValue, setLengthValue] = useState(5);
@@ -170,6 +181,16 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   const [showFPSInput, setShowFPSInput] = useState(false); // State for displaying input
   const [fPSInputValue, setFPSInputValue] = useState(10); // Value of the input field
   const [isEyeDrop, setIsEyeDrop] = useState(false);
+  const [manualState, setManualState] = useState('linear');
+  const [manualExpand, setManualExpand] = useState(false);
+
+  const handleManual = (param) => {
+    setManualState(param);
+  }
+
+  const handleManualExpand = () => {
+    setManualExpand(!manualExpand);
+  };
 
   const handleEyeDrop = () => {
     setIsEyeDrop(true);
@@ -204,12 +225,12 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     setShowFPSInput((prev) => !prev); // Toggle input visibility
   };
 
-  const handleSliderChange = (event, newValue) => {
+  const handleSliderChange = useCallback((event, newValue) => {
     setAmountValue(newValue); // Update state with the new slider value
     gv.viewer.setOptions({
       animateScale: { x: (newValue * 3) / 100, y: (newValue * 3) / 100 },
     });
-  };
+  }, []);
 
   const handleLengthChange = (event, newValue) => {
     setLengthValue(newValue); // Update state with the new slider value
@@ -238,14 +259,14 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
       });
   };
 
-  const handleGreyChange = (event, newValue) => {
+  const handleGreyChange = useCallback((event, newValue) => {
     setGreyValue(newValue); // Update state with the new slider value
-  };
-  const handleGreyCommit = (event, newValue) => {
+  }, []);
+  const handleGreyCommit = useCallback((event, newValue) => {
     gv.drawer.setOptions({
       depth: greyValue,
     });
-  };
+  }, []);
 
   const handleHardChange = (event, newValue) => {
     setHardValue(newValue); // Update state with the new slider value
@@ -282,11 +303,11 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
   };
 
   const amountValues = [
-    { value: 0, label: '0%' },
-    { value: 25, label: '25%' },
-    { value: 50, label: '50%' },
-    { value: 75, label: '75%' },
-    { value: 100, label: '100%' },
+    { value: 0 },
+    { value: 25 },
+    { value: 50 },
+    { value: 75 },
+    { value: 100 },
   ];
 
   const handleDepthUpload = (event) => {
@@ -328,828 +349,2012 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     }
   };
 
+  const [value, setValue] = React.useState('1');
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const tabBtn = { fontSize: '9px', lineHeight: '20px', width: '56px', color: 'rgb(224, 194, 255)' };
+
+  const [depth_mob, setDepthmob] = useState(false);
+  const handleDepth_mob = () => {
+    setDepthmob(!depth_mob);
+  }
+
   return (
     <div>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-        >
-          Animation Style
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <div
-            className="loop"
-            style={{
-              display: 'flex',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span>Loop</span>
-            <Switch />
-          </div>
-          <div
-            className="reverse"
-            style={{
-              display: 'flex',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }}
-          >
-            <span>Reverse</span>
-            <Switch />
-          </div>
-          <Grid container spacing={2}>
-            {buttons.map((button, index) => (
-              <Grid item xs={4} key={index}>
-                <Button
-                  variant="contained"
-                  style={{
-                    width: '96px',
-                    height: '96px',
-                    color: 'gray',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(157, 170, 231, 0.2)',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    flexDirection: 'column',
-                    fontSize: '8px',
-                  }}
-                  className={
-                    previewStyle == button.style ? 'btn-active' : 'btn-inactive'
+      {
+        isMobile ?
+          <>
+            <Box sx={{ width: '100%' }}>
+              {
+                manualExpand
+                ?
+                <Box sx={{ borderColor: 'divider' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '5px 0' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        width: '100%',
+                        fontSize: '14px',
+                        gap: 10,
+                      }}
+                    >
+                      <button className="btn-setting" onClick={() => handleManual('circular')}
+                        style={{ background: manualState == 'circular' ? 'rgba(157, 170, 231, 0.2)' : '', color: manualState == 'circular' ? 'rgb(224, 194, 255)' : '' }}>Circular</button>
+                      <button className="btn-setting" onClick={() => handleManual('linear')}
+                        style={{ background: manualState == 'linear' ? 'rgba(157, 170, 231, 0.2)' : '', color: manualState == 'linear' ? 'rgb(224, 194, 255)' : '' }}>Linear</button>
+                      <button className="btn-setting" onClick={() => handleManual('arc')}
+                        style={{ background: manualState == 'arc' ? 'rgba(157, 170, 231, 0.2)' : '', color: manualState == 'arc' ? 'rgb(224, 194, 255)' : '' }}>Arc</button>
+                    </div>
+                    <div onClick={handleManualExpand} className='manual-close'><CloseOutlinedIcon /></div>
+                  </div>
+                  {
+                    manualState == 'linear'
+                      ? <div className='manual-content'>
+                        <div>
+                          <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                            Starting Point
+                          </p>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                            Ending Point
+                          </p>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                      </div>
+                      : <></>
                   }
-                  onClick={() => {
-                    switch (index) {
-                      case 0:
-                        gv.viewer.setOptions({
-                          animateStyle: 'vertical',
-                        });
-                        break;
-                      case 1:
-                        gv.viewer.setOptions({
-                          animateStyle: 'horizontal',
-                        });
-                        break;
-                      case 2:
-                        gv.viewer.setOptions({
-                          animateStyle: 'circle',
-                        });
-                        break;
+                  {
+                    manualState == 'circular'
+                      ? <div className='manual-content'>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Amplitude-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Amplitude-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Amplitude-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div style={{ marginTop: 10 }}>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Phase-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Phase-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Phase-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                      </div>
+                      : <></>
+                  }
+                  {
+                    manualState == 'arc'
+                      ? <div className='manual-content'>
+                        <div>
+                          <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                            Starting Point
+                          </p>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                            Middle Point
+                          </p>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                            Ending Point
+                          </p>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-X</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Y</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                        <div>
+                          <div>
+                            <span style={{ fontSize: '12px' }}>Position-Z</span>
+                          </div>
+                          <Slider
+                            aria-label="Temperature"
+                            defaultValue={0}
+                            valueLabelDisplay="auto"
+                            shiftStep={0.01}
+                            step={0.01}
+                            marks={positionValues}
+                            min={-1}
+                            max={1}
+                          />
+                        </div>
+                      </div>
+                      : <></>
+                  }
+                </Box>
+                :
+                depth_mob
+                ?
+                <Box sx={{ borderColor: 'divider' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '5px 0' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        width: '100%',
+                        fontSize: '14px',
+                        gap: 10,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          width: '100%',
+                          alignItems: 'center',
+                          gap: '30px',
+                          paddingLeft: '15px'
+                        }}
+                      >
+                        <div
+                          id='eyeDrop'
+                          style={{
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: 'rgb(128, 128, 128)',
+                            borderRadius: '4px',
+                          }}
+                        ></div>
+                        <div>
+                          <Colorize
+                            onClick={handleEyeDrop}
+                            sx={{
+                              cursor: 'default',
+                              color: isEyeDrop ? 'white' : 'grey',
+                              '&:hover': {
+                                cursor: 'pointer',
+                                color: 'white',
+                              },
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div onClick={handleDepth_mob} className='manual-close'><CloseOutlinedIcon /></div>
+                  </div>
+                  <div
+                    className="sidebar-container"
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      flexDirection: 'column',
+                      padding: '0 12px'
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ width: '50%', fontSize: 12, fontWeight: 400 }}>Depth</div>
+                      </div>
+                      <Slider
+                        valueLabelDisplay="auto"
+                        shiftStep={0.01}
+                        step={0.01}
+                        marks={[{ value: 0 }]}
+                        min={0}
+                        max={1}
+                        value={greyValue}
+                        onChange={handleGreyChange}
+                        onChangeCommitted={handleGreyCommit}
+                      />
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '13px',
+                        }}
+                      >
+                        <span>Far(black)</span>
+                        <span>Near(white)</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ width: '50%', fontSize: 12, fontWeight: 400 }}>Size</div>
+                      </div>
+                      <Slider
+                        aria-label="Temperature"
+                        valueLabelDisplay="auto"
+                        shiftStep={1}
+                        step={1}
+                        marks={[{ value: 0 }]}
+                        min={5}
+                        max={100}
+                        value={bsizeValue}
+                        onChange={handleBsizeChange}
+                        onChangeCommitted={handleBsizeCommit}
+                      />
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '13px',
+                        }}
+                      >
+                        <span>Small</span>
+                        <span>Large</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ width: '50%', fontSize: 12, fontWeight: 400 }}>Hardness</div>
+                      </div>
+                      <Slider
+                        aria-label="Temperature"
+                        valueLabelDisplay="auto"
+                        shiftStep={0.01}
+                        step={0.01}
+                        marks={[{ value: 0 }]}
+                        min={0}
+                        max={1}
+                        value={hardValue}
+                        onChange={handleHardChange}
+                        onChangeCommitted={handleHardCommit}
+                      />
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '13px',
+                        }}
+                      >
+                        <span>Soft</span>
+                        <span>Hard</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                        }}
+                      >
+                        <div style={{ width: '50%', fontSize: 12, fontWeight: 400 }}>Opacity</div>
+                      </div>
+                      <Slider
+                        aria-label="Temperature"
+                        valueLabelDisplay="auto"
+                        shiftStep={0.01}
+                        step={0.01}
+                        marks={[{ value: 0 }]}
+                        min={0}
+                        max={1}
+                        value={opacityValue}
+                        onChange={handleOpacityChange}
+                        onChangeCommitted={handleOpacityCommit}
+                      />
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          fontSize: '13px',
+                        }}
+                      >
+                        <span>0</span>
+                        <span>1</span>
+                      </div>
+                    </div>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-evenly',
+                        justifySelf: 'flex-end',
+                        width: '100%',
+                        gap: '24px',
+                        bottom: '0px',
+                        paddingBottom: '3px'
+                      }}
+                    >
+                      <button className="btn-enabled" onClick={discardDepth}>
+                        Discard
+                      </button>
+                      {/* <button className={isSavable ? 'btn-enabled' : 'btn-disabled'} onClick={handleDepthSave}> */}
+                      <button className="btn-enabled" onClick={handleDepthSave}>
+                        Save
+                      </button>
+                    </div>
+                  </div>
+                </Box>
+                :
+                <Box sx={{ borderColor: 'divider' }}>
+                  <TabContext value={value} className='bar-tab'>
+                    <Box sx={{ borderColor: 'divider', overflowX: 'auto', whiteSpace: 'nowrap', scrollBehavior: 'smooth' }}>
+                      <TabPanel value="1">
+                        <Box>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <div>
+                              <span>Loop</span>
+                              <Switch />
+                            </div>
+                            <div>
+                              <span>Reverse</span>
+                              <Switch />
+                            </div>
+                          </Box>
+                          <Box sx={{ padding: '5px', display: 'flex', alignItems: 'center', gap: '8px', flexFlow: 'row', minWidth: '100%', justifyContent: 'space-between', overflowX: 'scroll' }}>
+                            {buttons.map((button, index) => (
+                              <Button
+                                key={index}
+                                variant="contained"
+                                style={{
+                                  width: '63px',
+                                  height: '60px',
+                                  minWidth: '63px',
+                                  color: 'gray',
+                                  backgroundColor: 'transparent',
+                                  border: '1px solid rgba(157, 170, 231, 0.2)',
+                                  display: 'flex',
+                                  justifyContent: 'center',
+                                  borderRadius: '8px',
+                                  alignItems: 'center',
+                                  flexDirection: 'column',
+                                  fontSize: '8px',
+                                }}
+                                className={
+                                  previewStyle == button.style ? 'btn-active' : 'btn-inactive'
+                                }
+                                onClick={() => {
+                                  switch (index) {
+                                    case 0:
+                                      gv.viewer.setOptions({
+                                        animateStyle: 'vertical',
+                                      });
+                                      break;
+                                    case 1:
+                                      gv.viewer.setOptions({
+                                        animateStyle: 'horizontal',
+                                      });
+                                      break;
+                                    case 2:
+                                      gv.viewer.setOptions({
+                                        animateStyle: 'circle',
+                                      });
+                                      break;
+                                    case 9:
+                                      setManualExpand(true);
+                                      break;
 
-                      default:
-                        break;
-                    }
-                    setPreviewStyle(button.style);
-                  }}
-                >
-                  {button.icon}
-                  {button.label}
-                </Button>
-              </Grid>
-            ))}
-          </Grid>
-          {/* <div style={{ marginTop: '20px', color: 'rgb(224, 194, 255)', fontSize: '16px', cursor:'pointer' }}>
-                        <ReportProblem />
-                        <span>Need help using animation styles?</span>
-                    </div> */}
-          <Accordion
-            style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}
-          >
-            <AccordionSummary
-              expandIcon={
-                <ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />
+                                    default:
+                                      break;
+                                  }
+                                  setPreviewStyle(button.style);
+                                }}
+                              >
+                                {button.icon}
+                                {button.label}
+                              </Button>
+                            ))}
+                          </Box>
+                        </Box>
+                      </TabPanel>
+                      <TabPanel value="2">
+                        <Box sx={{ padding: '10px 10px 0' }}>
+                          <Slider
+                            marks={amountValues}
+                            min={0}
+                            max={100}
+                            value={amountValue}
+                            onChange={handleSliderChange}
+                            id="amountSlider"
+                          />
+                          <div>{amountValue}%</div>
+                        </Box>
+                      </TabPanel>
+                      <TabPanel value="3">
+                        <Box sx={{ padding: '10px 10px 0' }}>
+                          <Slider
+                            marks={animLengthValues}
+                            min={1}
+                            max={10}
+                            value={lengthValue}
+                            onChange={handleLengthChange}
+                          />
+                          <div>{lengthValue}s</div>
+                        </Box>
+                      </TabPanel>
+                      <TabPanel value="4">
+                        <Box sx={{ padding: '10px 10px 0' }}>
+                          <button
+                            style={{
+                              backgroundColor: 'rgb(50, 50, 67)',
+                              height: '40px',
+                              width: '100%',
+                              borderRadius: '20px',
+                              color: `${isFocus ? 'rgb(224, 194, 255)' : 'white'}`,
+                            }}
+                            onClick={() => {
+                              if (!isFocus) {
+                                setIsFocus(true);
+                                document.getElementById('depth-viewer').style.pointerEvents = 'auto';
+                                document.getElementsByTagName('canvas')[0].style.cursor =
+                                  'crosshair';
+                                gv.temp_amt_mot = amountValue;
+                                handleSliderChange(null, 0);
+                              } else {
+                                handleSliderChange(null, gv.temp_amt_mot);
+                              }
+                              setAmountValue(0);
+                              const event = new Event('change', { bubbles: true });
+                              document.getElementById('amountSlider').value = 0; // Set the new value
+                              document.getElementById('amountSlider').dispatchEvent(event);
+                              document
+                                .getElementById('amountSlider')
+                                .dispatchEvent(new Event('change'));
+                            }}
+                          >
+                            Set focus point
+                          </button>
+                          <Box sx={{ paddingTop: '10px' }}>
+                            <Slider
+                              id={'focusSlider'}
+                              marks={focusPointValues}
+                              min={0}
+                              max={100}
+                              value={focusValue}
+                              onChange={handleFocusChange}
+                            />
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                              <div>Close</div>
+                              <div>Far</div>
+                            </div>
+                          </Box>
+                        </Box>
+                      </TabPanel>
+                      <TabPanel value="5">
+                        <Box sx={{ padding: '10px 10px 0' }}>
+                          <Slider
+                            marks={dilationValues}
+                            min={0}
+                            max={100}
+                            onChange={handleDilationChange}
+                            onChangeCommitted={handleDilationCommit}
+                            value={dilationValue}
+                          />
+                          <div>{dilationValue}%</div>
+                        </Box>
+                      </TabPanel>
+                      <TabPanel value="6">
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', height: '70px' }}>
+                          <hr className='distance-depth' />
+                          <Box className="map-btn" onClick={handleDepth_mob}>
+                            <div><BrushIcon /></div>
+                            DepthMap Editor
+                          </Box>
+                          <hr className='distance-depth' />
+                          <Box className="map-btn" onClick={depthUpload}>
+                            <div>
+                              <FileUpload />
+                            </div>
+                            Replace DepthMap
+                            <input
+                              id="depth_upload"
+                              type="file"
+                              style={{ display: 'none' }}
+                              onChange={handleDepthUpload}
+                            />
+                          </Box>
+                          <hr className='distance-depth' />
+                          <Box className="map-btn" onClick={restoreDepth}>
+                            <div>
+                              <Refresh />
+                            </div>
+                            Restore to default
+                          </Box>
+                          <hr className='distance-depth' />
+                        </Box>
+                      </TabPanel>
+                      <TabPanel value="7">
+                        <Box>
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '50px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Button
+                              color=""
+                              variant="contained"
+                              style={{
+                                width: '74%',
+                                borderRadius: '20px',
+                                border: '1px solid',
+                              }}
+                              onClick={() => {
+                                gv.viewer
+                                  .exportToPNG()
+                                  .then(() => {
+                                    return exportslistAdd('.png'); // Call the API after setting the state
+                                  })
+                                  .then(() => {
+                                    console.log('PNG exported and downloaded successfully.');
+                                  })
+                                  .catch((error) => {
+                                    console.error(
+                                      'Error during PNG export or API call:',
+                                      error,
+                                    );
+                                  });
+                              }}
+                            >
+                              <Download /> Export (.png)
+                            </Button>
+                          </div>
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '50px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Button
+                              color=""
+                              variant="contained"
+                              style={{
+                                width: '74%',
+                                borderRadius: '20px',
+                                border: '1px solid',
+                              }}
+                              onClick={() => {
+                                if (!gv.viewer) {
+                                  console.error('Viewer is not available.');
+                                  return;
+                                }
+                                if (!gv.viewer.exportWebmAnimation) {
+                                  console.error('exportWebmAnimation is not a function.');
+                                  return;
+                                }
+
+                                let options = gv.viewer.getOptions();
+                                delete options.size;
+                                gv.origin_viewer.setOptions(options);
+                                gv.viewer
+                                  .exportWebmAnimation(
+                                    document.getElementById('origin_view'),
+                                    5,
+                                    60,
+                                    gv.viewer.getOptions(),
+                                  )
+                                  .then((blob) => {
+                                    console.log(
+                                      'MP4 export completed:',
+                                      gv.viewer.getOptions(),
+                                    );
+                                    return exportslistAdd('.mp4');
+                                  })
+                                  .catch((error) => {
+                                    console.error('Export failed:', error);
+                                  });
+                              }}
+                            >
+                              <Download /> Export (.MP4)
+                            </Button>
+                          </div>
+                          <div
+                            style={{
+                              width: '100%',
+                              height: '50px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Button
+                              color=""
+                              variant="contained"
+                              style={{
+                                width: '74%',
+                                borderRadius: '20px',
+                                border: '1px solid',
+                              }}
+                              onClick={() => setOpen(true)}
+                            >
+                              <Download /> Export (Frames)
+                            </Button>
+                          </div>
+                        </Box>
+                      </TabPanel>
+                      {/* -------------------------------------------------------------------------------------- */}
+                      <TabList onChange={handleChange} variant="scrollable" scrollButtons="auto" aria-label="scrollable tabs example">
+                        <Tab label="Animation Style" value="1" sx={tabBtn} className='bar-tab-btn' />
+                        <Tab label="Amount of Motion" value="2" sx={tabBtn} className='bar-tab-btn' />
+                        <Tab label="Animation Length" value="3" sx={tabBtn} className='bar-tab-btn' />
+                        <Tab label="Focus Point" value="4" sx={tabBtn} className='bar-tab-btn' />
+                        <Tab label="Edge Dilation" value="5" sx={tabBtn} className='bar-tab-btn' />
+                        <Tab label="Depth Map" value="6" sx={tabBtn} className='bar-tab-btn' />
+                        <Tab label="Export" value="7" sx={tabBtn} className='bar-tab-btn' />
+                      </TabList>
+                    </Box>
+                  </TabContext>
+                </Box>
               }
-              sx={{ color: 'rgb(175, 175, 182)' }}
-            >
-              Manual Settings
-            </AccordionSummary>
-            <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  width: '100%',
-                  fontSize: '14px',
-                }}
-              >
-                <button className="btn-setting">Circular</button>
-                <button className="btn-setting">Linear</button>
-                <button className="btn-setting">Arc</button>
-              </div>
-              <div>
-                <p style={{ fontSize: '16px', marginTop: '10px' }}>
-                  Starting Point
-                </p>
-                <div>
-                  <span style={{ fontSize: '12px' }}>Position-X</span>
-                </div>
-                <Slider
-                  aria-label="Temperature"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  shiftStep={0.01}
-                  step={0.01}
-                  marks={positionValues}
-                  min={-1}
-                  max={1}
-                />
-              </div>
-              <div>
-                <div>
-                  <span style={{ fontSize: '12px' }}>Position-Y</span>
-                </div>
-                <Slider
-                  aria-label="Temperature"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  shiftStep={0.01}
-                  step={0.01}
-                  marks={positionValues}
-                  min={-1}
-                  max={1}
-                />
-              </div>
-              <div>
-                <div>
-                  <span style={{ fontSize: '12px' }}>Position-Z</span>
-                </div>
-                <Slider
-                  aria-label="Temperature"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  shiftStep={0.01}
-                  step={0.01}
-                  marks={positionValues}
-                  min={-1}
-                  max={1}
-                />
-              </div>
-              <div>
-                <p style={{ fontSize: '16px', marginTop: '10px' }}>
-                  Ending Point
-                </p>
-                <div>
-                  <span style={{ fontSize: '12px' }}>Position-X</span>
-                </div>
-                <Slider
-                  aria-label="Temperature"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  shiftStep={0.01}
-                  step={0.01}
-                  marks={positionValues}
-                  min={-1}
-                  max={1}
-                />
-              </div>
-              <div>
-                <div>
-                  <span style={{ fontSize: '12px' }}>Position-Y</span>
-                </div>
-                <Slider
-                  aria-label="Temperature"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  shiftStep={0.01}
-                  step={0.01}
-                  marks={positionValues}
-                  min={-1}
-                  max={1}
-                />
-              </div>
-              <div>
-                <div>
-                  <span style={{ fontSize: '12px' }}>Position-Z</span>
-                </div>
-                <Slider
-                  aria-label="Temperature"
-                  defaultValue={0}
-                  valueLabelDisplay="auto"
-                  shiftStep={0.01}
-                  step={0.01}
-                  marks={positionValues}
-                  min={-1}
-                  max={1}
-                />
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-        >
-          Amount of Motion
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <Slider
-            marks={amountValues}
-            min={0}
-            max={100}
-            value={amountValue}
-            onChange={handleSliderChange}
-            id="amountSlider"
-          />
-          <div>{amountValue}%</div>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-        >
-          Animation Length
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <Slider
-            marks={animLengthValues}
-            min={1}
-            max={10}
-            value={lengthValue}
-            onChange={handleLengthChange}
-          />
-          <div>{lengthValue}s</div>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-        >
-          Focus Point
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <button
-            style={{
-              backgroundColor: 'rgb(50, 50, 67)',
-              height: '40px',
-              width: '100%',
-              borderRadius: '20px',
-              color: `${isFocus ? 'rgb(224, 194, 255)' : 'white'}`,
-            }}
-            onClick={() => {
-              if (!isFocus) {
-                setIsFocus(true);
-                document.getElementById('depth-viewer').style.pointerEvents = 'auto';
-                document.getElementsByTagName('canvas')[0].style.cursor =
-                  'crosshair';
-                gv.temp_amt_mot = amountValue;
-                handleSliderChange(null, 0);
-              } else {
-                handleSliderChange(null, gv.temp_amt_mot);
-              }
-              setAmountValue(0);
-              const event = new Event('change', { bubbles: true });
-              document.getElementById('amountSlider').value = 0; // Set the new value
-              document.getElementById('amountSlider').dispatchEvent(event);
-              document
-                .getElementById('amountSlider')
-                .dispatchEvent(new Event('change'));
-            }}
-          >
-            Set focus point
-          </button>
-          <Slider
-            id={'focusSlider'}
-            marks={focusPointValues}
-            min={0}
-            max={100}
-            value={focusValue}
-            onChange={handleFocusChange}
-          />
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div>Close</div>
-            <div>Far</div>
-          </div>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-        >
-          Edge Dilation
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <Slider
-            marks={dilationValues}
-            min={0}
-            max={100}
-            onChange={handleDilationChange}
-            onChangeCommitted={handleDilationCommit}
-            value={dilationValue}
-          />
-          <div>{dilationValue}%</div>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-          //   onClick={() => navigate('./depth-map')}
-        >
-          DepthMap Editor
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <div style={{ padding: 0 }}>
-            <div
-              className="loop"
+            </Box>
+          </>
+          :
+          <>
+            <Accordion
               style={{
-                display: 'flex',
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
               }}
             >
-              <span>Depthmap</span>
-              <Switch onChange={handleSetIsDepth} />
-            </div>
-            {/* <div className="reverse" style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}><span>Anaglyph</span><Switch onChange={handleSetIsAnagl}/></div> */}
-          </div>
-          <div
-            className="sidebar-container"
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              flexDirection: 'column',
-            }}
-          >
-            <div
-              style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: '20px',
-                }}
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
               >
-                <div style={{ width: '50%' }}>Depth</div>
+                Animation Style
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
                 <div
+                  className="loop"
                   style={{
                     display: 'flex',
-                    width: '50%',
+                    width: '100%',
                     alignItems: 'center',
-                    justifyContent: 'space-evenly',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span>Loop</span>
+                  <Switch />
+                </div>
+                <div
+                  className="reverse"
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <span>Reverse</span>
+                  <Switch />
+                </div>
+                <Grid container spacing={2}>
+                  {buttons.map((button, index) => (
+                    <Grid item xs={4} key={index}>
+                      <Button
+                        variant="contained"
+                        style={{
+                          width: '94px',
+                          height: '94px',
+                          color: 'gray',
+                          backgroundColor: 'transparent',
+                          border: '1px solid rgba(157, 170, 231, 0.2)',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          flexDirection: 'column',
+                          fontSize: '8px',
+                          borderRadius: '10px'
+                        }}
+                        className={
+                          previewStyle == button.style ? 'btn-active' : 'btn-inactive'
+                        }
+                        onClick={() => {
+                          switch (index) {
+                            case 0:
+                              gv.viewer.setOptions({
+                                animateStyle: 'vertical',
+                              });
+                              break;
+                            case 1:
+                              gv.viewer.setOptions({
+                                animateStyle: 'horizontal',
+                              });
+                              break;
+                            case 2:
+                              gv.viewer.setOptions({
+                                animateStyle: 'circle',
+                              });
+                              break;
+                            case 9:
+                              setManualExpand(true);
+                              break;
+
+                            default:
+                              break;
+                          }
+                          setPreviewStyle(button.style);
+                        }}
+                      >
+                        {button.icon}
+                        {button.label}
+                      </Button>
+                    </Grid>
+                  ))}
+                </Grid>
+                {/* <div style={{ marginTop: '20px', color: 'rgb(224, 194, 255)', fontSize: '16px', cursor:'pointer' }}>
+                          <ReportProblem />
+                          <span>Need help using animation styles?</span>
+                      </div> */}
+                <Accordion expanded={manualExpand} onChange={handleManualExpand}
+                  style={{ backgroundColor: 'transparent', padding: 0, margin: 0 }}
+                >
+                  <AccordionSummary
+                    expandIcon={
+                      <ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />
+                    }
+                    sx={{ color: 'rgb(175, 175, 182)' }}
+                  >
+                    Manual Settings
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        width: '100%',
+                        fontSize: '14px',
+                      }}
+                    >
+                      <button className="btn-setting" onClick={() => handleManual('circular')}
+                        style={{ background: manualState == 'circular' ? 'rgba(157, 170, 231, 0.2)' : '', color: manualState == 'circular' ? 'rgb(224, 194, 255)' : '' }}>Circular</button>
+                      <button className="btn-setting" onClick={() => handleManual('linear')}
+                        style={{ background: manualState == 'linear' ? 'rgba(157, 170, 231, 0.2)' : '', color: manualState == 'linear' ? 'rgb(224, 194, 255)' : '' }}>Linear</button>
+                      <button className="btn-setting" onClick={() => handleManual('arc')}
+                        style={{ background: manualState == 'arc' ? 'rgba(157, 170, 231, 0.2)' : '', color: manualState == 'arc' ? 'rgb(224, 194, 255)' : '' }}>Arc</button>
+                    </div>
+                    {
+                      manualState == 'linear'
+                        ? <div>
+                          <div>
+                            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                              Starting Point
+                            </p>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                              Ending Point
+                            </p>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                        </div>
+                        : <></>
+                    }
+                    {
+                      manualState == 'circular'
+                        ? <div style={{ marginTop: 10 }}>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Amplitude-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Amplitude-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Amplitude-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div style={{ marginTop: 10 }}>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Phase-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Phase-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Phase-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                        </div>
+                        : <></>
+                    }
+                    {
+                      manualState == 'arc'
+                        ? <div>
+                          <div>
+                            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                              Starting Point
+                            </p>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                              Middle Point
+                            </p>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <p style={{ fontSize: '16px', marginTop: '10px' }}>
+                              Ending Point
+                            </p>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-X</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Y</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                          <div>
+                            <div>
+                              <span style={{ fontSize: '12px' }}>Position-Z</span>
+                            </div>
+                            <Slider
+                              aria-label="Temperature"
+                              defaultValue={0}
+                              valueLabelDisplay="auto"
+                              shiftStep={0.01}
+                              step={0.01}
+                              marks={positionValues}
+                              min={-1}
+                              max={1}
+                            />
+                          </div>
+                        </div>
+                        : <></>
+                    }
+                  </AccordionDetails>
+                </Accordion>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              style={{
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
+              >
+                Amount of Motion
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                <Slider
+                  marks={amountValues}
+                  min={0}
+                  max={100}
+                  value={amountValue}
+                  onChange={handleSliderChange}
+                  id="amountSlider"
+                />
+                <div>{amountValue}%</div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              style={{
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
+              >
+                Animation Length
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                <Slider
+                  marks={animLengthValues}
+                  min={1}
+                  max={10}
+                  value={lengthValue}
+                  onChange={handleLengthChange}
+                />
+                <div>{lengthValue}s</div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              style={{
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
+              >
+                Focus Point
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                <button
+                  style={{
+                    backgroundColor: 'rgb(50, 50, 67)',
+                    height: '40px',
+                    width: '100%',
+                    borderRadius: '20px',
+                    color: `${isFocus ? 'rgb(224, 194, 255)' : 'white'}`,
+                  }}
+                  onClick={() => {
+                    if (!isFocus) {
+                      setIsFocus(true);
+                      document.getElementById('depth-viewer').style.pointerEvents = 'auto';
+                      document.getElementsByTagName('canvas')[0].style.cursor =
+                        'crosshair';
+                      gv.temp_amt_mot = amountValue;
+                      handleSliderChange(null, 0);
+                    } else {
+                      handleSliderChange(null, gv.temp_amt_mot);
+                    }
+                    setAmountValue(0);
+                    const event = new Event('change', { bubbles: true });
+                    document.getElementById('amountSlider').value = 0; // Set the new value
+                    document.getElementById('amountSlider').dispatchEvent(event);
+                    document
+                      .getElementById('amountSlider')
+                      .dispatchEvent(new Event('change'));
+                  }}
+                >
+                  Set focus point
+                </button>
+                <Slider
+                  id={'focusSlider'}
+                  marks={focusPointValues}
+                  min={0}
+                  max={100}
+                  value={focusValue}
+                  onChange={handleFocusChange}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <div>Close</div>
+                  <div>Far</div>
+                </div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              style={{
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
+              >
+                Edge Dilation
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                <Slider
+                  marks={dilationValues}
+                  min={0}
+                  max={100}
+                  onChange={handleDilationChange}
+                  onChangeCommitted={handleDilationCommit}
+                  value={dilationValue}
+                />
+                <div>{dilationValue}%</div>
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
+              style={{
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
+              //   onClick={() => navigate('./depth-map')}
+              >
+                DepthMap Editor
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                <div style={{ padding: 0 }}>
+                  <div
+                    className="loop"
+                    style={{
+                      display: 'flex',
+                      width: '100%',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <span>Depthmap</span>
+                    <Switch onChange={handleSetIsDepth} />
+                  </div>
+                  {/* <div className="reverse" style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between' }}><span>Anaglyph</span><Switch onChange={handleSetIsAnagl}/></div> */}
+                </div>
+                <div
+                  className="sidebar-container"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    flexDirection: 'column',
                   }}
                 >
                   <div
-                    id='eyeDrop'
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      backgroundColor: 'rgb(128, 128, 128)',
-                      borderRadius: '4px',
-                    }}
-                  ></div>
-                  <div>
-                  <Colorize
-                    onClick={handleEyeDrop}
-                    sx={{
-                      cursor: 'default',
-                      color: isEyeDrop ? 'white' : 'grey',
-                      '&:hover': {
-                        cursor: 'pointer',
-                        color: 'white',
-                      },
-                    }}
-                  />
-                  </div>
-                  {/* <div>
+                    style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '20px',
+                      }}
+                    >
+                      <div style={{ width: '50%', fontWeight: '400', fontSize: '14px' }}>Depth</div>
+                      <div
+                        style={{
+                          display: 'flex',
+                          width: '50%',
+                          alignItems: 'center',
+                          justifyContent: 'space-evenly',
+                        }}
+                      >
+                        <div
+                          id='eyeDrop'
+                          style={{
+                            width: '20px',
+                            height: '20px',
+                            backgroundColor: 'rgb(128, 128, 128)',
+                            borderRadius: '4px',
+                          }}
+                        ></div>
+                        <div>
+                          <Colorize
+                            onClick={handleEyeDrop}
+                            sx={{
+                              cursor: 'default',
+                              color: isEyeDrop ? 'white' : 'grey',
+                              '&:hover': {
+                                cursor: 'pointer',
+                                color: 'white',
+                              },
+                            }}
+                          />
+                        </div>
+                        {/* <div>
                     <Gavel/>
                   </div> */}
+                      </div>
+                    </div>
+                    <Slider
+                      valueLabelDisplay="auto"
+                      shiftStep={0.01}
+                      step={0.01}
+                      marks={[{ value: 0 }]}
+                      min={0}
+                      max={1}
+                      value={greyValue}
+                      onChange={handleGreyChange}
+                      onChangeCommitted={handleGreyCommit}
+                    />
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                      }}
+                    >
+                      <span>Far(black)</span>
+                      <span>Near(white)</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '20px',
+                      }}
+                    >
+                      <div style={{ width: '50%', fontWeight: '400', fontSize: '14px' }}>Size</div>
+                    </div>
+                    <Slider
+                      aria-label="Temperature"
+                      valueLabelDisplay="auto"
+                      shiftStep={1}
+                      step={1}
+                      marks={[{ value: 0 }]}
+                      min={5}
+                      max={100}
+                      value={bsizeValue}
+                      onChange={handleBsizeChange}
+                      onChangeCommitted={handleBsizeCommit}
+                    />
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                      }}
+                    >
+                      <span>Small</span>
+                      <span>Large</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '20px',
+                      }}
+                    >
+                      <div style={{ width: '50%', fontWeight: '400', fontSize: '14px' }}>Hardness</div>
+                    </div>
+                    <Slider
+                      aria-label="Temperature"
+                      valueLabelDisplay="auto"
+                      shiftStep={0.01}
+                      step={0.01}
+                      marks={[{ value: 0 }]}
+                      min={0}
+                      max={1}
+                      value={hardValue}
+                      onChange={handleHardChange}
+                      onChangeCommitted={handleHardCommit}
+                    />
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                      }}
+                    >
+                      <span>Soft</span>
+                      <span>Hard</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        marginTop: '20px',
+                      }}
+                    >
+                      <div style={{ width: '50%', fontWeight: '400', fontSize: '14px' }}>Opacity</div>
+                    </div>
+                    <Slider
+                      aria-label="Temperature"
+                      valueLabelDisplay="auto"
+                      shiftStep={0.01}
+                      step={0.01}
+                      marks={[{ value: 0 }]}
+                      min={0}
+                      max={1}
+                      value={opacityValue}
+                      onChange={handleOpacityChange}
+                      onChangeCommitted={handleOpacityCommit}
+                    />
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '14px',
+                      }}
+                    >
+                      <span>0</span>
+                      <span>1</span>
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginTop: '20px',
+                      borderBottom: '1px solid gray',
+                      paddingBottom: '20px',
+                    }}
+                  >
+                    <span>Replace Depth Map</span>
+                    <span style={{ cursor: 'pointer' }} onClick={depthUpload}>
+                      <FileUpload />
+                    </span>
+                    <input
+                      id="depth_upload"
+                      type="file"
+                      style={{ display: 'none' }}
+                      onChange={handleDepthUpload}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      marginTop: '20px',
+                      borderBottom: '1px solid gray',
+                      paddingBottom: '20px',
+                    }}
+                  >
+                    <span>Restore Depth Map</span>
+                    <span style={{ cursor: 'pointer' }} onClick={restoreDepth}>
+                      <Refresh />
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-evenly',
+                      justifySelf: 'flex-end',
+                      width: '100%',
+                      gap: '24px',
+                      bottom: '0px',
+                      paddingTop: '20px',
+                    }}
+                  >
+                    <button className="btn-enabled" onClick={discardDepth}>
+                      Discard
+                    </button>
+                    {/* <button className={isSavable ? 'btn-enabled' : 'btn-disabled'} onClick={handleDepthSave}> */}
+                    <button className="btn-enabled" onClick={handleDepthSave}>
+                      Save
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <Slider
-                valueLabelDisplay="auto"
-                shiftStep={0.01}
-                step={0.01}
-                marks={[{ value: 0 }]}
-                min={0}
-                max={1}
-                value={greyValue}
-                onChange={handleGreyChange}
-                onChangeCommitted={handleGreyCommit}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '14px',
-                }}
-              >
-                <span>Far(black)</span>
-                <span>Near(white)</span>
-              </div>
-            </div>
-            <div
-              style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: '20px',
-                }}
-              >
-                <div style={{ width: '50%' }}>Size</div>
-              </div>
-              <Slider
-                aria-label="Temperature"
-                valueLabelDisplay="auto"
-                shiftStep={1}
-                step={1}
-                marks={[{ value: 0 }]}
-                min={5}
-                max={100}
-                value={bsizeValue}
-                onChange={handleBsizeChange}
-                onChangeCommitted={handleBsizeCommit}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '14px',
-                }}
-              >
-                <span>Small</span>
-                <span>Large</span>
-              </div>
-            </div>
-            <div
-              style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: '20px',
-                }}
-              >
-                <div style={{ width: '50%' }}>Hardness</div>
-              </div>
-              <Slider
-                aria-label="Temperature"
-                valueLabelDisplay="auto"
-                shiftStep={0.01}
-                step={0.01}
-                marks={[{ value: 0 }]}
-                min={0}
-                max={1}
-                value={hardValue}
-                onChange={handleHardChange}
-                onChangeCommitted={handleHardCommit}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '14px',
-                }}
-              >
-                <span>Soft</span>
-                <span>Hard</span>
-              </div>
-            </div>
-            <div
-              style={{ borderBottom: '1px solid gray', paddingBottom: '20px' }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginTop: '20px',
-                }}
-              >
-                <div style={{ width: '50%' }}>Opacity</div>
-              </div>
-              <Slider
-                aria-label="Temperature"
-                valueLabelDisplay="auto"
-                shiftStep={0.01}
-                step={0.01}
-                marks={[{ value: 0 }]}
-                min={0}
-                max={1}
-                value={opacityValue}
-                onChange={handleOpacityChange}
-                onChangeCommitted={handleOpacityCommit}
-              />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  fontSize: '14px',
-                }}
-              >
-                <span>0</span>
-                <span>1</span>
-              </div>
-            </div>
-            <div
+              </AccordionDetails>
+            </Accordion>
+            <Accordion
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: '20px',
-                borderBottom: '1px solid gray',
-                paddingBottom: '20px',
+                backgroundColor: 'transparent',
+                borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
               }}
             >
-              <span>Replace Depth Map</span>
-              <span style={{ cursor: 'pointer' }} onClick={depthUpload}>
-                <FileUpload />
-              </span>
-              <input
-                id="depth_upload"
-                type="file"
-                style={{ display: 'none' }}
-                onChange={handleDepthUpload}
-              />
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: '20px',
-                borderBottom: '1px solid gray',
-                paddingBottom: '20px',
-              }}
-            >
-              <span>Restore Depth Map</span>
-              <span style={{ cursor: 'pointer' }} onClick={restoreDepth}>
-                <Refresh />
-              </span>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-evenly',
-                justifySelf: 'flex-end',
-                width: '100%',
-                gap: '24px',
-                bottom: '0px',
-                paddingTop: '20px',
-              }}
-            >
-              <button className="btn-enabled" onClick={discardDepth}>
-                Discard
-              </button>
-              {/* <button className={isSavable ? 'btn-enabled' : 'btn-disabled'} onClick={handleDepthSave}> */}
-              <button className="btn-enabled" onClick={handleDepthSave}>
-                Save
-              </button>
-            </div>
-          </div>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        style={{
-          backgroundColor: 'transparent',
-          borderBottom: '1px solid rgba(172, 180, 215, 0.3)',
-        }}
-      >
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
-          sx={{ color: 'rgb(175, 175, 182)' }}
-        >
-          Export
-        </AccordionSummary>
-        <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
-          <div
-            style={{
-              width: '100%',
-              height: '60px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Button
-              color=""
-              variant="contained"
-              style={{
-                width: '74%',
-                borderRadius: '20px',
-                border: '1px solid',
-              }}
-              onClick={() => {
-                gv.viewer
-                  .exportToPNG()
-                  .then(() => {
-                    return exportslistAdd('.png'); // Call the API after setting the state
-                  })
-                  .then(() => {
-                    console.log('PNG exported and downloaded successfully.');
-                  })
-                  .catch((error) => {
-                    console.error(
-                      'Error during PNG export or API call:',
-                      error,
-                    );
-                  });
-              }}
-            >
-              <Download /> Export (.png)
-            </Button>
-          </div>
-          <div
-            style={{
-              width: '100%',
-              height: '60px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Button
-              color=""
-              variant="contained"
-              style={{
-                width: '74%',
-                borderRadius: '20px',
-                border: '1px solid',
-              }}
-              onClick={() => {
-                if (!gv.viewer) {
-                  console.error('Viewer is not available.');
-                  return;
-                }
-                if (!gv.viewer.exportWebmAnimation) {
-                  console.error('exportWebmAnimation is not a function.');
-                  return;
-                }
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: 'rgb(175, 175, 182)' }} />}
+                sx={{ color: 'rgb(175, 175, 182)' }}
+              >
+                Export
+              </AccordionSummary>
+              <AccordionDetails sx={{ color: 'rgb(175, 175, 182)' }}>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Button
+                    color=""
+                    variant="contained"
+                    style={{
+                      width: '74%',
+                      borderRadius: '20px',
+                      border: '1px solid',
+                    }}
+                    onClick={() => {
+                      gv.viewer
+                        .exportToPNG()
+                        .then(() => {
+                          return exportslistAdd('.png'); // Call the API after setting the state
+                        })
+                        .then(() => {
+                          console.log('PNG exported and downloaded successfully.');
+                        })
+                        .catch((error) => {
+                          console.error(
+                            'Error during PNG export or API call:',
+                            error,
+                          );
+                        });
+                    }}
+                  >
+                    <Download /> Export (.png)
+                  </Button>
+                </div>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Button
+                    color=""
+                    variant="contained"
+                    style={{
+                      width: '74%',
+                      borderRadius: '20px',
+                      border: '1px solid',
+                    }}
+                    onClick={() => {
+                      if (!gv.viewer) {
+                        console.error('Viewer is not available.');
+                        return;
+                      }
+                      if (!gv.viewer.exportWebmAnimation) {
+                        console.error('exportWebmAnimation is not a function.');
+                        return;
+                      }
 
-                let options = gv.viewer.getOptions();
-                delete options.size;
-                gv.origin_viewer.setOptions(options);
-                gv.viewer
-                  .exportWebmAnimation(
-                    document.getElementById('origin_view'),
-                    5,
-                    60,
-                    gv.viewer.getOptions(),
-                  )
-                  .then((blob) => {
-                    console.log(
-                      'MP4 export completed:',
-                      gv.viewer.getOptions(),
-                    );
-                    return exportslistAdd('.mp4');
-                  })
-                  .catch((error) => {
-                    console.error('Export failed:', error);
-                  });
-              }}
-            >
-              <Download /> Export (.MP4)
-            </Button>
-          </div>
-          <div
-            style={{
-              width: '100%',
-              height: '60px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Button
-              color=""
-              variant="contained"
-              style={{
-                width: '74%',
-                borderRadius: '20px',
-                border: '1px solid',
-              }}
-              onClick={() => {
-                if (!gv.viewer) {
-                  console.error('Viewer is not available.');
-                  return;
-                }
-                if (!gv.viewer.exportFramesToZip) {
-                  console.error('exportWebmAnimation is not a function.');
-                  return;
-                }
+                      let options = gv.viewer.getOptions();
+                      delete options.size;
+                      gv.origin_viewer.setOptions(options);
+                      gv.viewer
+                        .exportWebmAnimation(
+                          document.getElementById('origin_view'),
+                          5,
+                          60,
+                          gv.viewer.getOptions(),
+                        )
+                        .then((blob) => {
+                          console.log(
+                            'MP4 export completed:',
+                            gv.viewer.getOptions(),
+                          );
+                          return exportslistAdd('.mp4');
+                        })
+                        .catch((error) => {
+                          console.error('Export failed:', error);
+                        });
+                    }}
+                  >
+                    <Download /> Export (.MP4)
+                  </Button>
+                </div>
+                {/* <div
+                  style={{
+                    width: '100%',
+                    height: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Button
+                    color=""
+                    variant="contained"
+                    style={{
+                      width: '74%',
+                      borderRadius: '20px',
+                      border: '1px solid',
+                    }}
+                    onClick={() => {
+                      if (!gv.viewer) {
+                        console.error('Viewer is not available.');
+                        return;
+                      }
+                      if (!gv.viewer.exportFramesToZip) {
+                        console.error('exportWebmAnimation is not a function.');
+                        return;
+                      }
 
-                let options = gv.viewer.getOptions();
-                delete options.size;
-                gv.origin_viewer.setOptions(options);
-                toggleInput();
-              }}
-            >
-              <Download /> Export (Frames)
-            </Button>
-          </div>
-          {showFPSInput && (
-            <div
-              style={{
-                display: 'flex',
-                gap: '10px',
-                marginTop: '10px',
-                justifyContent: 'center',
-              }}
-            >
-              <input
-                type="number"
-                value={fPSInputValue}
-                onChange={handleFPSInputChange}
-                placeholder="Enter FPS"
-                min={1}
-                max={30}
-                style={{
-                  width: '140px',
-                  padding: '5px',
-                  borderRadius: '5px',
-                  border: '1px solid gray',
-                }}
-              />
-              <button
-                onClick={handleConfirmFrame}
-                style={{
-                  padding: '5px 10px',
-                  border: '1px solid gray',
-                  borderRadius: '5px',
-                }}
-              >
-                OK
-              </button>
-            </div>
-          )}
+                      let options = gv.viewer.getOptions();
+                      delete options.size;
+                      gv.origin_viewer.setOptions(options);
+                      toggleInput();
+                    }}
+                  >
+                    <Download /> Export (Frames)
+                  </Button>
+                </div> */}
+                {/* {showFPSInput && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: '10px',
+                      marginTop: '10px',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <input
+                      type="number"
+                      value={fPSInputValue}
+                      onChange={handleFPSInputChange}
+                      placeholder="Enter FPS"
+                      min={1}
+                      max={30}
+                      style={{
+                        width: '140px',
+                        padding: '5px',
+                        borderRadius: '5px',
+                        border: '1px solid gray',
+                      }}
+                    />
+                    <button
+                      onClick={handleConfirmFrame}
+                      style={{
+                        padding: '5px 10px',
+                        border: '1px solid gray',
+                        borderRadius: '5px',
+                      }}
+                    >
+                      OK
+                    </button>
+                  </div>
+                )} */}
 
-          <div
-            style={{
-              width: '100%',
-              height: '60px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Button
-              color=""
-              variant="contained"
-              style={{
-                width: '74%',
-                borderRadius: '20px',
-                border: '1px solid',
-              }}
-              onClick={() => setOpen(true)}
-            >
-              <Download /> Interlation
-            </Button>
-          </div>
-        </AccordionDetails>
-      </Accordion>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '60px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Button
+                    color=""
+                    variant="contained"
+                    style={{
+                      width: '74%',
+                      borderRadius: '20px',
+                      border: '1px solid',
+                    }}
+                    onClick={() => setOpen(true)}
+                  >
+                    <Download /> Export (Frames)
+                  </Button>
+                </div>
+              </AccordionDetails>
+            </Accordion></>
+      }
 
-      <PopupCreate open={open} onClose={() => setOpen(false)} />
+      <PopupCreate open={open} onClose={() => setOpen(false)} fPSInputValue={fPSInputValue} setFPSInputValue={setFPSInputValue} handleConfirmFrame={handleConfirmFrame} />
     </div>
   );
 }
@@ -1291,4 +2496,3 @@ function getColorFromCanvas(canvas, x, y) {
 
   return color;
 }
-

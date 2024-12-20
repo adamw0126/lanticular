@@ -69,7 +69,7 @@ const Users = () => {
                   <h5 className="text-sm font-medium xsm:text-base">Name</h5>
                 </div>
                 <div className="p-0.5 text-center">
-                  <h5 className="text-sm font-medium xsm:text-base">UserId</h5>
+                  <h5 className="text-sm font-medium xsm:text-base">Email</h5>
                 </div>
                 <div className="p-0.5 text-center">
                   <h5 className="text-sm font-medium xsm:text-base">Password</h5>
@@ -89,7 +89,7 @@ const Users = () => {
                   </div>
 
                   <div className="flex items-center justify-center p-0.5">
-                    <p className="text-meta-3">{admin.userId}</p>
+                    <p className="text-meta-3" style={{fontSize:'small'}}>{admin.userId}</p>
                   </div>
 
                   <div className="hidden items-center justify-center p-0.5 sm:flex">
@@ -98,6 +98,7 @@ const Users = () => {
                     id="reward" type='password'
                     placeholder="Password"
                     value={admin.password}
+                    style={{fontSize:'medium'}}
                     onChange={(e) => changePassword(admin.userId, e)}
                   />
                   </div>
@@ -150,7 +151,7 @@ const Users = () => {
                         }
                       }}
                     >
-                      UPDATE
+                      Update
                     </button>
                   </div>
                 </div>

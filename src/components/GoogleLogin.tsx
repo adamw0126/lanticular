@@ -25,14 +25,12 @@ function GoogleLoginComponent() {
                 }, 500);
             } else {
                 console.log(res.data);
-                
-                toast.error(res.data.msg);
+                // toast.error(res.data.msg);
             }
             if(res.data.msg == "signup success") {
                 handleLogin(data);
             }
         })
-
     }
 
   return (

@@ -31,13 +31,13 @@ app.use('/', router);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use("/outputs", express.static(path.join(__dirname, "outputs")));
+app.use("/avatars", express.static(path.join(__dirname, "avatars")));
 
 if (!fs.existsSync(path.join(__dirname, "uploads"))) {
     fs.mkdirSync(path.join(__dirname, "uploads"));
 }
-if (!fs.existsSync(path.join(__dirname, "outputs"))) {
-    fs.mkdirSync(path.join(__dirname, "outputs"));
+if (!fs.existsSync(path.join(__dirname, "avatars"))) {
+    fs.mkdirSync(path.join(__dirname, "avatars"));
 }
 
 // app.use(express.static(path.join(__dirname, '..', 'dist')));

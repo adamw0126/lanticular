@@ -1,11 +1,13 @@
 import * as React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import axios from 'axios';
+import SubFooter from '../LandingPages/footerSub';
 
 import Profile from './profile';
 import Credits from './credits';
@@ -15,6 +17,7 @@ const Account = () => {
     const [value, setValue] = React.useState(0);
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+    const navigate = useNavigate();
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -22,44 +25,44 @@ const Account = () => {
 
     return (
         <div className='myacc'>
-            <nav className="navbar in-navbar">
+            <nav className="navbar in-navbar" style={{position:'unset'}}>
                 <div className="nav-wrapper">
                     <div className="nav-container">
                         <div className="nav-wrapper">
                             <div className="nav-container">
-                                <a href="/" aria-current="page" className="nav-brand-wrapper w-inline-block w--current">
+                                <a href="/" aria-current="page" style={{paddingLeft: isMobile && '0px'}} className="nav-brand-wrapper w-inline-block w--current">
                                     <img
                                         src="./logo.png"
                                         loading="eager"
                                         alt=""
                                         className="nav-brand"
-                                        style={{ height: '2.2rem' }}
+                                        style={{ height: '1.8rem' }}
                                     />
                                 </a>
                             </div>
                         </div>
                         <div className="nav-container-right">
-                            {(!user || user === null) && (
-                                <NavLink to="/signin" style={{ width: 120 }} className="navlink w-inline-block">
-                                    <div>Sign In</div>
-                                </NavLink>
-                            )}
-                            <NavLink
-                                to={!user ? "/signin" : "/upload"}
-                                style={{ width: 130 }}
-                                className="navbar-button w-button"
-                            >
-                                Try Now
-                            </NavLink>
+                            <div className='signout'
+                                onClick={async (e) => {
+                                    e.preventDefault();
+                                    const result = await axios.post('/api/logout', { who: user.admin._id });
+
+                                    if (result.data.message == 'logout') {
+                                        console.log('logout')
+                                    }
+                                    localStorage.removeItem("userInfo");
+                                    navigate('/');
+                                    window.location.reload();
+                                }}>Sign out</div>
                         </div>
                     </div>
                 </div>
             </nav>
 
-            <div className="no-fillpage">
-                <div className="acc_content text-white">
+            <div className="fillpage">
+                <div className={`${!isMobile ? 'acc_content' : 'acc_content_mob'} text-white`}>
                     <div>
-                        <h3 style={{padding:'15px 0'}}>Manage Account</h3>
+                        <h3 style={{ padding: '15px 0' }}>Manage Account</h3>
                     </div>
                     <div>
                         <Box sx={{ width: '100%' }}>
@@ -78,7 +81,7 @@ const Account = () => {
                                     variant={isMobile ? 'scrollable' : 'fullWidth'}
                                     scrollButtons={isMobile ? 'auto' : false}
                                 >
-                                    <Tab label="Profile" {...a11yProps(0)} />
+                                    <Tab label="Profile" {...a11yProps(0)} className='acc_tab' />
                                     <Tab label="Credits" {...a11yProps(1)} />
                                     {/* <Tab label="Activity" {...a11yProps(2)} /> */}
                                 </Tabs>
@@ -97,6 +100,8 @@ const Account = () => {
                     </div>
                 </div>
             </div>
+
+            <SubFooter />
         </div>
     );
 };
