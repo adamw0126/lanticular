@@ -12,7 +12,7 @@ const PolicyContent = () => {
                 <h3 style={styles.sectionTitle}>Welcome to Lenticular</h3>
                 <p style={styles.paragraph}>
                     This Privacy Policy discloses the privacy practices for{" "}
-                    <a href="http://localhost:5173" style={styles.link}>
+                    <a href="http://172.86.110.135:5173" style={styles.link}>
                         Lenticular
                     </a>{" "}
                     and our mobile applications where this policy is posted (collectively
