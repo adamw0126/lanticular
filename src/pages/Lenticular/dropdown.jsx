@@ -42,7 +42,8 @@ const Dropdown = ({ isOpenDrop, setIsOpenDrop }) => {
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         }
-    }, [])
+    }, []);
+    
     return (
         <Box display="flex" alignItems="center">
             <Avatar
@@ -77,11 +78,12 @@ const Dropdown = ({ isOpenDrop, setIsOpenDrop }) => {
                                     navigate('/users');
                                     window.location.reload();
                                 }}>
+                                <img src={user.admin.avatar ? user.admin.avatar : "./userlogo.png"} width={50} height={50} style={{borderRadius:50}} />
                                 {`Admin Page (${user.admin.name})`}
                             </button>
-                            : <><div style={{display:'flex', gap:10, alignItems:'center', padding:'15px'}}>
-                                <img src={user.admin.avatar} width={50} height={50} style={{borderRadius:50}} />
-                                <div style={{display:'flex',flexDirection:'column'}}>
+                            : <><div style={{display:'flex', gap:10, alignItems:'center', padding:'10px 0'}}>
+                                <img src={user.admin.avatar ? user.admin.avatar : "./userlogo.png"} width={50} height={50} style={{borderRadius:50}} />
+                                <div style={{display:'flex',flexDirection:'column', cursor:'default'}}>
                                     <div>{user.admin.name}</div>
                                     <div>{user.admin.userId}</div>
                                 </div>
@@ -97,7 +99,7 @@ const Dropdown = ({ isOpenDrop, setIsOpenDrop }) => {
                         height: 45
                     }}
                 >
-                    <Typography sx={{ color: "white", fontFamily: 'Campton Webfont,Arial,sans-serif', "&:hover": { color: "#96cbff" } }}>
+                    <Typography sx={{ color: "white", fontFamily: 'Campton Webfont,Arial,sans-serif', "&:hover": { color: "#96cbff", cursor:'default' } }}>
                         <TollIcon />{` ${currentCredits} Credits`}&nbsp;&nbsp;
                     </Typography>
                     <Button size='small' className='buy-btn' onClick={() => setOpen(true)}>Buy</Button>

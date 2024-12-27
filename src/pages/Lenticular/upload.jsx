@@ -265,7 +265,7 @@ const UploadPage = () => {
                         </div>
         
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
-                            <Card title="2D to 3D Motion" description="Convert your pictures into immersive 3D Motions" />
+                            <Card title="2D to 3D Motion" description="Convert your pictures into realistic 3D Motions" />
                             <Card title="2D to 3D Image" description="Easily create accurately detailed 3D Images" />
                             {/* <Card title="2D to 3D Video" description="Convert any video and transport viewers into the scene" /> */}
                             <Card title="Edit Neural Depth" description="State-of-the-art depthmap generation and editing" />

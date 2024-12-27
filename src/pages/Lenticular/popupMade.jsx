@@ -146,6 +146,34 @@ const DimensionsModal = ({ open, onClose, fPSInputValue, setFPSInputValue, handl
                                 }}
                             /> */}
                         </div>
+                        <div style={{paddingTop:20}}>
+                            <FormControl>
+                                <FormLabel id="demo-row-radio-buttons-group-label" sx={{ color: 'white' }}>Image Type</FormLabel>
+                                <RadioGroup
+                                    row aria-labelledby="demo-row-radio-buttons-group-label"
+                                    name="imageType"
+                                    value={formData.imageType}
+                                    onChange={handleChange}
+                                    sx={{ color: "#ffffff" }}
+                                >
+                                    <FormControlLabel
+                                        value="png"
+                                        control={<Radio sx={{ color: "#ffffff" }} />}
+                                        label="PNG"
+                                    />
+                                    <FormControlLabel
+                                        value="jpg"
+                                        control={<Radio sx={{ color: "#ffffff" }} />}
+                                        label="JPG"
+                                    />
+                                    <FormControlLabel
+                                        value="tif"
+                                        control={<Radio sx={{ color: "#ffffff" }} />}
+                                        label="TIF"
+                                    />
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
                     </TabPanel>
                     <TabPanel value="2">
                         <Box display="flex" flexDirection="column" gap={2} sx={{ mt: 1 }}>

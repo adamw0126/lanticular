@@ -121,7 +121,7 @@ const HomeLanding = () => {
                                 <div className="padding-global">
                                     <div className="container align-center gap-small" style={{willChange: 'opacity',opacity:`calc(0 + ${valByScroll/378})`}}>
                                         <h2 id="w-node-_4146ae31-843e-6155-a933-3f3f49478edd-7b225824" className="heading-style-h1 large" style={{fontSize:'3.5rem'}}>Neural Depth Technology</h2>
-                                        <p id="w-node-_4146ae31-843e-6155-a933-3f3f49478edf-7b225824" className="text-size-xlarge">Our Technology is the future of visual interactions. It enables an immersive experience tailored to your device, whether you're viewing on your mobile, a head-mounted display or a 3D display.</p>
+                                        <p id="w-node-_4146ae31-843e-6155-a933-3f3f49478edf-7b225824" className="text-size-xlarge">Our Technology is the future of visual interactions. It enables an realistic experience tailored to your device, whether you're viewing on your mobile, a head-mounted display or a 3D display.</p>
                                     </div>
                                 </div>
                             </div>

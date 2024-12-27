@@ -9,6 +9,7 @@ const dataFolderPath = path.join(__dirname, '..', 'uploads');
 const avatarFolderPath = path.join(__dirname, '..', 'avatars');
 
 const serverUrl = '172.86.110.135:5000';
+// const serverUrl = 'localhost:5000';
 
 function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
