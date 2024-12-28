@@ -52,7 +52,7 @@ const DimensionsModal = ({ open, onClose, fPSInputValue, setFPSInputValue, handl
     };
 
     const createFrames = () => {
-        handleConfirmFrame()
+        handleConfirmFrame(formData.imageType)
         onClose();
     }
 

@@ -22,6 +22,7 @@ var upload_depth = '';
 var tempedit_depth = '';
 var storeDepth = '';
 var enableEyedrop = false;
+var frameType = 'png';
 
 module.exports = {
   depthData,
@@ -47,5 +48,6 @@ module.exports = {
   upload_depth,
   tempedit_depth,
   storeDepth,
-  enableEyedrop
+  enableEyedrop,
+  frameType
 };

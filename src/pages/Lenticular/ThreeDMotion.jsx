@@ -201,13 +201,17 @@ function ThreeDMotion({ user, isDepth, setIsDepth, isAnagl, setIsAnagl }) {
     setFPSInputValue(event.target.value);
   };
 
-  const handleConfirmFrame = () => {
+  const handleConfirmFrame = (imageType) => {
+    let options = gv.viewer.getOptions();
+    delete options.size;
+    gv.origin_viewer.setOptions(options);
     gv.viewer
       .exportFramesToZip(
         document.getElementById('origin_view'),
         5,
         fPSInputValue,
         gv.viewer.getOptions(),
+        imageType
       )
       .then((blob) => {
         console.log('Frames export completed:');

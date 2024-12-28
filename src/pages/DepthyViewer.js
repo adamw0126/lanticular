@@ -1928,7 +1928,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
       });
     };
 
-    this.exportFramesToZip = function (targetCanvas, duration, totalFrames, options) {
+    this.exportFramesToZip = function (targetCanvas, duration, totalFrames, options, frameType) {
       return new Promise((resolve, reject) => {
         const canvas = targetCanvas || this.getCanvas(); // Use the provided targetCanvas or default to the viewer's canvas
         if (!canvas) {
@@ -1953,9 +1953,9 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
             this.render(true); // Update the canvas
     
             // Convert the canvas content to a data URL and store it
-            const dataUrl = canvas.toDataURL("image/png");
+            const dataUrl = canvas.toDataURL(`image/${frameType}`);
             const base64Data = dataUrl.split(",")[1]; // Extract base64 portion
-            jsZip.file(`frame_${String(frame).padStart(4, "0")}.png`, base64Data, { base64: true });
+            jsZip.file(`frame_${String(frame).padStart(4, "0")}.${frameType}`, base64Data, { base64: true });
     
             frame++;
             animationFrameRequest = requestAnimationFrame(captureFrame);
@@ -1971,7 +1971,7 @@ Object.defineProperty(PIXI.DepthPerspectiveFilter.prototype, 'offset', {
                 const url = URL.createObjectURL(zipBlob);
                 const link = document.createElement("a");
                 link.href = url;
-                link.download = "frames.zip";
+                link.download = `frames_${frameType}.zip`;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
